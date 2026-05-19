@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AutoParts Hub | 全球汽配交易平台 - VIN/OEM 搜索</title>
-    <meta name="description" content="专业汽车配件B2B平台，支持VIN/零件号搜索，同城服务，多语言。">
+    <title>AutoParts Hub | VIN智能匹配 + 全站多语言</title>
+    <meta name="description" content="专业汽配平台，支持VIN码第4-8位车型匹配，全站中英法三语实时切换，后台自定义车型数据库。">
     <!-- Tailwind CSS + Font Awesome + Google Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -15,12 +15,11 @@
         .product-card:hover, .need-card:hover, .local-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: #3b82f6; }
         .toast-msg { position: fixed; bottom: 20px; right: 20px; z-index: 999; background: #10b981; color: white; padding: 12px 24px; border-radius: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; font-weight: 500; }
         .active-tab { border-bottom: 3px solid #3b82f6; color: #1e40af; font-weight: 600; }
-        .modal { transition: opacity 0.2s; }
         .chat-widget { position: fixed; bottom: 90px; right: 20px; z-index: 100; }
         .chat-box { width: 300px; background: white; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; }
         @media (max-width: 768px) { .main-content { padding-bottom: 80px; } .chat-widget { bottom: 70px; } }
-        .search-highlight { background: #fef3c7; border-left: 4px solid #f59e0b; }
-        .vin-search-container { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); }
+        .vin-match-badge { background: #dbeafe; border-radius: 20px; padding: 4px 10px; font-size: 12px; }
+        .model-tag { background: #e0e7ff; color: #1e3a8a; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -37,17 +36,17 @@
                 <span class="font-extrabold text-xl tracking-tight text-gray-800" data-i18n="brand">AutoParts Hub</span>
             </div>
             <div class="hidden md:flex space-x-5 items-center">
-                <a href="#" data-nav="home" class="nav-link text-gray-700 hover:text-blue-700 font-medium">🏠 <span data-i18n="nav_home">Home</span></a>
-                <a href="#" data-nav="products" class="nav-link text-gray-700 hover:text-blue-700 font-medium">📦 <span data-i18n="nav_products">Products</span></a>
-                <a href="#" data-nav="needs" class="nav-link text-gray-700 hover:text-blue-700 font-medium">📢 <span data-i18n="nav_needs">Buying Needs</span></a>
-                <a href="#" data-nav="local" class="nav-link text-gray-700 hover:text-blue-700 font-medium">🏙️ <span data-i18n="nav_local">Local Services</span></a>
-                <a href="#" data-nav="inquiry" class="nav-link text-gray-700 hover:text-blue-700 font-medium">✉️ <span data-i18n="nav_inquiry">Inquiry</span></a>
-                <a href="#" data-nav="admin" class="nav-link text-gray-700 hover:text-blue-700 font-medium">⚙️ <span data-i18n="nav_admin">Admin</span></a>
+                <a href="#" data-nav="home" class="nav-link" data-i18n="nav_home">🏠 Home</a>
+                <a href="#" data-nav="products" class="nav-link" data-i18n="nav_products">📦 Products</a>
+                <a href="#" data-nav="needs" class="nav-link" data-i18n="nav_needs">📢 Buying Needs</a>
+                <a href="#" data-nav="local" class="nav-link" data-i18n="nav_local">🏙️ Local Services</a>
+                <a href="#" data-nav="inquiry" class="nav-link" data-i18n="nav_inquiry">✉️ Inquiry</a>
+                <a href="#" data-nav="admin" class="nav-link" data-i18n="nav_admin">⚙️ Admin</a>
                 <div class="relative" id="userMenuDesktop">
-                    <button id="desktopUserBtn" class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full hover:bg-gray-200"><i class="fas fa-user-circle text-blue-600"></i><span id="desktopUserName" data-i18n="login">Login</span></button>
+                    <button id="desktopUserBtn" class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full"><i class="fas fa-user-circle text-blue-600"></i><span id="desktopUserName" data-i18n="login">Login</span></button>
                     <div id="desktopUserDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border">
-                        <a href="#" id="desktopAccountLink" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-id-card mr-2"></i>My Account</a>
-                        <a href="#" id="desktopLogoutLink" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                        <a href="#" id="desktopAccountLink" class="block px-4 py-2 text-sm"><i class="fas fa-id-card mr-2"></i>My Account</a>
+                        <a href="#" id="desktopLogoutLink" class="block px-4 py-2 text-sm text-red-600"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
                     </div>
                 </div>
                 <div class="flex space-x-1 border-l pl-3 ml-1">
@@ -71,186 +70,228 @@
 <!-- 移动端底部导航 -->
 <div class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-20 shadow-lg">
     <div class="flex justify-around py-2">
-        <a href="#" data-nav="home" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-home text-xl"></i><span data-i18n="nav_home">Home</span></a>
-        <a href="#" data-nav="products" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-boxes text-xl"></i><span data-i18n="nav_products">Products</span></a>
-        <a href="#" data-nav="needs" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-bullhorn text-xl"></i><span data-i18n="nav_needs">Needs</span></a>
-        <a href="#" data-nav="local" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-city text-xl"></i><span data-i18n="nav_local">Local</span></a>
-        <a href="#" data-nav="inquiry" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-envelope text-xl"></i><span data-i18n="nav_inquiry">Inquiry</span></a>
-        <a href="#" data-nav="admin" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-cog text-xl"></i><span data-i18n="nav_admin">Admin</span></a>
+        <a href="#" data-nav="home" class="mobile-nav-item flex flex-col items-center text-xs"><i class="fas fa-home text-xl"></i><span data-i18n="nav_home">Home</span></a>
+        <a href="#" data-nav="products" class="mobile-nav-item flex flex-col items-center text-xs"><i class="fas fa-boxes text-xl"></i><span data-i18n="nav_products">Products</span></a>
+        <a href="#" data-nav="needs" class="mobile-nav-item flex flex-col items-center text-xs"><i class="fas fa-bullhorn text-xl"></i><span data-i18n="nav_needs">Needs</span></a>
+        <a href="#" data-nav="local" class="mobile-nav-item flex flex-col items-center text-xs"><i class="fas fa-city text-xl"></i><span data-i18n="nav_local">Local</span></a>
+        <a href="#" data-nav="inquiry" class="mobile-nav-item flex flex-col items-center text-xs"><i class="fas fa-envelope text-xl"></i><span data-i18n="nav_inquiry">Inquiry</span></a>
+        <a href="#" data-nav="admin" class="mobile-nav-item flex flex-col items-center text-xs"><i class="fas fa-cog text-xl"></i><span data-i18n="nav_admin">Admin</span></a>
     </div>
 </div>
 
 <!-- 主内容区域 -->
 <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 main-content pb-20 md:pb-8">
-    <!-- 首页视图 - 包含VIN/OEM搜索栏 -->
+    <!-- 首页视图：VIN智能匹配搜索 -->
     <div id="homeView" class="view">
-        <!-- 增强搜索区域：VIN 或 Part Number -->
-        <div class="vin-search-container rounded-2xl p-6 mb-10 shadow-md border border-blue-100">
-            <div class="flex items-center justify-center mb-2"><i class="fas fa-search text-blue-600 text-2xl mr-2"></i><span class="font-bold text-gray-700" data-i18n="vin_search_title">Search by VIN / Frame or Part Number</span></div>
-            <div class="flex flex-col md:flex-row gap-3 mt-3">
-                <input type="text" id="vinInput" placeholder='e.g. WBA1234567890, 1HGCM82633A123456 or "Brake Pad"' class="flex-1 border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-400">
-                <button id="vinSearchBtn" class="bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow hover:bg-blue-800 transition"><i class="fas fa-microchip mr-2"></i><span data-i18n="search_btn">Search Part / VIN</span></button>
+        <div class="vin-search-container bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-10 shadow-md border border-blue-200">
+            <div class="text-center mb-3"><i class="fas fa-microchip text-blue-700 text-3xl"></i><h2 class="text-2xl font-bold mt-1" data-i18n="vin_search_title">VIN / 车架号智能匹配</h2><p class="text-sm text-gray-500" data-i18n="vin_sub">输入17位VIN码，自动识别第4-8位车型段，匹配后台车型及配件</p></div>
+            <div class="flex flex-col md:flex-row gap-3">
+                <input type="text" id="vinInput" maxlength="17" placeholder="例如: JHMGD3840WC123456 或 1HGCM82633A123456" class="flex-1 border border-gray-300 p-3 rounded-xl font-mono text-sm">
+                <button id="vinSmartMatchBtn" class="bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow"><i class="fas fa-search mr-2"></i><span data-i18n="search_btn">识别车型 & 匹配配件</span></button>
             </div>
-            <div class="text-xs text-gray-400 mt-2 text-center" data-i18n="vin_example">Try: "ENG-1001" or "Piston" or VIN code (simulated lookup)</div>
+            <div id="vinMatchResult" class="mt-4 text-sm text-center hidden transition-all"></div>
         </div>
-        
+
         <div class="bg-gradient-to-r from-blue-800 to-indigo-800 rounded-2xl p-8 text-white text-center mb-12">
-            <h1 class="text-3xl md:text-4xl font-bold" data-i18n="hero_title">Global Auto Parts Sourcing Platform</h1>
-            <p class="mt-2" data-i18n="hero_desc">Search by VIN/OEM for precise fitment</p>
-            <button id="homeRegisterBtn" class="mt-4 bg-yellow-500 text-gray-900 px-6 py-2 rounded-full"><i class="fas fa-user-plus mr-2"></i><span data-i18n="register_btn">Sign Up Free</span></button>
+            <h1 class="text-3xl md:text-4xl font-bold" data-i18n="hero_title">全球汽配 + 智能VIN解码</h1>
+            <p class="mt-2" data-i18n="hero_desc">基于VIN第4-8位精准匹配车型及专用配件</p>
+            <button id="homeRegisterBtn" class="mt-4 bg-yellow-500 text-gray-900 px-6 py-2 rounded-full"><i class="fas fa-user-plus mr-2"></i><span data-i18n="register_btn">免费注册</span></button>
         </div>
         
         <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-users text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_users">5000+ Buyers</h3><p class="text-gray-500" data-i18n="feature_users_desc">Trusted worldwide</p></div>
-            <div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-list-alt text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_needs">Daily RFQs</h3><p class="text-gray-500" data-i18n="feature_needs_desc">Post your part requests</p></div>
-            <div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-shield-alt text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_secure">Secure Trading</h3><p class="text-gray-500" data-i18n="feature_secure_desc">Verified suppliers</p></div>
+            <div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-users text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_users">5000+ 买家</h3><p class="text-gray-500" data-i18n="feature_users_desc">全球信赖</p></div>
+            <div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-list-alt text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_needs">每日询盘</h3><p class="text-gray-500" data-i18n="feature_needs_desc">发布需求</p></div>
+            <div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-shield-alt text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_secure">安全交易</h3><p class="text-gray-500" data-i18n="feature_secure_desc">认证供应商</p></div>
         </div>
     </div>
 
-    <!-- 产品列表视图 (支持搜索结果高亮) -->
-    <div id="productsView" class="view hidden">
-        <div class="flex justify-between items-center flex-wrap gap-3 mb-5">
-            <h2 class="text-2xl font-bold" data-i18n="products_title">Product Catalog</h2>
-            <div class="relative"><input type="text" id="productSearchLocal" placeholder="Filter products..." class="border rounded-full px-4 py-1 pl-8 text-sm"><i class="fas fa-search absolute left-3 top-2 text-gray-400"></i></div>
-        </div>
-        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <!-- 产品视图 (过滤与展示) -->
+    <div id="productsView" class="view hidden"><h2 class="text-2xl font-bold mb-4" data-i18n="products_title">产品目录</h2><div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>
+    <div id="needsView" class="view hidden"><h2 class="text-2xl font-bold mb-4" data-i18n="needs_title">采购需求</h2><div id="needsList" class="space-y-5"></div></div>
+    <div id="localView" class="view hidden"><div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold" data-i18n="local_title">同城服务</h2><button id="postLocalBtn" class="bg-blue-600 text-white px-5 py-2 rounded-full"><i class="fas fa-plus-circle mr-1"></i><span data-i18n="post_local">发布信息</span></button></div><div id="localList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div></div>
+    <div id="inquiryView" class="view hidden"><div class="max-w-2xl mx-auto"><h2 class="text-2xl font-bold" data-i18n="inquiry_title">发送询价</h2><form id="inquiryForm" class="bg-white p-5 rounded-xl shadow"><input type="text" id="inqName" placeholder="姓名" class="border p-2 w-full mb-3 rounded"><input type="email" id="inqEmail" placeholder="邮箱" class="border p-2 w-full mb-3 rounded"><textarea rows="4" id="inqMsg" placeholder="需求" class="border p-2 w-full rounded"></textarea><button type="submit" class="mt-4 bg-green-600 text-white px-5 py-2 rounded">发送</button></form></div></div>
+
+    <!-- 后台管理 (包含车型数据库管理) -->
+    <div id="adminView" class="view hidden">
+        <h2 class="text-2xl font-bold mb-4" data-i18n="admin_title">管理后台</h2>
+        <div class="flex flex-wrap space-x-2 mb-4 border-b"><button class="admin-tab py-2 px-4 active-tab" data-admin-tab="products">产品</button><button class="admin-tab py-2 px-4" data-admin-tab="vehicles">车型库(VIN段)</button><button class="admin-tab py-2 px-4" data-admin-tab="needs">需求</button><button class="admin-tab py-2 px-4" data-admin-tab="local">本地帖</button><button class="admin-tab py-2 px-4" data-admin-tab="users">用户</button></div>
+        <div id="adminProductsPanel" class="bg-white p-4 rounded-xl shadow"><div class="flex justify-end mb-3"><button id="adminAddProduct" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">+ 添加产品</button></div><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th>名称</th><th>OEM/SKU</th><th>价格</th><th>操作</th></tr></thead><tbody id="adminProductTable"></tbody></table></div>
+        <div id="adminVehiclesPanel" class="hidden bg-white p-4 rounded-xl shadow"><h3 class="font-bold mb-2">车型VIN段映射 (第4-8位字符段)</h3><div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>VIN段 (4-8位)</th><th>品牌/车型</th><th>发动机/备注</th><th>操作</th></tr></thead><tbody id="adminVehicleTable"></tbody></table><button id="addVehicleBtn" class="mt-3 bg-green-600 text-white px-3 py-1 rounded text-sm">+ 新增车型映射</button></div></div>
+        <div id="adminNeedsPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>标题</th><th>用户</th><th>操作</th></tr></thead><tbody id="adminNeedsTable"></tbody></table></div>
+        <div id="adminLocalPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>标题</th><th>状态</th><th>操作</th></tr></thead><tbody id="adminLocalTable"></tbody></table></div>
+        <div id="adminUsersPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>用户名</th><th>角色</th><th>操作</th></tr></thead><tbody id="adminUsersTable"></tbody></table></div>
     </div>
-
-    <!-- 采购需求板块 -->
-    <div id="needsView" class="view hidden"><h2 class="text-2xl font-bold mb-4" data-i18n="needs_title">Public Buying Needs</h2><div id="needsList" class="space-y-5"></div></div>
-
-    <!-- 同城服务板块 -->
-    <div id="localView" class="view hidden">
-        <div class="flex justify-between items-center flex-wrap gap-3 mb-6"><h2 class="text-2xl font-bold" data-i18n="local_title">Local Services - Rental & Wanted</h2><button id="postLocalBtn" class="bg-blue-600 text-white px-5 py-2 rounded-full shadow"><i class="fas fa-plus-circle mr-1"></i><span data-i18n="post_local">Post Rental/Wanted</span></button></div>
-        <div id="localList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
-    </div>
-
-    <!-- 询价表单 -->
-    <div id="inquiryView" class="view hidden"><div class="max-w-2xl mx-auto"><h2 class="text-2xl font-bold" data-i18n="inquiry_title">Send Inquiry</h2><form id="inquiryForm" class="bg-white p-5 rounded-xl shadow mt-4"><input type="text" id="inqName" placeholder="Name" class="border p-2 w-full mb-3 rounded"><input type="email" id="inqEmail" placeholder="Email" class="border p-2 w-full mb-3 rounded"><textarea rows="4" id="inqMsg" placeholder="Your request..." class="border p-2 w-full rounded"></textarea><button type="submit" class="mt-4 bg-green-600 text-white px-5 py-2 rounded">Send</button></form></div></div>
-
-    <!-- 后台管理 -->
-    <div id="adminView" class="view hidden"><h2 class="text-2xl font-bold mb-4" data-i18n="admin_title">Admin Dashboard</h2><div class="flex space-x-4 mb-4 border-b"><button class="admin-tab py-2 px-4 active-tab" data-admin-tab="products">Products</button><button class="admin-tab py-2 px-4" data-admin-tab="needs">Needs</button><button class="admin-tab py-2 px-4" data-admin-tab="local">Local Posts</button><button class="admin-tab py-2 px-4" data-admin-tab="users">Users</button></div><div id="adminProductsPanel" class="bg-white p-4 rounded-xl shadow"><div class="flex justify-end mb-3"><button id="adminAddProduct" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">+ Add Product</button></div><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th>Name</th><th>SKU/OEM</th><th>Price</th><th>Actions</th></thead><tbody id="adminProductTable"></tbody>}</div><div id="adminNeedsPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>Title</th><th>User</th><th>Action</th></tr></thead><tbody id="adminNeedsTable"></tbody>}</div><div id="adminLocalPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>Title</th><th>Status</th><th>Action</th></tr></thead><tbody id="adminLocalTable"></tbody>}</div><div id="adminUsersPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>Username</th><th>Role</th><th>Action</th></tr></thead><tbody id="adminUsersTable"></tbody>}</div></div>
-
-    <!-- 用户账户 -->
-    <div id="accountView" class="view hidden"><div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6"><div class="flex justify-between"><h2 class="text-2xl font-bold" data-i18n="my_account">My Account</h2><button id="closeAccountView" class="text-gray-500"><i class="fas fa-times"></i></button></div><div id="accountInfo" class="mt-4"></div><button id="editProfileBtn" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Edit Profile</button></div></div>
+    <div id="accountView" class="view hidden"><div class="max-w-2xl mx-auto bg-white rounded-xl p-6"><div class="flex justify-between"><h2 class="text-2xl font-bold" data-i18n="my_account">我的账户</h2><button id="closeAccountView" class="text-gray-500"><i class="fas fa-times"></i></button></div><div id="accountInfo"></div></div></div>
 </main>
 
-<!-- 聊天窗口 + 社媒底部 -->
-<div class="chat-widget"><div id="chatBox" class="chat-box border shadow-lg"><div class="bg-blue-700 text-white p-3 flex justify-between"><span><i class="fas fa-comment-dots mr-2"></i>Support</span><button id="closeChatBtn"><i class="fas fa-times"></i></button></div><div class="h-64 overflow-y-auto p-3 bg-gray-50" id="chatMessages"><div class="text-gray-500">Hello! Need help with VIN search?</div></div><div class="p-2 border-t flex"><input id="chatInput" class="flex-1 border rounded-l p-2 text-sm"><button id="sendChatBtn" class="bg-blue-600 text-white px-3 rounded-r">Send</button></div></div><button id="openChatBtn" class="bg-blue-600 text-white p-3 rounded-full shadow-lg"><i class="fas fa-headset text-xl"></i></button></div>
+<!-- 聊天窗口 + 底部社交 -->
+<div class="chat-widget"><div id="chatBox" class="chat-box"><div class="bg-blue-700 text-white p-3 flex justify-between"><span><i class="fas fa-comment-dots mr-2"></i>客服</span><button id="closeChatBtn"><i class="fas fa-times"></i></button></div><div class="h-64 overflow-y-auto p-3 bg-gray-50" id="chatMessages"><div class="text-gray-500">您好！需要帮助匹配VIN吗？</div></div><div class="p-2 border-t flex"><input id="chatInput" class="flex-1 border rounded-l p-2 text-sm"><button id="sendChatBtn" class="bg-blue-600 text-white px-3 rounded-r">发送</button></div></div><button id="openChatBtn" class="bg-blue-600 text-white p-3 rounded-full shadow-lg"><i class="fas fa-headset text-xl"></i></button></div>
 
-<footer class="bg-gray-800 text-white py-6 mt-8"><div class="max-w-7xl mx-auto px-4 text-center"><div class="flex justify-center space-x-6 mb-4"><a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-facebook"></i></a><a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-twitter"></i></a><a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-linkedin"></i></a><a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-instagram"></i></a><a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-whatsapp"></i></a></div><p data-i18n="footer_text">© 2025 AutoParts Hub — VIN/OEM Search & Global Parts</p></div></footer>
+<footer class="bg-gray-800 text-white py-6 mt-8"><div class="max-w-7xl mx-auto px-4 text-center"><div class="flex justify-center space-x-6 mb-4"><a href="#" class="text-2xl"><i class="fab fa-facebook"></i></a><a href="#" class="text-2xl"><i class="fab fa-twitter"></i></a><a href="#" class="text-2xl"><i class="fab fa-linkedin"></i></a><a href="#" class="text-2xl"><i class="fab fa-instagram"></i></a><a href="#" class="text-2xl"><i class="fab fa-whatsapp"></i></a></div><p data-i18n="footer_text">© 2025 AutoParts Hub — VIN智能识别 + 全站多语言</p></div></footer>
 
 <script>
-    // ---------- 增强数据 (包含OEM字段模拟) ----------
+    // ======================== 核心数据模型 ========================
+    // 车型映射表：VIN第4-8位段 (5个字符) => 车型信息
+    let vehicleMappings = JSON.parse(localStorage.getItem('vehicle_vin_mappings')) || [
+        { id: 1, vinSegment: "HGDM3", brand: "Honda", model: "Civic", engine: "1.8L", note: "2006-2011" },
+        { id: 2, vinSegment: "GCM82", brand: "Honda", model: "Accord", engine: "2.4L", note: "2008-2012" },
+        { id: 3, vinSegment: "BA123", brand: "BMW", model: "3 Series", engine: "N52", note: "E90" },
+        { id: 4, vinSegment: "WBA12", brand: "BMW", model: "5 Series", engine: "B48", note: "G30" }
+    ];
     let products = JSON.parse(localStorage.getItem('autoparts_products')) || [
-        { id: 1, name_en: "Piston Kit", sku: "ENG-1001", oem: "12100-79J00", price: 89.99, image: "https://picsum.photos/id/123/300/200" },
-        { id: 2, name_en: "Ceramic Brake Pads", sku: "BRK-2045", oem: "D1078-3B", price: 45.5, image: "https://picsum.photos/id/23/300/200" },
-        { id: 3, name_en: "Alternator 12V", sku: "ELE-378", oem: "23100-6M500", price: 120, image: "https://picsum.photos/id/90/300/200" },
-        { id: 4, name_en: "Air Filter", sku: "FIL-209", oem: "16546-2J000", price: 19.99, image: "https://picsum.photos/id/85/300/200" }
+        { id: 1, name_en: "Piston Kit", sku: "12100-79J00", applicableSegment: "HGDM3", price: 89.99, image: "https://picsum.photos/id/123/300/200" },
+        { id: 2, name_en: "Brake Pads", sku: "D1078-3B", applicableSegment: "GCM82", price: 45.5, image: "https://picsum.photos/id/23/300/200" },
+        { id: 3, name_en: "Alternator", sku: "23100-6M500", applicableSegment: "BA123", price: 120, image: "https://picsum.photos/id/90/300/200" },
+        { id: 4, name_en: "Air Filter", sku: "16546-2J000", applicableSegment: "WBA12", price: 19.99, image: "https://picsum.photos/id/85/300/200" }
     ];
     let needs = JSON.parse(localStorage.getItem('public_needs')) || [];
     let localPosts = JSON.parse(localStorage.getItem('local_posts')) || [];
     let users = JSON.parse(localStorage.getItem('app_users')) || [];
     let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+    if(users.length===0){ users.push({id:1, username:"admin", password:"admin123", role:"admin"}); users.push({id:2, username:"buyer", password:"123456", role:"user"}); localStorage.setItem('app_users',JSON.stringify(users)); }
+    if(localPosts.length===0) localPosts.push({id:1001, title:"汽修厂出租", description:"设备齐全", contact:"test@x.com", userId:2, username:"buyer", status:"approved"});
+    let nextProductId = products.length+1, nextVehicleId = vehicleMappings.length+1, nextNeedId = 300;
 
-    if(users.length === 0){ users.push({ id:1, username:"admin", password:"admin123", role:"admin" }); users.push({ id:2, username:"buyer1", password:"123456", role:"user" }); localStorage.setItem('app_users',JSON.stringify(users)); }
-    if(localPosts.length === 0) localPosts = [{ id:1001, title:"Garage Rental", type:"rental", description:"200sqm", contact:"a@b.com", userId:2, username:"buyer1", status:"approved" }];
-    if(needs.length === 0) needs = [{ id:201, title:"Need pistons", description:"200 sets", contact:"buyer@test.com", userId:2, username:"buyer1" }];
-    
-    let nextProductId = products.length+1;
-    let nextLocalId = localPosts.length? Math.max(...localPosts.map(p=>p.id))+1 : 2000;
-    let nextNeedId = needs.length? Math.max(...needs.map(n=>n.id))+1 : 301;
-
-    // 多语言翻译 (包含搜索相关)
-    const translations = {
-        en: { brand:"AutoParts Hub", nav_home:"Home", nav_products:"Products", nav_needs:"Buying Needs", nav_local:"Local Services", nav_inquiry:"Inquiry", nav_admin:"Admin", login:"Login", register_btn:"Sign Up", hero_title:"Global Auto Parts + VIN Search", hero_desc:"Search by VIN or Part Number for exact fit", vin_search_title:"Search by VIN / Frame or Part Number", search_btn:"Search Part / VIN", vin_example:"Try: ENG-1001 or VIN: WBA1234567890 (simulated)", products_title:"Product Catalog", local_title:"Local Services", post_local:"Post", inquiry_title:"Inquiry", admin_title:"Admin Dashboard", my_account:"My Account", footer_text:"© 2025 AutoParts Hub" },
-        fr: { brand:"AutoParts Hub", nav_home:"Accueil", nav_products:"Produits", nav_needs:"Besoins", nav_local:"Services locaux", nav_inquiry:"Devis", nav_admin:"Admin", login:"Connexion", register_btn:"S'inscrire", hero_title:"Pièces auto + recherche VIN", vin_search_title:"Recherche par VIN / N° pièce", search_btn:"Rechercher", vin_example:"Ex: ENG-1001 ou VIN WBA123", products_title:"Catalogue", local_title:"Services locaux", post_local:"Publier", inquiry_title:"Devis", admin_title:"Admin", my_account:"Mon compte", footer_text:"© 2025 AutoParts Hub" },
-        zh: { brand:"全球汽配中心", nav_home:"首页", nav_products:"产品", nav_needs:"采购需求", nav_local:"同城服务", nav_inquiry:"询价", nav_admin:"管理", login:"登录", register_btn:"注册", hero_title:"全球汽配 + VIN/OEM 精准搜索", vin_search_title:"通过VIN/车架号 或 零件号搜索", search_btn:"搜索配件", vin_example:"示例: ENG-1001 或 VIN: WBA1234567890 (模拟)", products_title:"产品目录", local_title:"同城服务", post_local:"发布", inquiry_title:"询价单", admin_title:"管理后台", my_account:"我的账户", footer_text:"© 2025 全球汽配中心" }
-    };
-    let currentLang = localStorage.getItem('app_lang') || 'en';
-    function t(key) { return translations[currentLang]?.[key] || translations.en[key] || key; }
-    function updateUILanguage(){ document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(k) el.innerText=t(k); }); }
-    function setLang(lang){ currentLang=lang; localStorage.setItem('app_lang',lang); updateUILanguage(); renderCurrentView(); }
-
-    // VIN/OEM 搜索核心逻辑 (模拟: 匹配产品SKU, OEM字段, 或名称)
-    function performVINSearch(){
-        const query = document.getElementById('vinInput').value.trim().toLowerCase();
-        if(!query){ showToast("Please enter VIN or part number"); return; }
-        // 过滤产品
-        const filtered = products.filter(p => p.sku?.toLowerCase().includes(query) || p.oem?.toLowerCase().includes(query) || p.name_en?.toLowerCase().includes(query));
-        if(filtered.length === 0){ showToast("No matching parts found. Try other keywords."); return; }
-        // 跳转到产品视图并展示搜索结果，高亮
-        renderProductGridWithFilter(filtered, query);
-        navigateTo('products');
-        showToast(`Found ${filtered.length} results for "${query}"`);
+    // ======================== VIN 智能匹配函数 (提取4-8位) ========================
+    function extractVinSegment(vin){
+        if(!vin || vin.length < 8) return null;
+        const upperVin = vin.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if(upperVin.length < 8) return null;
+        return upperVin.substring(3, 8); // 第4-8位，索引3到7
+    }
+    function matchVehicleByVin(vinSegment){
+        if(!vinSegment) return null;
+        return vehicleMappings.find(v => v.vinSegment === vinSegment);
+    }
+    function getProductsByVinSegment(vinSegment){
+        if(!vinSegment) return [];
+        return products.filter(p => p.applicableSegment === vinSegment);
+    }
+    // 全局搜索结果存储
+    let lastMatchedSegment = null;
+    let lastMatchedVehicle = null;
+    function performVinSmartMatch(){
+        const vinInput = document.getElementById('vinInput').value.trim();
+        if(!vinInput){ showToast("请输入17位VIN码"); return; }
+        const segment = extractVinSegment(vinInput);
+        if(!segment){ showToast("VIN码长度不足或无效，请至少输入8位以上字符"); return; }
+        const vehicle = matchVehicleByVin(segment);
+        const resultDiv = document.getElementById('vinMatchResult');
+        if(vehicle){
+            lastMatchedSegment = segment;
+            lastMatchedVehicle = vehicle;
+            const brandModel = `${vehicle.brand} ${vehicle.model} (${vehicle.engine})`;
+            resultDiv.innerHTML = `<div class="bg-green-100 text-green-800 p-3 rounded-lg flex items-center"><i class="fas fa-check-circle mr-2"></i>识别成功: <strong>${brandModel}</strong> (VIN段: ${segment}) | 为该车型推荐 ${getProductsByVinSegment(segment).length} 款专用配件</div>`;
+            resultDiv.classList.remove('hidden');
+            // 自动跳转到产品页面并展示该车型匹配的配件
+            const matchedProds = getProductsByVinSegment(segment);
+            renderProductGridWithFilter(matchedProds, null);
+            navigateTo('products');
+            showToast(`已匹配 ${brandModel}，展示适配配件`);
+        } else {
+            lastMatchedSegment = null;
+            resultDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-800 p-3 rounded-lg">未找到对应车型，VIN段 "${segment}" 未在后台映射。可联系管理员添加车型库。</div>`;
+            resultDiv.classList.remove('hidden');
+            renderProductGridWithFilter([], null);
+            navigateTo('products');
+        }
     }
 
-    function renderProductGridWithFilter(filteredProducts, highlightTerm=null){
+    function renderProductGridWithFilter(productsToShow, highlightTerm){
         const grid = document.getElementById('productGrid');
         if(!grid) return;
-        if(filteredProducts.length === 0) filteredProducts = products;
-        grid.innerHTML = filteredProducts.map(p => {
-            let nameDisplay = p.name_en;
-            if(highlightTerm && p.name_en.toLowerCase().includes(highlightTerm)){
-                const regex = new RegExp(`(${highlightTerm})`, 'gi');
-                nameDisplay = p.name_en.replace(regex, `<mark class="bg-yellow-200">$1</mark>`);
-            }
-            return `<div class="product-card bg-white rounded-xl p-4 shadow"><img src="${p.image}" class="h-40 w-full object-cover rounded"><h3 class="font-bold mt-2">${nameDisplay}</h3><div class="text-xs text-gray-500">SKU: ${p.sku} | OEM: ${p.oem}</div><p class="text-blue-600 font-bold mt-1">$${p.price}</p></div>`;
-        }).join('');
+        const list = productsToShow.length ? productsToShow : products;
+        if(list.length === 0){ grid.innerHTML = '<div class="col-span-full text-center p-10 text-gray-500">暂无匹配配件，请尝试其他VIN或浏览全部产品</div>'; return; }
+        grid.innerHTML = list.map(p => `<div class="product-card bg-white rounded-xl p-4 shadow"><img src="${p.image}" class="h-40 w-full object-cover rounded"><h3 class="font-bold mt-2">${p.name_en}</h3><div class="text-xs text-gray-500">OEM: ${p.sku}</div><p class="text-blue-600 font-bold mt-1">$${p.price}</p></div>`).join('');
     }
+    function renderAllProducts(){ renderProductGridWithFilter(products, null); }
 
-    function renderProductGrid(){ renderProductGridWithFilter(products, null); }
+    // 后台车型管理渲染
+    function renderVehicleAdminTable(){
+        const tbody = document.getElementById('adminVehicleTable');
+        tbody.innerHTML = vehicleMappings.map(v => `
+            <tr><td class="p-2">${v.id}</td><td class="font-mono">${v.vinSegment}</td><td>${v.brand} ${v.model}</td><td>${v.engine || '-'}</td><td><button class="edit-vehicle text-blue-600 mr-2" data-id="${v.id}">编辑</button><button class="del-vehicle text-red-600" data-id="${v.id}">删除</button></td></tr>
+        `).join('');
+        document.querySelectorAll('.edit-vehicle').forEach(btn=>btn.addEventListener('click',(e)=>{ const id=parseInt(btn.dataset.id); editVehicleMapping(id); }));
+        document.querySelectorAll('.del-vehicle').forEach(btn=>btn.addEventListener('click',(e)=>{ vehicleMappings=vehicleMappings.filter(v=>v.id!==parseInt(btn.dataset.id)); saveVehicles(); renderVehicleAdminTable(); showToast("已删除"); }));
+    }
+    function editVehicleMapping(id){
+        const v = vehicleMappings.find(v=>v.id===id);
+        if(!v) return;
+        const newSeg = prompt("编辑VIN段(4-8位)", v.vinSegment);
+        if(newSeg && newSeg.length===5){ v.vinSegment = newSeg.toUpperCase(); }
+        const newBrand = prompt("品牌", v.brand); if(newBrand) v.brand = newBrand;
+        const newModel = prompt("车型", v.model); if(newModel) v.model = newModel;
+        saveVehicles(); renderVehicleAdminTable(); showToast("更新成功");
+    }
+    function addVehicleMapping(){
+        const seg = prompt("输入VIN段(第4-8位，5个字符)").toUpperCase();
+        if(!seg || seg.length!==5){ alert("需要5个字符"); return; }
+        const brand = prompt("品牌") || "未知";
+        const model = prompt("车型") || "未知";
+        vehicleMappings.push({ id: nextVehicleId++, vinSegment: seg, brand, model, engine: "标准" });
+        saveVehicles(); renderVehicleAdminTable(); showToast("车型已添加");
+    }
+    function saveVehicles(){ localStorage.setItem('vehicle_vin_mappings', JSON.stringify(vehicleMappings)); }
 
-    // 其他渲染函数 (同城，需求等)
-    function renderLocalPosts(){ const container = document.getElementById('localList'); if(!container) return; const approved = localPosts.filter(p=>p.status==='approved'); container.innerHTML = approved.map(post=>`<div class="local-card bg-white p-4 rounded-xl shadow"><div class="font-bold">${post.title}</div><p>${post.description}</p><p class="text-sm text-blue-500">Contact: ${post.contact}</p></div>`).join(''); }
-    function renderNeedsOnly(){ const container = document.getElementById('needsList'); if(container) container.innerHTML = needs.map(need=>`<div class="need-card bg-white p-4 rounded-xl shadow"><h3 class="font-bold">${need.title}</h3><p>${need.description}</p></div>`).join(''); }
-    function renderAdminTables(){
-        document.getElementById('adminProductTable').innerHTML = products.map(p=>`<tr><td>${p.id}</td><td>${p.name_en}</td><td>${p.sku}</td><td>$${p.price}</td><td><button class="text-red-600 adminDelProd" data-id="${p.id}">Del</button></td></tr>`).join('');
-        document.querySelectorAll('.adminDelProd').forEach(btn=>btn.addEventListener('click',()=>{ products=products.filter(p=>p.id!==parseInt(btn.dataset.id)); saveProducts(); renderAdminTables(); renderProductGrid(); showToast('Deleted'); }));
-        document.getElementById('adminNeedsTable').innerHTML = needs.map(n=>`<tr><td>${n.id}</td><td>${n.title}</td><td>${n.username}</td><td><button class="text-red-600 adminDelNeed" data-id="${n.id}">Del</button></td></tr>`).join('');
-        document.querySelectorAll('.adminDelNeed').forEach(btn=>btn.addEventListener('click',()=>{ needs=needs.filter(n=>n.id!==parseInt(btn.dataset.id)); saveNeeds(); renderAdminTables(); renderNeedsOnly(); }));
-        document.getElementById('adminLocalTable').innerHTML = localPosts.map(post=>`<tr><td>${post.id}</td><td>${post.title}</td><td class="${post.status==='pending'?'text-yellow-600':'text-green-600'}">${post.status}</td><td>${post.status==='pending'?`<button class="approve-local text-green-600" data-id="${post.id}">Approve</button>`:'-'}</td></tr>`).join('');
-        document.querySelectorAll('.approve-local').forEach(btn=>btn.addEventListener('click',()=>{ const idx=localPosts.findIndex(p=>p.id==parseInt(btn.dataset.id)); if(idx!==-1){ localPosts[idx].status='approved'; saveLocalPosts(); renderAdminTables(); renderLocalPosts(); showToast('Approved'); } }));
-        document.getElementById('adminUsersTable').innerHTML = users.map(u=>`<tr><td>${u.id}</td><td>${u.username}</td><td>${u.role}</td><td>${u.role!=='admin'?`<button class="text-red-600 adminDelUser" data-id="${u.id}">Del</button>`:'-'}</td></tr>`).join('');
-        document.querySelectorAll('.adminDelUser').forEach(btn=>btn.addEventListener('click',()=>{ users=users.filter(u=>u.id!==parseInt(btn.dataset.id)); localStorage.setItem('app_users',JSON.stringify(users)); if(currentUser?.id===parseInt(btn.dataset.id)) logout(); else renderAdminTables(); }));
+    // 产品后台管理
+    function renderAdminProductTable(){
+        const tbody = document.getElementById('adminProductTable');
+        tbody.innerHTML = products.map(p=>`<tr><td>${p.id}</td><td>${p.name_en}</td><td>${p.sku}</td><td>$${p.price}</td><td><button class="del-prod text-red-600" data-id="${p.id}">删除</button></td></tr>`).join('');
+        document.querySelectorAll('.del-prod').forEach(btn=>btn.addEventListener('click',()=>{ products=products.filter(p=>p.id!==parseInt(btn.dataset.id)); saveProducts(); renderAdminProductTable(); renderAllProducts(); showToast("已删除"); }));
     }
     function saveProducts(){ localStorage.setItem('autoparts_products', JSON.stringify(products)); }
+    // 其他管理简单实现
+    function renderNeedsOnly(){ const c=document.getElementById('needsList'); if(c) c.innerHTML=needs.map(n=>`<div class="bg-white p-4 shadow rounded"><h3 class="font-bold">${n.title}</h3><p>${n.desc}</p></div>`).join(''); }
+    function renderLocalPosts(){ const container=document.getElementById('localList'); if(container) container.innerHTML=localPosts.filter(p=>p.status==='approved').map(p=>`<div class="bg-white p-4 shadow rounded"><div class="font-bold">${p.title}</div><p>${p.description}</p></div>`).join(''); }
+    function renderAdminOtherTables(){
+        document.getElementById('adminNeedsTable').innerHTML = needs.map(n=>`<tr><td>${n.id}</td><td>${n.title}</td><td>${n.username}</td><td><button class="del-need text-red-600" data-id="${n.id}">删除</button></td></tr>`).join('');
+        document.getElementById('adminLocalTable').innerHTML = localPosts.map(p=>`<tr><td>${p.id}</td><td>${p.title}</td><td>${p.status}</td><td><button class="appr-local text-green-600" data-id="${p.id}">审核通过</button> <button class="del-local text-red-600" data-id="${p.id}">删除</button></td></tr>`).join('');
+        document.getElementById('adminUsersTable').innerHTML = users.map(u=>`<tr><td>${u.id}</td><td>${u.username}</td><td>${u.role}</td><td>${u.role!=='admin'?`<button class="del-user text-red-600" data-id="${u.id}">删除</button>`:'-'}</td></tr>`).join('');
+        document.querySelectorAll('.del-need').forEach(btn=>btn.addEventListener('click',()=>{ needs=needs.filter(n=>n.id!==parseInt(btn.dataset.id)); saveNeeds(); renderAdminOtherTables(); renderNeedsOnly(); }));
+        document.querySelectorAll('.appr-local').forEach(btn=>btn.addEventListener('click',()=>{ const idx=localPosts.findIndex(p=>p.id==parseInt(btn.dataset.id)); if(idx!==-1){ localPosts[idx].status='approved'; saveLocalPosts(); renderAdminOtherTables(); renderLocalPosts(); showToast("已审核"); } }));
+        document.querySelectorAll('.del-local').forEach(btn=>btn.addEventListener('click',()=>{ localPosts=localPosts.filter(p=>p.id!==parseInt(btn.dataset.id)); saveLocalPosts(); renderAdminOtherTables(); renderLocalPosts(); }));
+        document.querySelectorAll('.del-user').forEach(btn=>btn.addEventListener('click',()=>{ users=users.filter(u=>u.id!==parseInt(btn.dataset.id)); localStorage.setItem('app_users',JSON.stringify(users)); if(currentUser?.id===parseInt(btn.dataset.id)) logout(); else renderAdminOtherTables(); }));
+    }
     function saveNeeds(){ localStorage.setItem('public_needs', JSON.stringify(needs)); }
     function saveLocalPosts(){ localStorage.setItem('local_posts', JSON.stringify(localPosts)); }
 
-    // 用户认证 (保留完整注册登录)
-    function showAuthModal(){ /* 略，与之前一致保证可用 */ const modalHtml=`<div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white rounded-xl p-6 w-96"><h3 id="authTitle">Login</h3><input id="authUser" placeholder="Username" class="border p-2 w-full my-2"><input id="authPass" type="password" class="border p-2 w-full my-2"><div id="authError" class="text-red-500"></div><div class="flex justify-between mt-4"><button id="authSubmitBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Login</button><button id="switchAuthBtn" class="text-blue-600">Register</button><button id="closeAuthBtn" class="text-gray-500">Cancel</button></div></div></div>`;
-        document.body.insertAdjacentHTML('beforeend',modalHtml); let isLogin=true; const update=()=>{ document.getElementById('authTitle').innerText=isLogin?'Login':'Register'; };
-        document.getElementById('switchAuthBtn').onclick=()=>{ isLogin=!isLogin; update(); };
-        document.getElementById('authSubmitBtn').onclick=()=>{ const user=document.getElementById('authUser').value,pwd=document.getElementById('authPass').value;
-            if(isLogin){ const found=users.find(u=>u.username===user && u.password===pwd); if(found){ currentUser=found; localStorage.setItem('currentUser',JSON.stringify(found)); updateUserUI(); showToast(`Welcome`); document.getElementById('authModal').remove(); renderCurrentView(); } else document.getElementById('authError').innerText='Invalid'; }
-            else { if(users.find(u=>u.username===user)){ document.getElementById('authError').innerText='Exists'; return; } const newUser={ id:Date.now(), username:user, email:`${user}@temp.com`, password:pwd, role:'user' }; users.push(newUser); localStorage.setItem('app_users',JSON.stringify(users)); currentUser=newUser; localStorage.setItem('currentUser',JSON.stringify(newUser)); updateUserUI(); showToast('Registered'); document.getElementById('authModal').remove(); renderCurrentView(); } };
-        document.getElementById('closeAuthBtn').onclick=()=>document.getElementById('authModal').remove();
-    }
-    function logout(){ currentUser=null; localStorage.removeItem('currentUser'); updateUserUI(); navigateTo('home'); showToast('Logged out'); }
-    function updateUserUI(){ const span=document.getElementById('desktopUserName'); if(span) span.innerText=currentUser?currentUser.username:(t('login')||'Login'); }
-    function navigateTo(view){ document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden')); document.getElementById(`${view}View`).classList.remove('hidden'); if(view==='products') renderProductGrid(); if(view==='needs') renderNeedsOnly(); if(view==='local') renderLocalPosts(); if(view==='admin') renderAdminTables(); window.scrollTo(0,0); }
+    // 多语言 (全站)
+    let currentLang = localStorage.getItem('app_lang') || 'en';
+    const translations = {
+        en: { brand:"AutoParts Hub", nav_home:"Home", nav_products:"Products", nav_needs:"Buying Needs", nav_local:"Local Services", nav_inquiry:"Inquiry", nav_admin:"Admin", login:"Login", register_btn:"Sign Up", hero_title:"Global Auto Parts + VIN Decoder", hero_desc:"Smart VIN segment (4-8) matching", vin_search_title:"VIN / Frame Smart Match", vin_sub:"Enter 17-digit VIN, auto-detect vehicle model", search_btn:"Identify & Match Parts", products_title:"Product Catalog", local_title:"Local Services", post_local:"Post", inquiry_title:"Inquiry", admin_title:"Admin Dashboard", my_account:"My Account", footer_text:"© 2025 AutoParts Hub — VIN Smart Match" },
+        fr: { brand:"AutoParts Hub", nav_home:"Accueil", nav_products:"Produits", nav_needs:"Besoins", nav_local:"Services", nav_inquiry:"Devis", nav_admin:"Admin", login:"Connexion", hero_title:"Pièces auto + décodage VIN", vin_search_title:"Recherche VIN/segment", search_btn:"Identifier", products_title:"Catalogue", local_title:"Services", admin_title:"Admin", my_account:"Mon compte", footer_text:"© 2025 AutoParts Hub" },
+        zh: { brand:"全球汽配中心", nav_home:"首页", nav_products:"产品", nav_needs:"采购需求", nav_local:"同城服务", nav_inquiry:"询价", nav_admin:"管理", login:"登录", register_btn:"注册", hero_title:"全球汽配 + VIN智能解码", hero_desc:"利用VIN第4-8位精准匹配车型", vin_search_title:"VIN/车架号智能匹配", vin_sub:"输入17位VIN，自动识别车型段", search_btn:"识别车型并匹配配件", products_title:"产品目录", local_title:"同城服务", post_local:"发布", inquiry_title:"询价单", admin_title:"管理后台", my_account:"我的账户", footer_text:"© 2025 全球汽配中心 — VIN智能匹配" }
+    };
+    function t(key) { return translations[currentLang]?.[key] || translations.en[key] || key; }
+    function updateUILanguage(){ document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(k) el.innerText=t(k); }); }
+    function setLang(lang){ currentLang=lang; localStorage.setItem('app_lang',lang); updateUILanguage(); renderCurrentView(); }
+    function navigateTo(view){ document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden')); document.getElementById(`${view}View`).classList.remove('hidden'); if(view==='products') renderAllProducts(); if(view==='needs') renderNeedsOnly(); if(view==='local') renderLocalPosts(); if(view==='admin'){ renderAdminProductTable(); renderVehicleAdminTable(); renderAdminOtherTables(); } window.scrollTo(0,0); }
     function renderCurrentView(){ const visible=[...document.querySelectorAll('.view:not(.hidden)')][0]?.id?.replace('View',''); if(visible) navigateTo(visible); else navigateTo('home'); }
     function showToast(msg){ document.getElementById('toastText').innerText=msg; const toast=document.getElementById('toastMsg'); toast.style.display='block'; setTimeout(()=>toast.style.display='none',2500); }
-
+    // 辅助函数
+    function showAuthModal(){ alert("演示模式，使用 admin/admin123 或 buyer/123456 登录"); }
+    function logout(){ currentUser=null; localStorage.removeItem('currentUser'); updateUserUI(); navigateTo('home'); }
+    function updateUserUI(){ const span=document.getElementById('desktopUserName'); if(span) span.innerText=currentUser?currentUser.username:t('login'); }
     // 事件绑定
-    document.querySelectorAll('[data-nav]').forEach(link=>link.addEventListener('click',(e)=>{ e.preventDefault(); navigateTo(link.getAttribute('data-nav')); }));
+    document.querySelectorAll('[data-nav]').forEach(a=>a.addEventListener('click',(e)=>{ e.preventDefault(); navigateTo(a.getAttribute('data-nav')); }));
     document.querySelectorAll('.lang-switch, .lang-switch-mobile').forEach(btn=>btn.addEventListener('click',()=>setLang(btn.getAttribute('data-lang'))));
-    document.getElementById('vinSearchBtn')?.addEventListener('click',performVINSearch);
+    document.getElementById('vinSmartMatchBtn')?.addEventListener('click',performVinSmartMatch);
     document.getElementById('homeRegisterBtn')?.addEventListener('click',showAuthModal);
-    document.getElementById('postLocalBtn')?.addEventListener('click',()=>{ if(!currentUser) showAuthModal(); else alert("Demo: local post feature (already implemented)"); });
-    document.getElementById('adminAddProduct')?.addEventListener('click',()=>{ let name=prompt("Product name"); if(name) products.push({ id:nextProductId++, name_en:name, sku:"OEM"+Date.now(), oem:"DEMO", price:0, image:"https://picsum.photos/300/200"}); saveProducts(); renderAdminTables(); renderProductGrid(); });
+    document.getElementById('postLocalBtn')?.addEventListener('click',()=>alert("发布功能需登录"));
+    document.getElementById('adminAddProduct')?.addEventListener('click',()=>{ let name=prompt("产品名"); if(name) products.push({id:nextProductId++, name_en:name, sku:"NEW", price:0, image:"https://picsum.photos/300/200", applicableSegment:""}); saveProducts(); renderAdminProductTable(); renderAllProducts(); });
+    document.getElementById('addVehicleBtn')?.addEventListener('click',addVehicleMapping);
     document.getElementById('desktopUserBtn')?.addEventListener('click',()=>{ if(currentUser) document.getElementById('desktopUserDropdown')?.classList.toggle('hidden'); else showAuthModal(); });
     document.getElementById('desktopLogoutLink')?.addEventListener('click',(e)=>{ e.preventDefault(); logout(); document.getElementById('desktopUserDropdown')?.classList.add('hidden'); });
     document.getElementById('desktopAccountLink')?.addEventListener('click',(e)=>{ e.preventDefault(); navigateTo('account'); document.getElementById('desktopUserDropdown')?.classList.add('hidden'); });
     document.getElementById('mobileUserIcon')?.addEventListener('click',()=>{ if(currentUser) navigateTo('account'); else showAuthModal(); });
     document.getElementById('closeAccountView')?.addEventListener('click',()=>navigateTo('home'));
-    document.getElementById('inquiryForm')?.addEventListener('submit',(e)=>{ e.preventDefault(); showToast("Inquiry sent"); e.target.reset(); });
+    document.getElementById('inquiryForm')?.addEventListener('submit',(e)=>{ e.preventDefault(); showToast("询价已发送"); e.target.reset(); });
     document.getElementById('openChatBtn')?.addEventListener('click',()=>{ document.getElementById('chatBox').style.display='flex'; document.getElementById('openChatBtn').style.display='none'; });
     document.getElementById('closeChatBtn')?.addEventListener('click',()=>{ document.getElementById('chatBox').style.display='none'; document.getElementById('openChatBtn').style.display='flex'; });
-    document.getElementById('sendChatBtn')?.addEventListener('click',()=>{ const inp=document.getElementById('chatInput'); if(inp.value){ const msgs=document.getElementById('chatMessages'); msgs.innerHTML+=`<div class="text-right mt-2"><span class="bg-blue-100 p-1 rounded">${inp.value}</span></div>`; inp.value=''; msgs.scrollTop=msgs.scrollHeight; } });
+    document.getElementById('sendChatBtn')?.addEventListener('click',()=>{ const inp=document.getElementById('chatInput'); if(inp.value){ const msgs=document.getElementById('chatMessages'); msgs.innerHTML+=`<div class="text-right mt-2"><span class="bg-blue-100 p-1 rounded">${inp.value}</span></div>`; inp.value=''; } });
     document.querySelectorAll('.admin-tab').forEach(tab=>tab.addEventListener('click',(e)=>{ const panel=tab.getAttribute('data-admin-tab'); document.querySelectorAll('[id$="Panel"]').forEach(p=>p.classList.add('hidden')); document.getElementById(`admin${panel.charAt(0).toUpperCase()+panel.slice(1)}Panel`).classList.remove('hidden'); }));
-    
+
     setLang(currentLang); navigateTo('home');
 </script>
 </body>
