@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AutoParts Hub | 海量车型数据库 | OEM/VIN精准匹配</title>
+    <title>AutoParts Hub | 海量车型数据库 | OEM/VIN精准匹配 | 在线客服</title>
     <meta name="description" content="专业汽配平台，内置丰田/雷克萨斯/本田等海量车型VIN段数据，OEM精确匹配，全站多语言，在线客服+社媒链接。">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -80,6 +80,7 @@
 
 <!-- 主内容区域 -->
 <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 main-content pb-20 md:pb-8">
+    <!-- 首页视图 -->
     <div id="homeView" class="view">
         <div class="search-card rounded-2xl p-6 mb-6 shadow-md border border-blue-100">
             <div class="text-center mb-3"><i class="fas fa-database text-blue-700 text-3xl"></i><h2 class="text-2xl font-bold mt-1" data-i18n="unified_search_title">OEM编号 / VIN码 智能搜索</h2><p class="text-sm text-gray-500" data-i18n="unified_sub">内置丰田/雷克萨斯/本田等海量车型数据库，输入OEM零件号或VIN码精确匹配</p></div>
@@ -101,6 +102,7 @@
         </div>
     </div>
 
+    <!-- 产品列表视图 -->
     <div id="productsView" class="view hidden">
         <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
             <h2 class="text-2xl font-bold" data-i18n="products_title">产品目录</h2>
@@ -126,7 +128,7 @@
             <button class="admin-tab py-2 px-4" data-admin-tab="local" data-i18n="tab_local">本地帖</button>
             <button class="admin-tab py-2 px-4" data-admin-tab="users" data-i18n="tab_users">用户</button>
         </div>
-        <div id="adminProductsPanel" class="bg-white p-4 rounded-xl shadow"><div class="flex justify-end mb-3"><button id="adminAddProduct" class="bg-blue-600 text-white px-3 py-1 rounded text-sm" data-i18n="add_product_btn">+ 添加产品</button></div><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="name_col">名称</th><th data-i18n="sku_col">OEM编号</th><th data-i18n="price_col">价格</th><th data-i18n="action_col">操作</th></tr></thead><tbody id="adminProductTable"></tbody>}</div>
+        <div id="adminProductsPanel" class="bg-white p-4 rounded-xl shadow"><div class="flex justify-end mb-3"><button id="adminAddProduct" class="bg-blue-600 text-white px-3 py-1 rounded text-sm" data-i18n="add_product_btn">+ 添加产品</button></div><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="name_col">名称</th><th data-i18n="sku_col">OEM编号</th><th data-i18n="price_col">价格</th><th data-i18n="action_col">操作</th><tr></thead><tbody id="adminProductTable"></tbody>}</div>
         <div id="adminVehiclesPanel" class="hidden bg-white p-4 rounded-xl shadow"><h3 class="font-bold mb-2" data-i18n="vin_db_title">海量车型数据库 (VIN段映射，仅管理员可编辑)</h3><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="vin_segment">VIN段(4-8位)</th><th data-i18n="brand_model">品牌</th><th data-i18n="model_name">车型</th><th data-i18n="engine_info">发动机/年份</th><th data-i18n="action_col">操作</th></tr></thead><tbody id="adminVehicleTable"></tbody>}</div><button id="addVehicleBtn" class="mt-3 bg-green-600 text-white px-3 py-1 rounded text-sm" data-i18n="add_vehicle_btn">+ 新增车型</button><p class="text-xs text-gray-400 mt-2">当前数据库共 <span id="vehicleTotalCount">0</span> 条车型记录</p></div>
         <div id="adminNeedsPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="title_col">标题</th><th data-i18n="user_col">用户</th><th data-i18n="action_col">操作</th></tr></thead><tbody id="adminNeedsTable"></tbody>}</div>
         <div id="adminLocalPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="title_col">标题</th><th data-i18n="status_col">状态</th><th data-i18n="action_col">操作</th></tr></thead><tbody id="adminLocalTable"></tbody>}</div>
@@ -135,7 +137,7 @@
     <div id="accountView" class="view hidden"><div class="max-w-2xl mx-auto bg-white rounded-xl p-6"><div class="flex justify-between"><h2 class="text-2xl font-bold" data-i18n="my_account">我的账户</h2><button id="closeAccountView" class="text-gray-500"><i class="fas fa-times"></i></button></div><div id="accountInfo"></div></div></div>
 </main>
 
-<!-- 聊天窗口组件 -->
+<!-- ======================== 聊天窗口组件 (右下角固定，确保存在) ======================== -->
 <div class="chat-widget">
     <div id="chatBox" class="chat-box shadow-xl border border-gray-200">
         <div class="bg-blue-700 text-white p-3 flex justify-between items-center">
@@ -153,7 +155,7 @@
     <button id="openChatBtn" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fas fa-headset text-xl"></i></button>
 </div>
 
-<!-- 底部社媒区域 -->
+<!-- ======================== 底部社媒区域 (所有页面底部都会显示，确保存在) ======================== -->
 <footer class="bg-gray-800 text-white py-8 mt-12">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center">
@@ -195,26 +197,20 @@
         "JTEBH3FJ605001512", "JTEBD9FJ30K003301", "JTEBL29J965041449", "JTEBL29JX75100719", "5TFPC5DBXRX078658"
     ];
     
-    // 辅助函数：提取VIN第4-8位
     function extractSegment(vin) {
         if(!vin || vin.length < 8) return null;
         const clean = vin.toUpperCase().replace(/[^A-Z0-9]/g, '');
         return clean.length >= 8 ? clean.substring(3, 8) : null;
     }
     
-    // 品牌映射字典（基于VIN前3位或特征）
     function identifyBrand(vin) {
         const prefix = vin.substring(0,3);
         if(prefix === "2T3" || prefix === "5TD" || prefix === "JTM" || prefix === "JTE" || prefix === "JTB" || prefix === "4T1" || prefix === "5TF") return "Toyota";
         if(prefix === "AHT" || prefix === "MR0" || prefix === "AHTH" || prefix === "AHTF" || prefix === "AHTK") return "Toyota (Hilux/Tundra)";
-        if(prefix === "JTD" || prefix === "JT8") return "Toyota/Lexus";
-        if(vin.startsWith("JTMB") || vin.startsWith("JTEB") || vin.startsWith("JTE") || vin.startsWith("JTM")) return "Toyota";
         return "Toyota/Lexus";
     }
     
-    // 基于VIN前缀推断车型
     function inferModel(vin) {
-        const segment = extractSegment(vin);
         if(vin.includes("U5JR")) return "4Runner / Tacoma";
         if(vin.includes("BFR") || vin.includes("RFR")) return "RAV4";
         if(vin.includes("Z29")) return "Land Cruiser";
@@ -224,12 +220,9 @@
         if(vin.includes("HU09") || vin.includes("HX01") || vin.includes("HV01") || vin.includes("HV02") || vin.includes("HV05")) return "RAV4 / Venza";
         if(vin.includes("AA7BJ") || vin.includes("ABBBJ")) return "Camry / Avalon";
         if(vin.includes("ER73") || vin.includes("EBR71") || vin.includes("EEB71") || vin.includes("EBB71") || vin.includes("ELB71")) return "Tacoma / Tundra";
-        if(vin.includes("BR3FJ") || vin.includes("BR9FJ") || vin.includes("BZ29") || vin.includes("BH3FJ") || vin.includes("BH8FJ") || vin.includes("BH9FJ") || vin.includes("BD9FJ") || vin.includes("BL29")) return "Land Cruiser / Sequoia";
-        if(vin.includes("TPC5")) return "Tundra";
         return "Toyota SUV/Truck";
     }
     
-    // 构建唯一车型映射表
     const segmentMap = new Map();
     for(const vin of rawVINs) {
         const seg = extractSegment(vin);
@@ -244,7 +237,6 @@
         }
     }
     
-    // 转换为基础车型数据库数组
     let vehicleDatabaseFromVINs = Array.from(segmentMap.values()).map((item, idx) => ({
         id: idx + 1,
         vinSegment: item.vinSegment,
@@ -254,7 +246,6 @@
         years: item.years
     }));
     
-    // 合并原有的预置车型数据（保留经典车型）
     const classicVehicles = [
         { id: 100, vinSegment: "1A5C5", brand: "BMW", model: "3 Series", engine: "B48 2.0T", years: "2016-2019" },
         { id: 101, vinSegment: "WBA12", brand: "BMW", model: "5 Series", engine: "B48/B58", years: "2017-2023" },
@@ -263,7 +254,6 @@
         { id: 104, vinSegment: "WAUZZ", brand: "Audi", model: "A4", engine: "EA888", years: "2016-2019" }
     ];
     
-    // 合并去重（基于vinSegment）
     let allVehicles = [...vehicleDatabaseFromVINs];
     for(const cv of classicVehicles) {
         if(!allVehicles.some(v => v.vinSegment === cv.vinSegment)) {
@@ -295,9 +285,9 @@
     
     let currentLang = localStorage.getItem('app_lang') || 'en';
     const translations = {
-        en: { brand:"AutoParts Hub", nav_home:"Home", nav_products:"Products", nav_needs:"Buying Needs", nav_local:"Local Services", nav_inquiry:"Inquiry", nav_admin:"Admin", login:"Login", logout:"Logout", my_account:"My Account", register_btn:"Sign Up", hero_title:"Global Auto Parts + Massive Vehicle Database", hero_desc:"Covering Toyota/Lexus/Honda and more VIN data", unified_search_title:"OEM / VIN Smart Search", unified_sub:"Enter OEM number or 17-digit VIN, matching 100+ vehicle models", search_btn:"Smart Search", products_title:"Product Catalog", show_all:"All Products", clear_results:"Clear Search", needs_title:"Buying Needs", local_title:"Local Services", post_local:"Post Listing", inquiry_title:"Send Inquiry", send_btn:"Send", admin_title:"Admin Dashboard", tab_products:"Products", tab_vehicles:"Vehicle DB", tab_needs:"Needs", tab_local:"Local", tab_users:"Users", add_product_btn:"+ Add Product", name_col:"Name", sku_col:"OEM Number", price_col:"Price", action_col:"Actions", vin_db_title:"Massive Vehicle Database (VIN Mapping)", vin_segment:"VIN Segment", brand_model:"Brand", model_name:"Model", engine_info:"Engine/Year", add_vehicle_btn:"+ Add Vehicle", title_col:"Title", user_col:"User", status_col:"Status", username_col:"Username", role_col:"Role", feature_users:"5000+ Buyers", feature_needs:"Daily RFQs", feature_secure:"Secure Trading", chat_title:"Customer Support", chat_hello:"Hello! Need OEM/VIN help?", footer_text:"© 2025 AutoParts Hub — Massive Toyota/Lexus Database", footer_slogan:"Massive Database · Precise Match · Trustworthy" },
+        en: { brand:"AutoParts Hub", nav_home:"Home", nav_products:"Products", nav_needs:"Buying Needs", nav_local:"Local Services", nav_inquiry:"Inquiry", nav_admin:"Admin", login:"Login", logout:"Logout", my_account:"My Account", register_btn:"Sign Up", hero_title:"Global Auto Parts + Massive Vehicle Database", hero_desc:"Covering Toyota/Lexus/Honda and more VIN data", unified_search_title:"OEM / VIN Smart Search", unified_sub:"Enter OEM number or 17-digit VIN, matching 100+ vehicle models", search_btn:"Smart Search", products_title:"Product Catalog", show_all:"All Products", clear_results:"Clear Search", needs_title:"Buying Needs", local_title:"Local Services", post_local:"Post Listing", inquiry_title:"Send Inquiry", send_btn:"Send", admin_title:"Admin Dashboard", tab_products:"Products", tab_vehicles:"Vehicle DB", tab_needs:"Needs", tab_local:"Local", tab_users:"Users", add_product_btn:"+ Add Product", name_col:"Name", sku_col:"OEM Number", price_col:"Price", action_col:"Actions", vin_db_title:"Massive Vehicle Database (VIN Mapping)", vin_segment:"VIN Segment", brand_model:"Brand", model_name:"Model", engine_info:"Engine/Year", add_vehicle_btn:"+ Add Vehicle", title_col:"Title", user_col:"User", status_col:"Status", username_col:"Username", role_col:"Role", feature_users:"5000+ Buyers", feature_needs:"Daily RFQs", feature_secure:"Secure Trading", chat_title:"Customer Support", chat_hello:"Hello! Need OEM/VIN help? Leave a message.", footer_text:"© 2025 AutoParts Hub — Massive Toyota/Lexus Database", footer_slogan:"Massive Database · Precise Match · Trustworthy" },
         fr: { brand:"AutoParts Hub", nav_home:"Accueil", nav_products:"Produits", nav_needs:"Besoins", nav_local:"Services", nav_inquiry:"Devis", nav_admin:"Admin", login:"Connexion", logout:"Déconnexion", my_account:"Mon compte", register_btn:"S'inscrire", hero_title:"Pièces auto + base véhicules massive", unified_search_title:"Recherche OEM/VIN", search_btn:"Rechercher", products_title:"Catalogue", show_all:"Tous", clear_results:"Effacer", needs_title:"Besoins", local_title:"Services", post_local:"Publier", inquiry_title:"Devis", send_btn:"Envoyer", admin_title:"Admin", tab_vehicles:"Base VIN", add_vehicle_btn:"+ Ajouter", vin_db_title:"Base véhicules", vin_segment:"Segment VIN", brand_model:"Marque", model_name:"Modèle", engine_info:"Moteur", feature_users:"5000+ Acheteurs", feature_needs:"Demandes", feature_secure:"Sécurisé", chat_title:"Support", chat_hello:"Bonjour!", footer_text:"© 2025 AutoParts Hub — Base Toyota/Lexus", footer_slogan:"Base massive · Match précis" },
-        zh: { brand:"全球汽配中心", nav_home:"首页", nav_products:"产品", nav_needs:"采购需求", nav_local:"同城服务", nav_inquiry:"询价", nav_admin:"管理", login:"登录", logout:"退出", my_account:"我的账户", register_btn:"免费注册", hero_title:"全球汽配 + 海量车型数据库", hero_desc:"覆盖丰田/雷克萨斯/本田等大量VIN数据", unified_search_title:"OEM编号 / VIN码 智能搜索", unified_sub:"输入OEM零件号或17位VIN码，匹配海量车型数据", search_btn:"智能搜索", products_title:"产品目录", show_all:"全部产品", clear_results:"清空搜索", needs_title:"采购需求", local_title:"同城服务", post_local:"发布信息", inquiry_title:"发送询价", send_btn:"发送询价", admin_title:"管理后台", tab_products:"产品管理", tab_vehicles:"车型数据库", tab_needs:"需求管理", tab_local:"本地帖子", tab_users:"用户管理", add_product_btn:"+ 添加产品", name_col:"产品名称", sku_col:"OEM编号", price_col:"价格", action_col:"操作", vin_db_title:"海量车型数据库 (VIN段映射)", vin_segment:"VIN段(4-8位)", brand_model:"品牌", model_name:"车型", engine_info:"发动机/年份", add_vehicle_btn:"+ 新增车型", title_col:"标题", user_col:"发布用户", status_col:"状态", username_col:"用户名", role_col:"角色", feature_users:"5000+ 采购商", feature_needs:"每日询盘", feature_secure:"安全交易", chat_title:"在线客服", chat_hello:"您好！需要帮助查询OEM或VIN吗？", footer_text:"© 2025 全球汽配中心 — 内置丰田/雷克萨斯海量数据库", footer_slogan:"海量车型库 · 精准匹配 · 值得信赖" }
+        zh: { brand:"全球汽配中心", nav_home:"首页", nav_products:"产品", nav_needs:"采购需求", nav_local:"同城服务", nav_inquiry:"询价", nav_admin:"管理", login:"登录", logout:"退出", my_account:"我的账户", register_btn:"免费注册", hero_title:"全球汽配 + 海量车型数据库", hero_desc:"覆盖丰田/雷克萨斯/本田等大量VIN数据", unified_search_title:"OEM编号 / VIN码 智能搜索", unified_sub:"输入OEM零件号或17位VIN码，匹配海量车型数据", search_btn:"智能搜索", products_title:"产品目录", show_all:"全部产品", clear_results:"清空搜索", needs_title:"采购需求", local_title:"同城服务", post_local:"发布信息", inquiry_title:"发送询价", send_btn:"发送询价", admin_title:"管理后台", tab_products:"产品管理", tab_vehicles:"车型数据库", tab_needs:"需求管理", tab_local:"本地帖子", tab_users:"用户管理", add_product_btn:"+ 添加产品", name_col:"产品名称", sku_col:"OEM编号", price_col:"价格", action_col:"操作", vin_db_title:"海量车型数据库 (VIN段映射)", vin_segment:"VIN段(4-8位)", brand_model:"品牌", model_name:"车型", engine_info:"发动机/年份", add_vehicle_btn:"+ 新增车型", title_col:"标题", user_col:"发布用户", status_col:"状态", username_col:"用户名", role_col:"角色", feature_users:"5000+ 采购商", feature_needs:"每日询盘", feature_secure:"安全交易", chat_title:"在线客服", chat_hello:"您好！需要帮助查询OEM或VIN吗？请留言。", footer_text:"© 2025 全球汽配中心 — 内置丰田/雷克萨斯海量数据库", footer_slogan:"海量车型库 · 精准匹配 · 值得信赖" }
     };
     function t(key) { return translations[currentLang]?.[key] || translations.en[key] || key; }
     function updateUILanguage() { 
@@ -416,19 +406,19 @@
     function saveVehicleDatabase(){ localStorage.setItem('vehicle_database', JSON.stringify(vehicleDatabase)); }
     function renderAdminProductTable(){ const tbody=document.getElementById('adminProductTable'); if(tbody) tbody.innerHTML=products.map(p=>`<tr><td class="p-2">${p.id}<td>${p.name_en}<td class="font-mono text-xs">${p.oem}<td>$${p.price}<td><button class="del-prod text-red-600" data-id="${p.id}">删除</button></td>`).join(''); document.querySelectorAll('.del-prod').forEach(btn=>btn.addEventListener('click',()=>{ products=products.filter(p=>p.id!==parseInt(btn.dataset.id)); saveProducts(); if(!currentSearchMode) currentDisplayProducts = [...products]; else { currentDisplayProducts = currentDisplayProducts.filter(p=>products.find(np=>np.id===p.id)); } renderProductGrid(); renderAdminProductTable(); showToast("已删除"); })); }
     function saveProducts(){ localStorage.setItem('autoparts_products', JSON.stringify(products)); }
-    function renderAdminOtherTables(){ const ntb=document.getElementById('adminNeedsTable'); if(ntb) ntb.innerHTML=needs.map(n=>`<tr><td class="p-2">${n.id}<td>${n.title}<td>${n.username}<td><button class="del-need" data-id="${n.id}">删除</button></tr>`).join(''); const ltb=document.getElementById('adminLocalTable'); if(ltb) ltb.innerHTML=localPosts.map(p=>`<tr><td class="p-2">${p.id}<td>${p.title_en}<td>${p.status}<td><button class="appr-local" data-id="${p.id}">通过</button></td></tr>`).join(''); const utb=document.getElementById('adminUsersTable'); if(utb) utb.innerHTML=users.map(u=>`<tr><td class="p-2">${u.id}<td>${u.username}<td>${u.role}<td>${u.role!=='admin'?`<button class="del-user" data-id="${u.id}">删除</button>`:'-'}</td></tr>`).join(''); }
+    function renderAdminOtherTables(){ const ntb=document.getElementById('adminNeedsTable'); if(ntb) ntb.innerHTML=needs.map(n=>`<td><td class="p-2">${n.id}<td>${n.title}<td>${n.username}<td><button class="del-need" data-id="${n.id}">删除</button></td></tr>`).join(''); const ltb=document.getElementById('adminLocalTable'); if(ltb) ltb.innerHTML=localPosts.map(p=>`<tr><td class="p-2">${p.id}<td>${p.title_en}<td>${p.status}<td><button class="appr-local" data-id="${p.id}">通过</button></td></tr>`).join(''); const utb=document.getElementById('adminUsersTable'); if(utb) utb.innerHTML=users.map(u=>`<tr><td class="p-2">${u.id}<td>${u.username}<td>${u.role}<td>${u.role!=='admin'?`<button class="del-user" data-id="${u.id}">删除</button>`:'-'}</td></tr>`).join(''); }
     function showToast(msg){ document.getElementById('toastText').innerText=msg; const toast=document.getElementById('toastMsg'); toast.style.display='block'; setTimeout(()=>toast.style.display='none',2500); }
     function navigateTo(view){ document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden')); document.getElementById(`${view}View`).classList.remove('hidden'); if(view==='products') renderProductGrid(); if(view==='needs') renderNeedsOnly(); if(view==='local') renderLocalPosts(); if(view==='admin'){ if(!currentUser || currentUser.role !== 'admin'){ showToast("仅管理员可访问"); navigateTo('home'); return; } renderAdminProductTable(); renderVehicleDatabaseTable(); renderAdminOtherTables(); } window.scrollTo(0,0); }
     function showAuthModal(){ alert("演示: admin/admin123 或 buyer/123456"); }
     function logout(){ currentUser=null; localStorage.removeItem('currentUser'); updateUserUI(); navigateTo('home'); }
     function updateUserUI(){ const span=document.getElementById('desktopUserName'); if(span) span.innerText=currentUser?currentUser.username:t('login'); }
     
-    // 聊天窗口绑定
+    // 聊天窗口事件绑定 (确保存在)
     document.getElementById('openChatBtn')?.addEventListener('click',()=>{ document.getElementById('chatBox').style.display='flex'; document.getElementById('openChatBtn').style.display='none'; });
     document.getElementById('closeChatBtn')?.addEventListener('click',()=>{ document.getElementById('chatBox').style.display='none'; document.getElementById('openChatBtn').style.display='flex'; });
     document.getElementById('sendChatBtn')?.addEventListener('click',()=>{ const inp=document.getElementById('chatInput'); if(inp.value.trim()){ const msgs=document.getElementById('chatMessages'); msgs.innerHTML+=`<div class="text-right mt-2"><span class="bg-blue-100 inline-block p-2 rounded-lg text-sm">${inp.value}</span></div>`; inp.value=''; msgs.scrollTop=msgs.scrollHeight; showToast("消息已发送"); } });
     
-    // 全局事件
+    // 其他事件绑定
     document.querySelectorAll('[data-nav]').forEach(a=>a.addEventListener('click',(e)=>{ e.preventDefault(); navigateTo(a.getAttribute('data-nav')); }));
     document.querySelectorAll('.lang-switch, .lang-switch-mobile').forEach(btn=>btn.addEventListener('click',()=>setLang(btn.getAttribute('data-lang'))));
     document.getElementById('unifiedSearchBtn')?.addEventListener('click',performUnifiedSearch);
