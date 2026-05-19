@@ -80,6 +80,7 @@
 
 <!-- 主内容区域 -->
 <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 main-content pb-20 md:pb-8">
+    <!-- 首页视图 -->
     <div id="homeView" class="view">
         <div class="search-card rounded-2xl p-6 mb-6 shadow-md border border-blue-100">
             <div class="text-center mb-3"><i class="fas fa-database text-blue-700 text-3xl"></i><h2 class="text-2xl font-bold mt-1" data-i18n="unified_search_title">OEM编号 / VIN码 智能搜索</h2><p class="text-sm text-gray-500" data-i18n="unified_sub">内置海量车型数据库，输入OEM零件号或VIN码精确匹配</p></div>
@@ -89,13 +90,11 @@
             </div>
             <div id="unifiedSearchResult" class="mt-4 text-sm text-center hidden transition-all"></div>
         </div>
-
         <div class="bg-gradient-to-r from-blue-800 to-indigo-800 rounded-2xl p-8 text-white text-center mb-12">
             <h1 class="text-3xl md:text-4xl font-bold" data-i18n="hero_title">全球汽配 + 海量车型数据库</h1>
             <p class="mt-2" data-i18n="hero_desc">覆盖宝马/奔驰/奥迪/本田/丰田/大众等主流品牌VIN段数据</p>
             <button id="homeRegisterBtn" class="mt-4 bg-yellow-500 text-gray-900 px-6 py-2 rounded-full"><i class="fas fa-user-plus mr-2"></i><span data-i18n="register_btn">免费注册</span></button>
         </div>
-        
         <div class="grid md:grid-cols-3 gap-6">
             <div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-users text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_users">5000+ 买家</h3><p class="text-gray-500" data-i18n="feature_users_desc">全球信赖</p></div>
             <div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-list-alt text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_needs">每日询盘</h3><p class="text-gray-500" data-i18n="feature_needs_desc">发布配件需求</p></div>
@@ -103,13 +102,17 @@
         </div>
     </div>
 
+    <!-- 产品列表视图：默认展示全部产品，搜索时仅展示匹配结果 -->
     <div id="productsView" class="view hidden">
         <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-            <h2 class="text-2xl font-bold" data-i18n="products_title">搜索结果</h2>
-            <button id="clearSearchBtn" class="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full"><i class="fas fa-times mr-1"></i><span data-i18n="clear_results">清空结果</span></button>
+            <h2 class="text-2xl font-bold" data-i18n="products_title">产品目录</h2>
+            <div class="flex gap-2">
+                <button id="showAllProductsBtn" class="text-sm bg-green-600 text-white px-3 py-1 rounded-full hover:bg-green-700"><i class="fas fa-list-ul mr-1"></i><span data-i18n="show_all">全部产品</span></button>
+                <button id="clearSearchBtn" class="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full"><i class="fas fa-times mr-1"></i><span data-i18n="clear_results">清空搜索</span></button>
+            </div>
         </div>
         <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="col-span-full text-center py-12 text-gray-400" data-i18n="search_prompt">请输入OEM编号或VIN码进行搜索</div>
+            <!-- 默认会加载全部产品 -->
         </div>
     </div>
 
@@ -127,7 +130,7 @@
             <button class="admin-tab py-2 px-4" data-admin-tab="local" data-i18n="tab_local">本地帖</button>
             <button class="admin-tab py-2 px-4" data-admin-tab="users" data-i18n="tab_users">用户</button>
         </div>
-        <div id="adminProductsPanel" class="bg-white p-4 rounded-xl shadow"><div class="flex justify-end mb-3"><button id="adminAddProduct" class="bg-blue-600 text-white px-3 py-1 rounded text-sm" data-i18n="add_product_btn">+ 添加产品</button></div><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="name_col">名称</th><th data-i18n="sku_col">OEM编号</th><th data-i18n="price_col">价格</th><th data-i18n="action_col">操作</th></table></thead><tbody id="adminProductTable"></tbody>}</div>
+        <div id="adminProductsPanel" class="bg-white p-4 rounded-xl shadow"><div class="flex justify-end mb-3"><button id="adminAddProduct" class="bg-blue-600 text-white px-3 py-1 rounded text-sm" data-i18n="add_product_btn">+ 添加产品</button></div><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="name_col">名称</th><th data-i18n="sku_col">OEM编号</th><th data-i18n="price_col">价格</th><th data-i18n="action_col">操作</th></tr></thead><tbody id="adminProductTable"></tbody>}</div>
         <div id="adminVehiclesPanel" class="hidden bg-white p-4 rounded-xl shadow"><h3 class="font-bold mb-2" data-i18n="vin_db_title">海量车型数据库 (VIN段映射，仅管理员可编辑)</h3><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="vin_segment">VIN段(4-8位)</th><th data-i18n="brand_model">品牌</th><th data-i18n="model_name">车型</th><th data-i18n="engine_info">发动机/年份</th><th data-i18n="action_col">操作</th></tr></thead><tbody id="adminVehicleTable"></tbody>}</div><button id="addVehicleBtn" class="mt-3 bg-green-600 text-white px-3 py-1 rounded text-sm" data-i18n="add_vehicle_btn">+ 新增车型</button><p class="text-xs text-gray-400 mt-2">当前数据库共 <span id="vehicleTotalCount">0</span> 条车型记录</p></div>
         <div id="adminNeedsPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="title_col">标题</th><th data-i18n="user_col">用户</th><th data-i18n="action_col">操作</th></tr></thead><tbody id="adminNeedsTable"></tbody>}</div>
         <div id="adminLocalPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th data-i18n="title_col">标题</th><th data-i18n="status_col">状态</th><th data-i18n="action_col">操作</th></tr></thead><tbody id="adminLocalTable"></tbody>}</div>
@@ -136,71 +139,76 @@
     <div id="accountView" class="view hidden"><div class="max-w-2xl mx-auto bg-white rounded-xl p-6"><div class="flex justify-between"><h2 class="text-2xl font-bold" data-i18n="my_account">我的账户</h2><button id="closeAccountView" class="text-gray-500"><i class="fas fa-times"></i></button></div><div id="accountInfo"></div></div></div>
 </main>
 
-<!-- 聊天窗口 -->
+<!-- 聊天窗口组件 (右下角固定，已恢复) -->
 <div class="chat-widget">
     <div id="chatBox" class="chat-box shadow-xl border border-gray-200">
-        <div class="bg-blue-700 text-white p-3 flex justify-between items-center"><span><i class="fas fa-comment-dots mr-2"></i><span data-i18n="chat_title">在线客服</span></span><button id="closeChatBtn" class="text-white"><i class="fas fa-times"></i></button></div>
-        <div class="h-64 overflow-y-auto p-3 bg-gray-50" id="chatMessages"><div class="text-gray-600 text-sm" data-i18n="chat_hello">您好！需要帮助查询OEM或VIN吗？请留言。</div></div>
-        <div class="p-2 border-t bg-white flex"><input id="chatInput" class="flex-1 border rounded-l p-2 text-sm" placeholder="输入消息..."><button id="sendChatBtn" class="bg-blue-600 text-white px-3 rounded-r"><i class="fas fa-paper-plane"></i></button></div>
+        <div class="bg-blue-700 text-white p-3 flex justify-between items-center">
+            <span><i class="fas fa-comment-dots mr-2"></i><span data-i18n="chat_title">在线客服</span></span>
+            <button id="closeChatBtn" class="text-white hover:text-gray-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="h-64 overflow-y-auto p-3 bg-gray-50" id="chatMessages">
+            <div class="text-gray-600 text-sm" data-i18n="chat_hello">您好！需要帮助查询OEM或VIN吗？请留言，我们会尽快回复。</div>
+        </div>
+        <div class="p-2 border-t bg-white flex">
+            <input id="chatInput" class="flex-1 border rounded-l p-2 text-sm focus:outline-none" placeholder="输入消息...">
+            <button id="sendChatBtn" class="bg-blue-600 text-white px-3 rounded-r hover:bg-blue-700"><i class="fas fa-paper-plane"></i></button>
+        </div>
     </div>
-    <button id="openChatBtn" class="bg-blue-600 text-white p-3 rounded-full shadow-lg"><i class="fas fa-headset text-xl"></i></button>
+    <button id="openChatBtn" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fas fa-headset text-xl"></i></button>
 </div>
 
-<!-- 底部社媒 -->
+<!-- 底部社媒区域：已恢复，所有页面底部都会显示 -->
 <footer class="bg-gray-800 text-white py-8 mt-12">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0"><i class="fas fa-car-side text-2xl mr-2"></i><span class="font-bold text-lg" data-i18n="brand">AutoParts Hub</span><p class="text-sm text-gray-400 mt-1" data-i18n="footer_slogan">海量车型库 · 精准匹配 · 值得信赖</p></div>
+            <div class="mb-4 md:mb-0">
+                <i class="fas fa-car-side text-2xl mr-2"></i>
+                <span class="font-bold text-lg" data-i18n="brand">AutoParts Hub</span>
+                <p class="text-sm text-gray-400 mt-1" data-i18n="footer_slogan">海量车型库 · 精准匹配 · 值得信赖</p>
+            </div>
             <div class="flex space-x-6">
-                <a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-linkedin"></i></a>
-                <a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-youtube"></i></a>
-                <a href="#" class="text-gray-300 hover:text-white text-2xl"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white text-2xl transition transform hover:scale-110" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white text-2xl transition transform hover:scale-110" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white text-2xl transition transform hover:scale-110" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white text-2xl transition transform hover:scale-110" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white text-2xl transition transform hover:scale-110" target="_blank"><i class="fab fa-youtube"></i></a>
+                <a href="#" class="text-gray-300 hover:text-white text-2xl transition transform hover:scale-110" target="_blank"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
-        <div class="border-t border-gray-700 mt-6 pt-4 text-center text-sm text-gray-400"><p data-i18n="footer_text">© 2025 AutoParts Hub — 内置海量车型数据库 | 宝马/奔驰/奥迪/本田/丰田/大众/福特等</p></div>
+        <div class="border-t border-gray-700 mt-6 pt-4 text-center text-sm text-gray-400">
+            <p data-i18n="footer_text">© 2025 AutoParts Hub — 内置海量车型数据库 | 宝马/奔驰/奥迪/本田/丰田/大众/福特等</p>
+        </div>
     </div>
 </footer>
 
 <script>
     // ======================== 海量车型数据库 (预置数据) ========================
-    // 收集了主流品牌车型的VIN段 (第4-8位模拟真实数据)
     const preloadedVehicles = [
-        // BMW 宝马系列
         { id: 1, vinSegment: "1A5C5", brand: "BMW", model: "3 Series", engine: "B48 2.0T", years: "2016-2019" },
         { id: 2, vinSegment: "1A6E3", brand: "BMW", model: "5 Series", engine: "B58 3.0T", years: "2017-2020" },
         { id: 3, vinSegment: "1A7G5", brand: "BMW", model: "X5", engine: "N55 3.0T", years: "2014-2018" },
         { id: 4, vinSegment: "1A8H2", brand: "BMW", model: "X3", engine: "B48 2.0T", years: "2018-2022" },
         { id: 5, vinSegment: "BA123", brand: "BMW", model: "3 Series E90", engine: "N52 2.5L", years: "2005-2011" },
         { id: 6, vinSegment: "WBA12", brand: "BMW", model: "5 Series G30", engine: "B48/B58", years: "2017-2023" },
-        // Mercedes-Benz 奔驰
         { id: 7, vinSegment: "4JGDF", brand: "Mercedes", model: "GLE Class", engine: "M276 3.0T", years: "2015-2019" },
         { id: 8, vinSegment: "55SWF", brand: "Mercedes", model: "C Class", engine: "M264 2.0T", years: "2015-2021" },
         { id: 9, vinSegment: "WDDGF", brand: "Mercedes", model: "E Class", engine: "OM654 2.0D", years: "2016-2020" },
-        // Audi 奥迪
         { id: 10, vinSegment: "WAUZZ", brand: "Audi", model: "A4", engine: "EA888 2.0T", years: "2016-2019" },
         { id: 11, vinSegment: "WAUC8", brand: "Audi", model: "Q5", engine: "2.0 TFSI", years: "2017-2021" },
         { id: 12, vinSegment: "WUA3Z", brand: "Audi", model: "A6", engine: "3.0 V6 TDI", years: "2015-2018" },
-        // Honda 本田
         { id: 13, vinSegment: "HGDM3", brand: "Honda", model: "Civic", engine: "1.8L", years: "2006-2011" },
         { id: 14, vinSegment: "GCM82", brand: "Honda", model: "Accord", engine: "2.4L", years: "2008-2012" },
         { id: 15, vinSegment: "HGF5E", brand: "Honda", model: "CR-V", engine: "2.0 i-VTEC", years: "2012-2016" },
         { id: 16, vinSegment: "JHMC1", brand: "Honda", model: "Fit/Jazz", engine: "1.5L", years: "2014-2019" },
-        // Toyota 丰田
         { id: 17, vinSegment: "4T1BF", brand: "Toyota", model: "Camry", engine: "2AR-FE 2.5L", years: "2012-2017" },
         { id: 18, vinSegment: "JTDBE", brand: "Toyota", model: "Corolla", engine: "1.8L 2ZR-FE", years: "2009-2013" },
         { id: 19, vinSegment: "JTMBD", brand: "Toyota", model: "RAV4", engine: "2.5L 2AR-FE", years: "2013-2018" },
         { id: 20, vinSegment: "5TDZK", brand: "Toyota", model: "Highlander", engine: "3.5L V6", years: "2014-2019" },
-        // Volkswagen 大众
         { id: 21, vinSegment: "WVWZZ", brand: "Volkswagen", model: "Golf", engine: "EA211 1.4T", years: "2013-2017" },
         { id: 22, vinSegment: "WVGZZ", brand: "Volkswagen", model: "Tiguan", engine: "2.0 TSI", years: "2016-2020" },
         { id: 23, vinSegment: "WV1ZZ", brand: "Volkswagen", model: "Passat", engine: "2.0 TDI", years: "2015-2019" },
-        // Ford 福特
         { id: 24, vinSegment: "1FADP", brand: "Ford", model: "Focus", engine: "1.0 EcoBoost", years: "2015-2018" },
         { id: 25, vinSegment: "1FTEW", brand: "Ford", model: "F-150", engine: "5.0 V8", years: "2015-2020" },
-        // 额外补充
         { id: 26, vinSegment: "KMHDU", brand: "Hyundai", model: "Elantra", engine: "1.6L GDI", years: "2012-2016" },
         { id: 27, vinSegment: "5NPET", brand: "Hyundai", model: "Sonata", engine: "2.4L", years: "2011-2014" },
         { id: 28, vinSegment: "KNAF4", brand: "Kia", model: "Optima", engine: "2.0T", years: "2013-2016" },
@@ -217,7 +225,8 @@
         { id: 3, name_en: "Alternator", name_fr: "Alternateur", name_zh: "发电机", oem: "23100-6M500", sku: "ELE-378", applicableSegment: "BA123", price: 120, image: "https://picsum.photos/id/90/300/200" },
         { id: 4, name_en: "Air Filter", name_fr: "Filtre à air", name_zh: "空气滤清器", oem: "16546-2J000", sku: "FIL-209", applicableSegment: "WBA12", price: 19.99, image: "https://picsum.photos/id/85/300/200" },
         { id: 5, name_en: "Turbocharger", name_fr: "Turbo", name_zh: "涡轮增压器", oem: "06K145722", sku: "TBO-001", applicableSegment: "1A5C5", price: 450, image: "https://picsum.photos/id/56/300/200" },
-        { id: 6, name_en: "Ignition Coil", name_fr: "Bobine d'allumage", name_zh: "点火线圈", oem: "UF626", sku: "IGN-01", applicableSegment: "4T1BF", price: 28.5, image: "https://picsum.photos/id/34/300/200" }
+        { id: 6, name_en: "Ignition Coil", name_fr: "Bobine d'allumage", name_zh: "点火线圈", oem: "UF626", sku: "IGN-01", applicableSegment: "4T1BF", price: 28.5, image: "https://picsum.photos/id/34/300/200" },
+        { id: 7, name_en: "Oil Filter", name_fr: "Filtre à huile", name_zh: "机油滤清器", oem: "90915-YZZZ", sku: "FIL-002", applicableSegment: "JTDBE", price: 8.99, image: "https://picsum.photos/id/67/300/200" }
     ];
     let nextProductId = products.length+1;
     let needs = JSON.parse(localStorage.getItem('public_needs')) || [];
@@ -227,17 +236,21 @@
     if(users.length===0){ users.push({id:1, username:"admin", password:"admin123", role:"admin"}); users.push({id:2, username:"buyer", password:"123456", role:"user"}); localStorage.setItem('app_users',JSON.stringify(users)); }
     if(localPosts.length===0) localPosts.push({id:1001, title_en:"Garage Rental", title_zh:"汽修厂出租", description_en:"Full equipment", description_zh:"设备齐全", contact:"test@x.com", userId:2, username:"buyer", status:"approved"});
     
-    let currentSearchResults = [];
+    // 状态管理：当前显示的产品列表（默认全部，搜索后变为搜索结果）
+    let currentDisplayProducts = [...products]; // 默认全部产品
+    let currentSearchMode = false;
+    
     let currentLang = localStorage.getItem('app_lang') || 'en';
     const translations = {
-        en: { brand:"AutoParts Hub", nav_home:"Home", nav_products:"Products", nav_needs:"Buying Needs", nav_local:"Local Services", nav_inquiry:"Inquiry", nav_admin:"Admin", login:"Login", logout:"Logout", my_account:"My Account", register_btn:"Sign Up", hero_title:"Global Auto Parts + Massive Vehicle Database", hero_desc:"Covering BMW/Mercedes/Audi/Honda/Toyota/VW and more", unified_search_title:"OEM / VIN Smart Search", unified_sub:"Enter OEM number or 17-digit VIN, matching 30+ vehicle models", search_btn:"Smart Search", products_title:"Search Results", clear_results:"Clear Results", search_prompt:"Enter OEM number or VIN to search", needs_title:"Buying Needs", local_title:"Local Services", post_local:"Post Listing", inquiry_title:"Send Inquiry", send_btn:"Send", admin_title:"Admin Dashboard", tab_products:"Products", tab_vehicles:"Vehicle DB", tab_needs:"Needs", tab_local:"Local", tab_users:"Users", add_product_btn:"+ Add Product", name_col:"Name", sku_col:"OEM Number", price_col:"Price", action_col:"Actions", vin_db_title:"Massive Vehicle Database (VIN Mapping)", vin_segment:"VIN Segment", brand_model:"Brand", model_name:"Model", engine_info:"Engine/Year", add_vehicle_btn:"+ Add Vehicle", title_col:"Title", user_col:"User", status_col:"Status", username_col:"Username", role_col:"Role", feature_users:"5000+ Buyers", feature_needs:"Daily RFQs", feature_secure:"Secure Trading", chat_title:"Support", chat_hello:"Hello! Need OEM/VIN help?", footer_text:"© 2025 AutoParts Hub — Massive Vehicle Database", footer_slogan:"Massive Database · Precise Match · Trustworthy" },
-        fr: { brand:"AutoParts Hub", nav_home:"Accueil", nav_products:"Produits", nav_needs:"Besoins", nav_local:"Services", nav_inquiry:"Devis", nav_admin:"Admin", login:"Connexion", logout:"Déconnexion", my_account:"Mon compte", register_btn:"S'inscrire", hero_title:"Pièces auto + base véhicules massive", unified_search_title:"Recherche OEM/VIN", search_btn:"Rechercher", products_title:"Résultats", clear_results:"Effacer", search_prompt:"Entrez OEM ou VIN", needs_title:"Besoins", local_title:"Services", post_local:"Publier", inquiry_title:"Devis", send_btn:"Envoyer", admin_title:"Admin", tab_vehicles:"Base VIN", add_vehicle_btn:"+ Ajouter", vin_db_title:"Base véhicules", vin_segment:"Segment VIN", brand_model:"Marque", model_name:"Modèle", engine_info:"Moteur", feature_users:"5000+ Acheteurs", feature_needs:"Demandes", feature_secure:"Sécurisé", chat_title:"Support", chat_hello:"Bonjour!", footer_text:"© 2025 AutoParts Hub — Base véhicules massive", footer_slogan:"Base massive · Match précis · Fiable" },
-        zh: { brand:"全球汽配中心", nav_home:"首页", nav_products:"产品", nav_needs:"采购需求", nav_local:"同城服务", nav_inquiry:"询价", nav_admin:"管理", login:"登录", logout:"退出", my_account:"我的账户", register_btn:"免费注册", hero_title:"全球汽配 + 海量车型数据库", hero_desc:"覆盖宝马/奔驰/奥迪/本田/丰田/大众等30+车型", unified_search_title:"OEM编号 / VIN码 智能搜索", unified_sub:"输入OEM零件号或17位VIN码，匹配内置海量车型数据", search_btn:"智能搜索", products_title:"搜索结果", clear_results:"清空结果", search_prompt:"请输入OEM编号或VIN码进行搜索", needs_title:"采购需求", local_title:"同城服务", post_local:"发布信息", inquiry_title:"发送询价", send_btn:"发送询价", admin_title:"管理后台", tab_products:"产品管理", tab_vehicles:"车型数据库", tab_needs:"需求管理", tab_local:"本地帖子", tab_users:"用户管理", add_product_btn:"+ 添加产品", name_col:"产品名称", sku_col:"OEM编号", price_col:"价格", action_col:"操作", vin_db_title:"海量车型数据库 (VIN段映射)", vin_segment:"VIN段(4-8位)", brand_model:"品牌", model_name:"车型", engine_info:"发动机/年份", add_vehicle_btn:"+ 新增车型", title_col:"标题", user_col:"发布用户", status_col:"状态", username_col:"用户名", role_col:"角色", feature_users:"5000+ 采购商", feature_needs:"每日询盘", feature_secure:"安全交易", chat_title:"在线客服", chat_hello:"您好！需要帮助查询OEM或VIN吗？", footer_text:"© 2025 全球汽配中心 — 内置海量车型数据库", footer_slogan:"海量车型库 · 精准匹配 · 值得信赖" }
+        en: { brand:"AutoParts Hub", nav_home:"Home", nav_products:"Products", nav_needs:"Buying Needs", nav_local:"Local Services", nav_inquiry:"Inquiry", nav_admin:"Admin", login:"Login", logout:"Logout", my_account:"My Account", register_btn:"Sign Up", hero_title:"Global Auto Parts + Massive Vehicle Database", hero_desc:"Covering BMW/Mercedes/Audi/Honda/Toyota/VW and more", unified_search_title:"OEM / VIN Smart Search", unified_sub:"Enter OEM number or 17-digit VIN, matching 30+ vehicle models", search_btn:"Smart Search", products_title:"Product Catalog", show_all:"All Products", clear_results:"Clear Search", search_prompt:"Enter OEM number or VIN to search", needs_title:"Buying Needs", local_title:"Local Services", post_local:"Post Listing", inquiry_title:"Send Inquiry", send_btn:"Send", admin_title:"Admin Dashboard", tab_products:"Products", tab_vehicles:"Vehicle DB", tab_needs:"Needs", tab_local:"Local", tab_users:"Users", add_product_btn:"+ Add Product", name_col:"Name", sku_col:"OEM Number", price_col:"Price", action_col:"Actions", vin_db_title:"Massive Vehicle Database (VIN Mapping)", vin_segment:"VIN Segment", brand_model:"Brand", model_name:"Model", engine_info:"Engine/Year", add_vehicle_btn:"+ Add Vehicle", title_col:"Title", user_col:"User", status_col:"Status", username_col:"Username", role_col:"Role", feature_users:"5000+ Buyers", feature_needs:"Daily RFQs", feature_secure:"Secure Trading", chat_title:"Customer Support", chat_hello:"Hello! Need OEM/VIN help? Leave a message.", footer_text:"© 2025 AutoParts Hub — Massive Vehicle Database", footer_slogan:"Massive Database · Precise Match · Trustworthy" },
+        fr: { brand:"AutoParts Hub", nav_home:"Accueil", nav_products:"Produits", nav_needs:"Besoins", nav_local:"Services", nav_inquiry:"Devis", nav_admin:"Admin", login:"Connexion", logout:"Déconnexion", my_account:"Mon compte", register_btn:"S'inscrire", hero_title:"Pièces auto + base véhicules massive", unified_search_title:"Recherche OEM/VIN", search_btn:"Rechercher", products_title:"Catalogue", show_all:"Tous les produits", clear_results:"Effacer", search_prompt:"Entrez OEM ou VIN", needs_title:"Besoins", local_title:"Services", post_local:"Publier", inquiry_title:"Devis", send_btn:"Envoyer", admin_title:"Admin", tab_vehicles:"Base VIN", add_vehicle_btn:"+ Ajouter", vin_db_title:"Base véhicules", vin_segment:"Segment VIN", brand_model:"Marque", model_name:"Modèle", engine_info:"Moteur", feature_users:"5000+ Acheteurs", feature_needs:"Demandes", feature_secure:"Sécurisé", chat_title:"Support", chat_hello:"Bonjour!", footer_text:"© 2025 AutoParts Hub — Base véhicules massive", footer_slogan:"Base massive · Match précis · Fiable" },
+        zh: { brand:"全球汽配中心", nav_home:"首页", nav_products:"产品", nav_needs:"采购需求", nav_local:"同城服务", nav_inquiry:"询价", nav_admin:"管理", login:"登录", logout:"退出", my_account:"我的账户", register_btn:"免费注册", hero_title:"全球汽配 + 海量车型数据库", hero_desc:"覆盖宝马/奔驰/奥迪/本田/丰田/大众等30+车型", unified_search_title:"OEM编号 / VIN码 智能搜索", unified_sub:"输入OEM零件号或17位VIN码，匹配内置海量车型数据", search_btn:"智能搜索", products_title:"产品目录", show_all:"全部产品", clear_results:"清空搜索", search_prompt:"请输入OEM编号或VIN码进行搜索", needs_title:"采购需求", local_title:"同城服务", post_local:"发布信息", inquiry_title:"发送询价", send_btn:"发送询价", admin_title:"管理后台", tab_products:"产品管理", tab_vehicles:"车型数据库", tab_needs:"需求管理", tab_local:"本地帖子", tab_users:"用户管理", add_product_btn:"+ 添加产品", name_col:"产品名称", sku_col:"OEM编号", price_col:"价格", action_col:"操作", vin_db_title:"海量车型数据库 (VIN段映射)", vin_segment:"VIN段(4-8位)", brand_model:"品牌", model_name:"车型", engine_info:"发动机/年份", add_vehicle_btn:"+ 新增车型", title_col:"标题", user_col:"发布用户", status_col:"状态", username_col:"用户名", role_col:"角色", feature_users:"5000+ 采购商", feature_needs:"每日询盘", feature_secure:"安全交易", chat_title:"在线客服", chat_hello:"您好！需要帮助查询OEM或VIN吗？请留言。", footer_text:"© 2025 全球汽配中心 — 内置海量车型数据库", footer_slogan:"海量车型库 · 精准匹配 · 值得信赖" }
     };
     function t(key) { return translations[currentLang]?.[key] || translations.en[key] || key; }
     function updateUILanguage() { 
         document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(k) el.innerText = t(k); });
-        renderSearchResults(); renderNeedsOnly(); renderLocalPosts();
+        renderProductGrid();
+        renderNeedsOnly(); renderLocalPosts();
         document.getElementById('vehicleCountBadge') && (document.getElementById('vehicleCountBadge').innerText = `${vehicleDatabase.length}车型`);
         if(document.getElementById('adminView') && !document.getElementById('adminView').classList.contains('hidden')) {
             renderAdminProductTable(); renderVehicleDatabaseTable(); renderAdminOtherTables();
@@ -245,18 +258,54 @@
     }
     function setLang(lang){ currentLang=lang; localStorage.setItem('app_lang',lang); updateUILanguage(); }
 
+    // 渲染产品网格 (使用 currentDisplayProducts)
+    function renderProductGrid(){
+        const grid = document.getElementById('productGrid');
+        if(!grid) return;
+        if(!currentDisplayProducts.length){
+            if(currentSearchMode) grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">未找到匹配产品，请尝试其他OEM或VIN</div>`;
+            else grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">暂无产品数据</div>`;
+            return;
+        }
+        grid.innerHTML = currentDisplayProducts.map(p => {
+            let name = p[`name_${currentLang}`] || p.name_en;
+            return `<div class="product-card bg-white rounded-xl p-4 shadow"><img src="${p.image}" class="h-40 w-full object-cover rounded"><h3 class="font-bold mt-2">${name}</h3><div class="text-xs text-gray-500">OEM: ${p.oem}</div><p class="text-blue-600 font-bold mt-1">$${p.price}</p></div>`;
+        }).join('');
+    }
+
+    // 显示全部产品
+    function showAllProducts(){
+        currentDisplayProducts = [...products];
+        currentSearchMode = false;
+        document.getElementById('unifiedInput').value = '';
+        document.getElementById('unifiedSearchResult').classList.add('hidden');
+        renderProductGrid();
+        showToast("已显示全部产品");
+    }
+
+    // 清空搜索结果（同显示全部）
+    function clearSearchAndShowAll(){
+        showAllProducts();
+    }
+
+    // OEM/VIN 智能搜索（仅展示匹配的产品）
     function performUnifiedSearch(){
         const query = document.getElementById('unifiedInput').value.trim();
         if(!query){ showToast(t('unified_sub')); return; }
         const upperQuery = query.toUpperCase();
+        // 1. 精确匹配 OEM 编号
         const oemMatchedProducts = products.filter(p => p.oem && p.oem.toUpperCase() === upperQuery);
         if(oemMatchedProducts.length > 0){
-            currentSearchResults = oemMatchedProducts;
-            showToast(`找到 ${currentSearchResults.length} 个匹配OEM的产品`);
-            document.getElementById('unifiedSearchResult').innerHTML = `<div class="bg-green-100 p-2 rounded">✅ 找到 ${currentSearchResults.length} 个匹配 OEM 编号的产品</div>`;
+            currentDisplayProducts = oemMatchedProducts;
+            currentSearchMode = true;
+            showToast(`找到 ${currentDisplayProducts.length} 个匹配OEM的产品`);
+            document.getElementById('unifiedSearchResult').innerHTML = `<div class="bg-green-100 p-2 rounded">✅ 找到 ${currentDisplayProducts.length} 个匹配 OEM 编号的产品</div>`;
             document.getElementById('unifiedSearchResult').classList.remove('hidden');
-            renderSearchResults(); navigateTo('products'); return;
+            renderProductGrid();
+            navigateTo('products');
+            return;
         }
+        // 2. 尝试作为 VIN 码处理
         const vinClean = query.replace(/[^A-Z0-9]/gi, '').toUpperCase();
         let vinSegment = null;
         if(vinClean.length >= 8) vinSegment = vinClean.substring(3,8);
@@ -265,40 +314,44 @@
             if(matchedVehicle){
                 const vinMatchedProducts = products.filter(p => p.applicableSegment === vinSegment);
                 if(vinMatchedProducts.length){
-                    currentSearchResults = vinMatchedProducts;
-                    showToast(`VIN识别: ${matchedVehicle.brand} ${matchedVehicle.model}，匹配 ${currentSearchResults.length} 个配件`);
-                    document.getElementById('unifiedSearchResult').innerHTML = `<div class="bg-green-100 p-2 rounded">🚗 VIN识别: ${matchedVehicle.brand} ${matchedVehicle.model}，共 ${currentSearchResults.length} 个适配产品</div>`;
+                    currentDisplayProducts = vinMatchedProducts;
+                    currentSearchMode = true;
+                    showToast(`VIN识别: ${matchedVehicle.brand} ${matchedVehicle.model}，匹配 ${currentDisplayProducts.length} 个配件`);
+                    document.getElementById('unifiedSearchResult').innerHTML = `<div class="bg-green-100 p-2 rounded">🚗 VIN识别: ${matchedVehicle.brand} ${matchedVehicle.model}，共 ${currentDisplayProducts.length} 个适配产品</div>`;
                     document.getElementById('unifiedSearchResult').classList.remove('hidden');
-                    renderSearchResults(); navigateTo('products'); return;
+                    renderProductGrid();
+                    navigateTo('products');
+                    return;
                 } else {
-                    currentSearchResults = [];
+                    currentDisplayProducts = [];
+                    currentSearchMode = true;
                     showToast(`识别到车型 ${matchedVehicle.brand} ${matchedVehicle.model}，但暂无对应配件`);
                     document.getElementById('unifiedSearchResult').innerHTML = `<div class="bg-yellow-100 p-2 rounded">⚠️ VIN对应 ${matchedVehicle.brand} ${matchedVehicle.model}，暂无适配产品。</div>`;
                     document.getElementById('unifiedSearchResult').classList.remove('hidden');
-                    renderSearchResults(); navigateTo('products'); return;
+                    renderProductGrid();
+                    navigateTo('products');
+                    return;
                 }
             } else {
-                currentSearchResults = [];
+                currentDisplayProducts = [];
+                currentSearchMode = true;
                 showToast(`VIN段 ${vinSegment} 未在车型库中`);
                 document.getElementById('unifiedSearchResult').innerHTML = `<div class="bg-yellow-100 p-2 rounded">⚠️ VIN段 ${vinSegment} 未在车型库中，请联系管理员添加。</div>`;
                 document.getElementById('unifiedSearchResult').classList.remove('hidden');
-                renderSearchResults(); navigateTo('products'); return;
+                renderProductGrid();
+                navigateTo('products');
+                return;
             }
         }
-        currentSearchResults = [];
+        currentDisplayProducts = [];
+        currentSearchMode = true;
         showToast(`未找到匹配 "${query}" 的OEM或VIN`);
         document.getElementById('unifiedSearchResult').innerHTML = `<div class="bg-red-100 p-2 rounded">❌ 未找到匹配 "${query}" 的OEM编号或VIN码。</div>`;
         document.getElementById('unifiedSearchResult').classList.remove('hidden');
-        renderSearchResults(); navigateTo('products');
+        renderProductGrid();
+        navigateTo('products');
     }
 
-    function renderSearchResults(){
-        const grid = document.getElementById('productGrid');
-        if(!grid) return;
-        if(!currentSearchResults.length){ grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">${t('search_prompt')}</div>`; return; }
-        grid.innerHTML = currentSearchResults.map(p => { let name = p[`name_${currentLang}`] || p.name_en; return `<div class="product-card bg-white rounded-xl p-4 shadow"><img src="${p.image}" class="h-40 w-full object-cover rounded"><h3 class="font-bold mt-2">${name}</h3><div class="text-xs text-gray-500">OEM: ${p.oem}</div><p class="text-blue-600 font-bold mt-1">$${p.price}</p></div>`; }).join('');
-    }
-    function clearSearchResults(){ currentSearchResults = []; document.getElementById('unifiedInput').value = ''; document.getElementById('unifiedSearchResult').classList.add('hidden'); renderSearchResults(); showToast("已清空"); }
     function renderNeedsOnly(){ const c=document.getElementById('needsList'); if(c) c.innerHTML=needs.map(n=>`<div class="bg-white p-4 shadow rounded"><h3 class="font-bold">${n.title}</h3><p>${n.desc}</p></div>`).join(''); }
     function renderLocalPosts(){ const container=document.getElementById('localList'); if(container) container.innerHTML=localPosts.filter(p=>p.status==='approved').map(p=>{ let title = p[`title_${currentLang}`] || p.title_en; let desc = p[`description_${currentLang}`] || p.description_en; return `<div class="bg-white p-4 shadow rounded"><div class="font-bold">${title}</div><p>${desc}</p></div>`; }).join(''); }
     
@@ -314,26 +367,29 @@
     }
     function addVehicleMapping(){ const seg = prompt("输入VIN段(第4-8位，5个字符)").toUpperCase(); if(!seg || seg.length!==5){ alert("需要5个字符"); return; } const brand = prompt("品牌"); const model = prompt("车型"); const engine = prompt("发动机/年份") || "标准"; vehicleDatabase.push({ id: nextVehicleId++, vinSegment: seg, brand, model, engine }); saveVehicleDatabase(); renderVehicleDatabaseTable(); showToast("车型已添加"); }
     function saveVehicleDatabase(){ localStorage.setItem('vehicle_database', JSON.stringify(vehicleDatabase)); }
-    function renderAdminProductTable(){ const tbody=document.getElementById('adminProductTable'); if(tbody) tbody.innerHTML=products.map(p=>`<tr><td class="p-2">${p.id}<td>${p.name_en}<td class="font-mono text-xs">${p.oem}<td>$${p.price}<td><button class="del-prod text-red-600" data-id="${p.id}">删除</button></tr>`).join(''); document.querySelectorAll('.del-prod').forEach(btn=>btn.addEventListener('click',()=>{ products=products.filter(p=>p.id!==parseInt(btn.dataset.id)); saveProducts(); renderAdminProductTable(); showToast("已删除"); })); }
+    function renderAdminProductTable(){ const tbody=document.getElementById('adminProductTable'); if(tbody) tbody.innerHTML=products.map(p=>`<tr><td class="p-2">${p.id}<td>${p.name_en}<td class="font-mono text-xs">${p.oem}<td>$${p.price}<td><button class="del-prod text-red-600" data-id="${p.id}">删除</button></td>`).join(''); document.querySelectorAll('.del-prod').forEach(btn=>btn.addEventListener('click',()=>{ products=products.filter(p=>p.id!==parseInt(btn.dataset.id)); saveProducts(); if(!currentSearchMode) currentDisplayProducts = [...products]; else if(currentSearchMode) { /* 保持搜索结果但产品已变，重新搜索逻辑简单处理 */ currentDisplayProducts = currentDisplayProducts.filter(p=>products.find(np=>np.id===p.id)); } renderProductGrid(); renderAdminProductTable(); showToast("已删除"); })); }
     function saveProducts(){ localStorage.setItem('autoparts_products', JSON.stringify(products)); }
-    function renderAdminOtherTables(){ const ntb=document.getElementById('adminNeedsTable'); if(ntb) ntb.innerHTML=needs.map(n=>`<tr><td>${n.id}<td>${n.title}<td>${n.username}<td><button class="del-need" data-id="${n.id}">删除</button></tr>`).join(''); const ltb=document.getElementById('adminLocalTable'); if(ltb) ltb.innerHTML=localPosts.map(p=>`<tr><td>${p.id}<td>${p.title_en}<td>${p.status}<td><button class="appr-local" data-id="${p.id}">通过</button></tr>`).join(''); const utb=document.getElementById('adminUsersTable'); if(utb) utb.innerHTML=users.map(u=>`<tr><td>${u.id}<td>${u.username}<td>${u.role}<td>${u.role!=='admin'?`<button class="del-user" data-id="${u.id}">删除</button>`:'-'}</tr>`).join(''); }
+    function renderAdminOtherTables(){ const ntb=document.getElementById('adminNeedsTable'); if(ntb) ntb.innerHTML=needs.map(n=>`<tr><td>${n.id}<td>${n.title}<td>${n.username}<td><button class="del-need" data-id="${n.id}">删除</button></tr>`).join(''); const ltb=document.getElementById('adminLocalTable'); if(ltb) ltb.innerHTML=localPosts.map(p=>`</td><td class="p-2">${p.id}<td>${p.title_en}<td>${p.status}<td><button class="appr-local" data-id="${p.id}">通过</button></td></tr>`).join(''); const utb=document.getElementById('adminUsersTable'); if(utb) utb.innerHTML=users.map(u=>`<tr><td class="p-2">${u.id}<td>${u.username}<td>${u.role}<td>${u.role!=='admin'?`<button class="del-user" data-id="${u.id}">删除</button>`:'-'}</td></tr>`).join(''); }
     function showToast(msg){ document.getElementById('toastText').innerText=msg; const toast=document.getElementById('toastMsg'); toast.style.display='block'; setTimeout(()=>toast.style.display='none',2500); }
-    function navigateTo(view){ document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden')); document.getElementById(`${view}View`).classList.remove('hidden'); if(view==='products') renderSearchResults(); if(view==='needs') renderNeedsOnly(); if(view==='local') renderLocalPosts(); if(view==='admin'){ if(!currentUser || currentUser.role !== 'admin'){ showToast("仅管理员可访问"); navigateTo('home'); return; } renderAdminProductTable(); renderVehicleDatabaseTable(); renderAdminOtherTables(); } window.scrollTo(0,0); }
+    function navigateTo(view){ document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden')); document.getElementById(`${view}View`).classList.remove('hidden'); if(view==='products') renderProductGrid(); if(view==='needs') renderNeedsOnly(); if(view==='local') renderLocalPosts(); if(view==='admin'){ if(!currentUser || currentUser.role !== 'admin'){ showToast("仅管理员可访问"); navigateTo('home'); return; } renderAdminProductTable(); renderVehicleDatabaseTable(); renderAdminOtherTables(); } window.scrollTo(0,0); }
     function showAuthModal(){ alert("演示: admin/admin123 或 buyer/123456"); }
     function logout(){ currentUser=null; localStorage.removeItem('currentUser'); updateUserUI(); navigateTo('home'); }
     function updateUserUI(){ const span=document.getElementById('desktopUserName'); if(span) span.innerText=currentUser?currentUser.username:t('login'); }
     
+    // 聊天窗口事件
     document.getElementById('openChatBtn')?.addEventListener('click',()=>{ document.getElementById('chatBox').style.display='flex'; document.getElementById('openChatBtn').style.display='none'; });
     document.getElementById('closeChatBtn')?.addEventListener('click',()=>{ document.getElementById('chatBox').style.display='none'; document.getElementById('openChatBtn').style.display='flex'; });
     document.getElementById('sendChatBtn')?.addEventListener('click',()=>{ const inp=document.getElementById('chatInput'); if(inp.value.trim()){ const msgs=document.getElementById('chatMessages'); msgs.innerHTML+=`<div class="text-right mt-2"><span class="bg-blue-100 inline-block p-2 rounded-lg text-sm">${inp.value}</span></div>`; inp.value=''; msgs.scrollTop=msgs.scrollHeight; showToast("消息已发送"); } });
     
+    // 事件绑定
     document.querySelectorAll('[data-nav]').forEach(a=>a.addEventListener('click',(e)=>{ e.preventDefault(); navigateTo(a.getAttribute('data-nav')); }));
     document.querySelectorAll('.lang-switch, .lang-switch-mobile').forEach(btn=>btn.addEventListener('click',()=>setLang(btn.getAttribute('data-lang'))));
     document.getElementById('unifiedSearchBtn')?.addEventListener('click',performUnifiedSearch);
-    document.getElementById('clearSearchBtn')?.addEventListener('click',clearSearchResults);
+    document.getElementById('showAllProductsBtn')?.addEventListener('click',showAllProducts);
+    document.getElementById('clearSearchBtn')?.addEventListener('click',clearSearchAndShowAll);
     document.getElementById('homeRegisterBtn')?.addEventListener('click',showAuthModal);
     document.getElementById('postLocalBtn')?.addEventListener('click',()=>alert("发布需登录"));
-    document.getElementById('adminAddProduct')?.addEventListener('click',()=>{ let name=prompt("产品名"); if(name){ let oem=prompt("OEM编号"); products.push({id:nextProductId++, name_en:name, name_zh:name, name_fr:name, oem:oem||"NEW", sku:"SKU", price:0, image:"https://picsum.photos/300/200", applicableSegment:""}); saveProducts(); renderAdminProductTable(); showToast("产品已添加"); } });
+    document.getElementById('adminAddProduct')?.addEventListener('click',()=>{ let name=prompt("产品名"); if(name){ let oem=prompt("OEM编号"); products.push({id:nextProductId++, name_en:name, name_zh:name, name_fr:name, oem:oem||"NEW", sku:"SKU", price:0, image:"https://picsum.photos/300/200", applicableSegment:""}); saveProducts(); if(!currentSearchMode) currentDisplayProducts = [...products]; renderProductGrid(); renderAdminProductTable(); showToast("产品已添加"); } });
     document.getElementById('addVehicleBtn')?.addEventListener('click',addVehicleMapping);
     document.getElementById('desktopUserBtn')?.addEventListener('click',()=>{ if(currentUser) document.getElementById('desktopUserDropdown')?.classList.toggle('hidden'); else showAuthModal(); });
     document.getElementById('desktopLogoutLink')?.addEventListener('click',(e)=>{ e.preventDefault(); logout(); document.getElementById('desktopUserDropdown')?.classList.add('hidden'); });
@@ -343,7 +399,10 @@
     document.getElementById('inquiryForm')?.addEventListener('submit',(e)=>{ e.preventDefault(); showToast("询价已发送"); e.target.reset(); });
     document.querySelectorAll('.admin-tab').forEach(tab=>tab.addEventListener('click',(e)=>{ const panel=tab.getAttribute('data-admin-tab'); document.querySelectorAll('[id$="Panel"]').forEach(p=>p.classList.add('hidden')); document.getElementById(`admin${panel.charAt(0).toUpperCase()+panel.slice(1)}Panel`).classList.remove('hidden'); }));
     
-    setLang(currentLang); navigateTo('home');
+    // 初始化
+    currentDisplayProducts = [...products];
+    setLang(currentLang); 
+    navigateTo('home');
 </script>
 </body>
 </html>
