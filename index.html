@@ -26,13 +26,14 @@
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.875rem; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; }
-        .permission-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; margin: 2px; }
-        .bg-perm-product { background: #dbeafe; color: #1e40af; }
-        .bg-perm-vehicle { background: #dcfce7; color: #166534; }
-        .bg-perm-user { background: #fef3c7; color: #92400e; }
-        .bg-perm-local { background: #fce7f3; color: #9d174d; }
         .img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
-        footer a:hover { transform: scale(1.1); transition: transform 0.2s; }
+        /* 表格响应式滚动 */
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 1rem; }
+        .admin-table { min-width: 800px; width: 100%; border-collapse: collapse; }
+        .admin-table th, .admin-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+        @media (max-width: 640px) { .admin-table th, .admin-table td { padding: 8px 4px; font-size: 12px; } }
+        footer a { transition: transform 0.2s; display: inline-block; }
+        footer a:hover { transform: scale(1.1); }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -131,7 +132,7 @@
     <div id="localView" class="view hidden-view"><div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold" data-i18n="local_title">同城服务</h2><button id="postLocalBtn" class="bg-blue-600 text-white px-5 py-2 rounded-full"><i class="fas fa-plus-circle mr-1"></i><span data-i18n="post_local">发布信息</span></button></div><div id="localList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div></div>
     <div id="inquiryView" class="view hidden-view"><div class="max-w-2xl mx-auto"><h2 class="text-2xl font-bold mb-4" data-i18n="inquiry_title">发送询价</h2><form id="inquiryForm" class="bg-white p-5 rounded-xl shadow"><input type="text" id="inqName" placeholder="姓名" class="border p-2 w-full mb-3 rounded"><input type="email" id="inqEmail" placeholder="邮箱" class="border p-2 w-full mb-3 rounded"><textarea rows="4" id="inqMsg" placeholder="需求" class="border p-2 w-full rounded"></textarea><button type="submit" class="mt-4 bg-green-600 text-white px-5 py-2 rounded" data-i18n="send_btn">发送</button></form></div></div>
 
-    <!-- 后台管理 (完整权限控制) -->
+    <!-- 后台管理 (完整权限控制，表格响应式滚动) -->
     <div id="adminView" class="view hidden-view">
         <h2 class="text-2xl font-bold mb-4" data-i18n="admin_title">管理后台</h2>
         <div class="flex flex-wrap space-x-2 mb-4 border-b">
@@ -144,17 +145,22 @@
         <!-- 产品管理面板 -->
         <div id="adminProductsPanel" class="bg-white p-4 rounded-xl shadow">
             <div class="flex justify-end mb-3"><button id="adminAddProduct" class="bg-blue-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-plus mr-1"></i>添加产品</button></div>
-            <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th>图片</th><th>名称(中/英)</th><th>OEM编号</th><th>价格</th><th>适用VIN段</th><th>操作</th></tr></thead><tbody id="adminProductTable"></tbody>}</div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead class="bg-gray-100"><tr><th>ID</th><th>图片</th><th>名称(中/英)</th><th>OEM编号</th><th>价格</th><th>适用VIN段</th><th>操作</th></tr></thead>
+                    <tbody id="adminProductTable"></tbody>
+                </table>
+            </div>
         </div>
-        <div id="adminVehiclesPanel" class="hidden bg-white p-4 rounded-xl shadow"><h3 class="font-bold mb-2">车型数据库</h3><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th>VIN段(4-8位)</th><th>品牌</th><th>车型</th><th>发动机/年份</th><th>操作</th></tr></thead><tbody id="adminVehicleTable"></tbody>}</div><button id="addVehicleBtn" class="mt-3 bg-green-600 text-white px-3 py-1 rounded text-sm">+ 新增车型</button></div>
-        <div id="adminNeedsPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>标题</th><th>用户</th><th>操作</th></tr></thead><tbody id="adminNeedsTable"></tbody>}</div>
-        <div id="adminLocalPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>标题</th><th>状态</th><th>操作</th></tr></thead><tbody id="adminLocalTable"></tbody>}</div>
-        <div id="adminUsersPanel" class="hidden bg-white p-4 rounded-xl shadow"><h3 class="font-bold mb-2">用户列表 & 权限管理</h3><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th>用户名</th><th>角色</th><th>产品管理</th><th>车型管理</th><th>用户管理</th><th>本地审核</th><th>操作</th></tr></thead><tbody id="adminUsersTable"></tbody>}</div><button id="adminAddUserBtn" class="mt-3 bg-blue-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-user-plus mr-1"></i>添加管理员</button></div>
+        <div id="adminVehiclesPanel" class="hidden bg-white p-4 rounded-xl shadow"><h3 class="font-bold mb-2">车型数据库</h3><div class="table-responsive"><table class="admin-table"><thead class="bg-gray-100"><tr><th>ID</th><th>VIN段(4-8位)</th><th>品牌</th><th>车型</th><th>发动机/年份</th><th>操作</th></tr></thead><tbody id="adminVehicleTable"></tbody>}</div><button id="addVehicleBtn" class="mt-3 bg-green-600 text-white px-3 py-1 rounded text-sm">+ 新增车型</button></div>
+        <div id="adminNeedsPanel" class="hidden bg-white p-4 rounded-xl shadow"><div class="table-responsive"><table class="admin-table"><thead class="bg-gray-100"><tr><th>ID</th><th>标题</th><th>用户</th><th>操作</th></tr></thead><tbody id="adminNeedsTable"></tbody>}</div></div>
+        <div id="adminLocalPanel" class="hidden bg-white p-4 rounded-xl shadow"><div class="table-responsive"><table class="admin-table"><thead class="bg-gray-100"><tr><th>ID</th><th>标题</th><th>状态</th><th>操作</th></tr></thead><tbody id="adminLocalTable"></tbody>}</div></div>
+        <div id="adminUsersPanel" class="hidden bg-white p-4 rounded-xl shadow"><h3 class="font-bold mb-2">用户列表 & 权限管理</h3><div class="table-responsive"><table class="admin-table"><thead class="bg-gray-100"><tr><th>ID</th><th>用户名</th><th>角色</th><th>产品管理</th><th>车型管理</th><th>用户管理</th><th>本地审核</th><th>操作</th></tr></thead><tbody id="adminUsersTable"></tbody>}</div><button id="adminAddUserBtn" class="mt-3 bg-blue-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-user-plus mr-1"></i>添加管理员</button></div>
     </div>
     <div id="accountView" class="view hidden-view"><div class="max-w-2xl mx-auto bg-white rounded-xl p-6"><div class="flex justify-between"><h2 class="text-2xl font-bold" data-i18n="my_account">我的账户</h2><button id="closeAccountView" class="text-gray-500"><i class="fas fa-times"></i></button></div><div id="accountInfo"></div></div></div>
 </main>
 
-<!-- ======================== 聊天窗口组件 (右下角固定，已确保存在) ======================== -->
+<!-- ======================== 聊天窗口组件 ======================== -->
 <div class="chat-widget">
     <div id="chatBox" class="chat-box shadow-xl border border-gray-200">
         <div class="bg-blue-700 text-white p-3 flex justify-between items-center">
@@ -172,7 +178,7 @@
     <button id="openChatBtn" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fas fa-headset text-xl"></i></button>
 </div>
 
-<!-- ======================== 底部社媒区域 (所有页面底部都会显示，已确保存在) ======================== -->
+<!-- ======================== 底部社媒区域 (所有页面底部都会显示) ======================== -->
 <footer class="bg-gray-800 text-white py-8 mt-12">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center">
@@ -262,7 +268,7 @@
         grid.innerHTML = list.map(p => { let name = p[`name_${currentLang}`] || p.name_en; return `<div class="product-card bg-white rounded-xl p-4 shadow"><img src="${p.image}" class="h-40 w-full object-cover rounded"><h3 class="font-bold mt-2">${name}</h3><div class="text-xs text-gray-500">OEM: ${p.oem}</div><p class="text-blue-600 font-bold mt-1">$${p.price}</p></div>`; }).join('');
     }
     
-    // 产品编辑模态框 (完整修复)
+    // 产品编辑模态框
     function openProductModal(productId = null){
         if(!hasPermission('products')) { showToast("您没有产品管理权限"); return; }
         const p = productId ? products.find(p=>p.id===productId) : null;
@@ -349,17 +355,22 @@
     function renderAdminUsersTable(){
         const tbody = document.getElementById('adminUsersTable');
         if(!tbody) return;
-        tbody.innerHTML = users.map(u => `<tr><td class="p-2">${u.id}<td>${u.username}<td>${u.role}<td class="text-center"><input type="checkbox" class="perm-products" data-id="${u.id}" ${u.permissions?.products ? 'checked' : ''} ${u.role==='super_admin' ? 'disabled' : ''}>
+        tbody.innerHTML = users.map(u => `<tr><td class="p-2">${u.id}<td>${u.username}<td>${u.role}
+            <td class="text-center"><input type="checkbox" class="perm-products" data-id="${u.id}" ${u.permissions?.products ? 'checked' : ''} ${u.role==='super_admin' ? 'disabled' : ''}>
             <td class="text-center"><input type="checkbox" class="perm-vehicles" data-id="${u.id}" ${u.permissions?.vehicles ? 'checked' : ''} ${u.role==='super_admin' ? 'disabled' : ''}>
             <td class="text-center"><input type="checkbox" class="perm-users" data-id="${u.id}" ${u.permissions?.users ? 'checked' : ''} ${u.role==='super_admin' ? 'disabled' : ''}>
             <td class="text-center"><input type="checkbox" class="perm-local" data-id="${u.id}" ${u.permissions?.local ? 'checked' : ''} ${u.role==='super_admin' ? 'disabled' : ''}>
-            <td>${u.role !== 'super_admin' ? `<button class="del-user text-red-600" data-id="${u.id}">删除</button>` : '-'}</td>`).join('');
+            <td class="p-2">${u.role !== 'super_admin' ? `<button class="del-user text-red-600" data-id="${u.id}">删除</button>` : '-'}</td>
+        </tr>`).join('');
         document.querySelectorAll('.perm-products, .perm-vehicles, .perm-users, .perm-local').forEach(cb => cb.addEventListener('change', (e) => { const userId = parseInt(cb.dataset.id); const permType = cb.classList.contains('perm-products') ? 'products' : cb.classList.contains('perm-vehicles') ? 'vehicles' : cb.classList.contains('perm-users') ? 'users' : 'local'; const user = users.find(u => u.id === userId); if(user && user.role !== 'super_admin'){ if(!user.permissions) user.permissions = {}; user.permissions[permType] = cb.checked; localStorage.setItem('app_users', JSON.stringify(users)); showToast('权限已更新'); } }));
         document.querySelectorAll('.del-user').forEach(btn=>btn.addEventListener('click',()=>{ const id=parseInt(btn.dataset.id); if(id === currentUser?.id){ showToast('不能删除自己'); return; } users=users.filter(u=>u.id!==id); localStorage.setItem('app_users', JSON.stringify(users)); if(currentUser && currentUser.id === id) logout(); renderAdminUsersTable(); showToast('已删除'); }));
     }
     function addAdminUser(){ const username = prompt("用户名"); const password = prompt("密码"); if(username && password){ if(users.find(u=>u.username===username)){ alert("用户名已存在"); return; } users.push({ id: Date.now(), username, password, role: "editor", permissions: { products: true, vehicles: false, users: false, local: true, needs: true } }); localStorage.setItem('app_users', JSON.stringify(users)); renderAdminUsersTable(); showToast("管理员已添加"); } }
     
-    function renderAdminOtherTables(){ const ntb=document.getElementById('adminNeedsTable'); if(ntb) ntb.innerHTML=needs.map(n=>`<tr><td class="p-2">${n.id}<td>${n.title}<td>${n.username}<td><button class="del-need text-red-600" data-id="${n.id}">删除</button></tr>`).join(''); const ltb=document.getElementById('adminLocalTable'); if(ltb) ltb.innerHTML=localPosts.map(p=>`<tr><td class="p-2">${p.id}<td>${p.title_en}<td>${p.status}<td><button class="appr-local text-green-600" data-id="${p.id}">通过</button></tr>`).join(''); }
+    function renderAdminOtherTables(){ 
+        const ntb=document.getElementById('adminNeedsTable'); if(ntb) ntb.innerHTML=needs.map(n=>`<tr><td class="p-2">${n.id}<td>${n.title}<td>${n.username}<td><button class="del-need text-red-600" data-id="${n.id}">删除</button></tr>`).join(''); 
+        const ltb=document.getElementById('adminLocalTable'); if(ltb) ltb.innerHTML=localPosts.map(p=>`<tr><td class="p-2">${p.id}<td>${p.title_en}<td>${p.status}<td><button class="appr-local text-green-600" data-id="${p.id}">通过</button></tr>`).join(''); 
+    }
     function renderNeedsOnly(){ const c=document.getElementById('needsList'); if(c) c.innerHTML=needs.map(n=>`<div class="bg-white p-4 shadow rounded"><h3 class="font-bold">${n.title}</h3><p>${n.desc}</p></div>`).join(''); }
     function renderLocalPosts(){ const container=document.getElementById('localList'); if(container) container.innerHTML=localPosts.filter(p=>p.status==='approved').map(p=>{ let title = p.title_en; return `<div class="bg-white p-4 shadow rounded"><div class="font-bold">${title}</div><p>${p.description_en}</p></div>`; }).join(''); }
     
