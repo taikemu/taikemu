@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AutoParts Hub | 全球汽配交易平台</title>
+    <meta name="description" content="专业汽车配件B2B平台，用户注册、发布采购需求、管理账户，多语言支持。">
+    <!-- Tailwind CSS + Font Awesome + Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .product-card, .need-card { transition: all 0.2s ease; border: 1px solid #e5e7eb; }
+        .product-card:hover, .need-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: #3b82f6; }
+        .toast-msg { position: fixed; bottom: 20px; right: 20px; z-index: 999; background: #10b981; color: white; padding: 12px 24px; border-radius: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; font-weight: 500; }
+        .active-tab { border-bottom: 3px solid #3b82f6; color: #1e40af; font-weight: 600; }
+        .modal { transition: opacity 0.2s; }
+        @media (max-width: 768px) { .main-content { padding-bottom: 80px; } }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Toast 提示 -->
+<div id="toastMsg" class="toast-msg"><i class="fas fa-check-circle mr-2"></i><span id="toastText"></span></div>
+
+<!-- 顶部导航栏 -->
+<nav class="bg-white shadow-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-car-side text-blue-700 text-2xl"></i>
+                <span class="font-extrabold text-xl tracking-tight text-gray-800" data-i18n="brand">AutoParts Hub</span>
+            </div>
+            <!-- 桌面端菜单 -->
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#" data-nav="home" class="nav-link text-gray-700 hover:text-blue-700 font-medium">🏠 <span data-i18n="nav_home">Home</span></a>
+                <a href="#" data-nav="products" class="nav-link text-gray-700 hover:text-blue-700 font-medium">📦 <span data-i18n="nav_products">Products</span></a>
+                <a href="#" data-nav="needs" class="nav-link text-gray-700 hover:text-blue-700 font-medium">📢 <span data-i18n="nav_needs">Buying Needs</span></a>
+                <a href="#" data-nav="inquiry" class="nav-link text-gray-700 hover:text-blue-700 font-medium">✉️ <span data-i18n="nav_inquiry">Inquiry</span></a>
+                <a href="#" data-nav="admin" class="nav-link text-gray-700 hover:text-blue-700 font-medium">⚙️ <span data-i18n="nav_admin">Admin</span></a>
+                <!-- 用户菜单/登录注册 -->
+                <div class="relative" id="userMenuDesktop">
+                    <button id="desktopUserBtn" class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full hover:bg-gray-200"><i class="fas fa-user-circle text-blue-600"></i><span id="desktopUserName" data-i18n="login">Login</span></button>
+                    <div id="desktopUserDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border">
+                        <a href="#" id="desktopAccountLink" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-id-card mr-2"></i>My Account</a>
+                        <a href="#" id="desktopLogoutLink" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                    </div>
+                </div>
+                <div class="flex space-x-1 border-l pl-3 ml-1">
+                    <button data-lang="en" class="lang-switch px-2 py-1 text-sm font-semibold rounded-md">EN</button>
+                    <button data-lang="fr" class="lang-switch px-2 py-1 text-sm font-semibold rounded-md">FR</button>
+                    <button data-lang="zh" class="lang-switch px-2 py-1 text-sm font-semibold rounded-md">中文</button>
+                </div>
+            </div>
+            <!-- 移动端：简洁语言切换 + 用户图标 -->
+            <div class="md:hidden flex items-center space-x-2">
+                <button id="mobileUserIcon" class="text-gray-700"><i class="fas fa-user-circle text-2xl"></i></button>
+                <div class="flex space-x-1 bg-gray-100 p-1 rounded-full">
+                    <button data-lang="en" class="lang-switch-mobile text-xs px-2 py-1 rounded-full">EN</button>
+                    <button data-lang="fr" class="lang-switch-mobile text-xs px-2 py-1 rounded-full">FR</button>
+                    <button data-lang="zh" class="lang-switch-mobile text-xs px-2 py-1 rounded-full">中</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- 移动端底部导航栏 -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-20 shadow-lg">
+    <div class="flex justify-around py-2">
+        <a href="#" data-nav="home" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-home text-xl"></i><span data-i18n="nav_home">Home</span></a>
+        <a href="#" data-nav="products" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-boxes text-xl"></i><span data-i18n="nav_products">Products</span></a>
+        <a href="#" data-nav="needs" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-bullhorn text-xl"></i><span data-i18n="nav_needs">Needs</span></a>
+        <a href="#" data-nav="inquiry" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-envelope text-xl"></i><span data-i18n="nav_inquiry">Inquiry</span></a>
+        <a href="#" data-nav="admin" class="mobile-nav-item flex flex-col items-center text-gray-600 text-xs"><i class="fas fa-cog text-xl"></i><span data-i18n="nav_admin">Admin</span></a>
+    </div>
+</div>
+
+<!-- 主内容区域 -->
+<main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 main-content pb-20 md:pb-8">
+    <!-- 首页视图 -->
+    <div id="homeView" class="view">
+        <div class="bg-gradient-to-r from-blue-800 to-indigo-800 rounded-2xl p-8 text-white text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold" data-i18n="hero_title">Global Auto Parts Sourcing Platform</h1>
+            <p class="mt-2 opacity-90" data-i18n="hero_desc">Register now to post your buying needs & get quotes</p>
+            <button id="homeRegisterBtn" class="mt-4 bg-yellow-500 text-gray-900 px-6 py-2 rounded-full font-semibold"><i class="fas fa-user-plus mr-2"></i><span data-i18n="register_btn">Sign Up Free</span></button>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6"><div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-users text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_users">5000+ Buyers</h3><p class="text-gray-500" data-i18n="feature_users_desc">Trusted worldwide</p></div><div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-list-alt text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_needs">Daily RFQs</h3><p class="text-gray-500" data-i18n="feature_needs_desc">Post your part requests</p></div><div class="bg-white p-5 rounded-xl shadow"><i class="fas fa-shield-alt text-3xl text-blue-600"></i><h3 class="font-bold mt-2" data-i18n="feature_secure">Secure Trading</h3><p class="text-gray-500" data-i18n="feature_secure_desc">Verified suppliers</p></div></div>
+    </div>
+
+    <!-- 产品列表视图 -->
+    <div id="productsView" class="view hidden"><h2 class="text-2xl font-bold mb-4" data-i18n="products_title">Product Catalog</h2><div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>
+
+    <!-- 采购需求板块 (用户自主发布、编辑) -->
+    <div id="needsView" class="view hidden">
+        <div class="flex justify-between items-center flex-wrap gap-3 mb-6">
+            <h2 class="text-2xl font-bold" data-i18n="needs_title">Public Buying Needs</h2>
+            <button id="postNeedBtn" class="bg-blue-600 text-white px-5 py-2 rounded-full shadow"><i class="fas fa-plus-circle mr-1"></i><span data-i18n="post_need">Post Your Need</span></button>
+        </div>
+        <div id="needsList" class="space-y-5"></div>
+        <!-- 发布/编辑需求的模态框 -->
+        <div id="needModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden modal">
+            <div class="bg-white rounded-xl max-w-lg w-full p-6">
+                <h3 class="text-xl font-bold mb-3" id="needModalTitle" data-i18n="post_new_need">Post a Requirement</h3>
+                <input type="hidden" id="editNeedId">
+                <input type="text" id="needTitle" placeholder="Title (e.g. Need 500pcs Brake Pads)" class="border p-2 w-full mb-3 rounded">
+                <textarea id="needDesc" rows="3" placeholder="Detailed description, quantity, target price..." class="border p-2 w-full mb-3 rounded"></textarea>
+                <input type="text" id="needContact" placeholder="Contact email / WhatsApp" class="border p-2 w-full mb-4 rounded">
+                <div class="flex justify-end gap-3"><button id="closeNeedModal" class="px-4 py-2 bg-gray-300 rounded">Cancel</button><button id="saveNeedBtn" class="px-4 py-2 bg-blue-600 text-white rounded">Publish / Update</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 询价表单 -->
+    <div id="inquiryView" class="view hidden"><div class="max-w-2xl mx-auto"><h2 class="text-2xl font-bold" data-i18n="inquiry_title">Send Inquiry</h2><form id="inquiryForm" class="bg-white p-5 rounded-xl shadow mt-4"><input type="text" id="inqName" placeholder="Name" class="border p-2 w-full mb-3 rounded"><input type="email" id="inqEmail" placeholder="Email" class="border p-2 w-full mb-3 rounded"><textarea rows="4" id="inqMsg" placeholder="Your request..." class="border p-2 w-full rounded"></textarea><button type="submit" class="mt-4 bg-green-600 text-white px-5 py-2 rounded">Send</button></form></div></div>
+
+    <!-- 后台管理 (产品+需求管理整合) -->
+    <div id="adminView" class="view hidden"><h2 class="text-2xl font-bold mb-4" data-i18n="admin_title">Admin Dashboard</h2><div class="flex space-x-4 mb-4 border-b"><button class="admin-tab py-2 px-4 active-tab" data-admin-tab="products">Manage Products</button><button class="admin-tab py-2 px-4" data-admin-tab="needs">Manage Needs</button><button class="admin-tab py-2 px-4" data-admin-tab="users">Manage Users</button></div><div id="adminProductsPanel" class="bg-white p-4 rounded-xl shadow"><div class="flex justify-end mb-3"><button id="adminAddProduct" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">+ Add Product</button></div><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th>ID</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="adminProductTable"></tbody></table></div><div id="adminNeedsPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>Title</th><th>User</th><th>Actions</th></tr></thead><tbody id="adminNeedsTable"></tbody></table></div><div id="adminUsersPanel" class="hidden bg-white p-4 rounded-xl shadow"><table class="w-full"><thead class="bg-gray-100"><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Action</th></tr></thead><tbody id="adminUsersTable"></tbody></table></div></div>
+
+    <!-- 用户账户管理页面 (独立视图) -->
+    <div id="accountView" class="view hidden">
+        <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6">
+            <div class="flex justify-between items-center"><h2 class="text-2xl font-bold" data-i18n="my_account">My Account</h2><button id="closeAccountView" class="text-gray-500"><i class="fas fa-times"></i></button></div>
+            <div id="accountInfo" class="mt-4 space-y-3"></div>
+            <button id="editProfileBtn" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i> Edit Profile</button>
+            <button id="changePassBtn" class="mt-2 ml-2 bg-gray-500 text-white px-4 py-2 rounded">Change Password</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ======================== 用户系统核心 ========================
+    let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+    let users = JSON.parse(localStorage.getItem('app_users')) || [];
+    // 初始化默认管理员账户以及测试买家
+    if(users.length === 0){
+        users.push({ id: 1, username: "admin", email: "admin@parts.com", password: "admin123", role: "admin", createdAt: new Date() });
+        users.push({ id: 2, username: "buyer1", email: "buyer@test.com", password: "123456", role: "user", createdAt: new Date() });
+        localStorage.setItem('app_users', JSON.stringify(users));
+    }
+    // 采购需求数据 (每个需求包含发布者ID, 可编辑删除权限)
+    let needs = JSON.parse(localStorage.getItem('public_needs')) || [
+        { id: 101, title: "Looking for engine piston rings", description: "Need 200 sets, for Toyota Corolla", contact: "buyer@test.com", userId: 2, username: "buyer1", createdAt: Date.now() },
+        { id: 102, title: "Brake pads for heavy truck", description: "Quantity 500 pairs, need certification", contact: "truck@mail.com", userId: 2, username: "buyer1", createdAt: Date.now() }
+    ];
+    let nextNeedId = needs.length? Math.max(...needs.map(n=>n.id))+1 : 201;
+    let products = JSON.parse(localStorage.getItem('autoparts_products')) || [
+        { id: 1, name_en: "Piston Kit", sku: "ENG-01", price: 89.99, category: "engine", image: "https://picsum.photos/id/123/300/200" },
+        { id: 2, name_en: "Ceramic Brake Pads", sku: "BRK-02", price: 45.5, category: "brake", image: "https://picsum.photos/id/23/300/200" }
+    ];
+    let nextProductId = products.length? Math.max(...products.map(p=>p.id))+1 : 3;
+    // 语言相关
+    let currentLang = localStorage.getItem('app_lang') || 'en';
+    const translations = {
+        en: { brand: "AutoParts Hub", nav_home: "Home", nav_products: "Products", nav_needs: "Buying Needs", nav_inquiry: "Inquiry", nav_admin: "Admin", login: "Login", register_btn: "Sign Up Free", hero_title: "Global Auto Parts Sourcing Platform", hero_desc: "Register now to post your buying needs & get quotes", needs_title: "Public Buying Needs", post_need: "Post Your Need", my_account: "My Account", products_title: "Product Catalog", inquiry_title: "Request a Quote", admin_title: "Admin Dashboard", post_new_need: "Post a Requirement" },
+        fr: { brand: "AutoParts Hub", nav_home: "Accueil", nav_products: "Produits", nav_needs: "Besoins", nav_inquiry: "Devis", nav_admin: "Admin", login: "Connexion", register_btn: "Inscription", hero_title: "Plateforme d'approvisionnement", needs_title: "Annonces d'achat", post_need: "Publier un besoin", my_account: "Mon compte", products_title: "Catalogue", inquiry_title: "Demande de devis", admin_title: "Administration", post_new_need: "Publier" },
+        zh: { brand: "全球汽配中心", nav_home: "首页", nav_products: "产品", nav_needs: "采购需求", nav_inquiry: "询价", nav_admin: "管理", login: "登录", register_btn: "免费注册", hero_title: "全球汽配采购平台", hero_desc: "注册发布需求，获取报价", needs_title: "公开采购需求", post_need: "发布需求", my_account: "我的账户", products_title: "产品目录", inquiry_title: "询价单", admin_title: "管理后台", post_new_need: "发布采购需求" }
+    };
+    function t(key) { return translations[currentLang]?.[key] || translations.en[key] || key; }
+    function updateUILanguage() { document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(k) el.innerText = t(k); }); if(currentUser) document.querySelectorAll('.user-name-display').forEach(el=>el.innerText=currentUser.username); }
+    function setLang(lang) { currentLang = lang; localStorage.setItem('app_lang', lang); updateUILanguage(); renderCurrentView(); }
+
+    // 渲染采购需求列表 (用户可编辑自己的需求)
+    function renderNeeds() {
+        const container = document.getElementById('needsList');
+        if(!container) return;
+        container.innerHTML = needs.map(need => {
+            const isOwner = currentUser && (currentUser.id === need.userId || currentUser.role === 'admin');
+            return `<div class="need-card bg-white p-5 rounded-xl shadow-sm border">
+                        <div class="flex justify-between"><h3 class="font-bold text-lg">${need.title}</h3><span class="text-xs text-gray-400">by ${need.username}</span></div>
+                        <p class="text-gray-600 mt-2">${need.description}</p><p class="text-sm text-blue-500 mt-1">Contact: ${need.contact}</p>
+                        ${isOwner ? `<div class="mt-3 flex gap-3"><button class="edit-need-btn text-blue-600 text-sm" data-id="${need.id}"><i class="fas fa-edit"></i> Edit</button><button class="delete-need-btn text-red-500 text-sm" data-id="${need.id}"><i class="fas fa-trash"></i> Delete</button></div>` : ''}
+                    </div>`;
+        }).join('');
+        document.querySelectorAll('.edit-need-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ const id=parseInt(btn.dataset.id); openNeedModal(id); }));
+        document.querySelectorAll('.delete-need-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ if(confirm('Delete this need?')){ needs=needs.filter(n=>n.id!==parseInt(btn.dataset.id)); saveNeeds(); renderNeeds(); showToast('Deleted'); } }));
+    }
+    function openNeedModal(needId=null){
+        document.getElementById('needModal').classList.remove('hidden');
+        if(needId){
+            const need=needs.find(n=>n.id===needId);
+            if(need){
+                document.getElementById('editNeedId').value=need.id;
+                document.getElementById('needTitle').value=need.title;
+                document.getElementById('needDesc').value=need.description;
+                document.getElementById('needContact').value=need.contact;
+                document.getElementById('needModalTitle').innerText='Edit Your Need';
+                return;
+            }
+        }
+        document.getElementById('editNeedId').value='';
+        document.getElementById('needTitle').value='';
+        document.getElementById('needDesc').value='';
+        document.getElementById('needContact').value=currentUser?.email || '';
+        document.getElementById('needModalTitle').innerText=t('post_new_need');
+    }
+    function saveNeedFromModal(){
+        if(!currentUser){ showToast('Please login first'); document.getElementById('needModal').classList.add('hidden'); return; }
+        const id = document.getElementById('editNeedId').value;
+        const title=document.getElementById('needTitle').value;
+        const desc=document.getElementById('needDesc').value;
+        const contact=document.getElementById('needContact').value;
+        if(!title){ alert('Title required'); return; }
+        if(id){
+            const index=needs.findIndex(n=>n.id==id);
+            if(index!==-1 && (needs[index].userId===currentUser.id || currentUser.role==='admin')){
+                needs[index]={...needs[index], title, description:desc, contact};
+                showToast('Updated');
+            }
+        } else {
+            needs.push({ id: nextNeedId++, title, description:desc, contact, userId: currentUser.id, username: currentUser.username, createdAt: Date.now() });
+            showToast('Posted successfully');
+        }
+        saveNeeds(); renderNeeds(); document.getElementById('needModal').classList.add('hidden');
+    }
+    function saveNeeds(){ localStorage.setItem('public_needs', JSON.stringify(needs)); }
+
+    // 用户注册/登录 UI (简易弹窗)
+    function showAuthModal(){
+        const modalHtml = `<div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white rounded-xl p-6 w-96"><h3 class="text-xl font-bold" id="authTitle">Login</h3><input type="text" id="authUser" placeholder="Username" class="border p-2 w-full my-2 rounded"><input type="password" id="authPass" placeholder="Password" class="border p-2 w-full my-2 rounded"><div id="authError" class="text-red-500 text-sm"></div><div class="flex justify-between mt-4"><button id="authSubmitBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Login</button><button id="switchAuthBtn" class="text-blue-600">Create account</button><button id="closeAuthBtn" class="text-gray-500">Cancel</button></div></div></div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        let isLogin = true;
+        const updateForm = () => { document.getElementById('authTitle').innerText = isLogin ? 'Login' : 'Register'; document.getElementById('authSubmitBtn').innerText = isLogin ? 'Login' : 'Register'; };
+        document.getElementById('switchAuthBtn').onclick = () => { isLogin = !isLogin; updateForm(); };
+        document.getElementById('authSubmitBtn').onclick = () => {
+            const user = document.getElementById('authUser').value;
+            const pwd = document.getElementById('authPass').value;
+            if(isLogin){
+                const found = users.find(u=> u.username === user && u.password === pwd);
+                if(found){ currentUser = found; localStorage.setItem('currentUser', JSON.stringify(found)); updateUserUI(); showToast(`Welcome ${found.username}`); document.getElementById('authModal').remove(); renderCurrentView(); }
+                else document.getElementById('authError').innerText = 'Invalid credentials';
+            } else {
+                if(users.find(u=>u.username === user)){ document.getElementById('authError').innerText = 'Username exists'; return; }
+                const newUser = { id: Date.now(), username: user, email: `${user}@temp.com`, password: pwd, role: 'user' };
+                users.push(newUser); localStorage.setItem('app_users', JSON.stringify(users));
+                currentUser = newUser; localStorage.setItem('currentUser', JSON.stringify(newUser)); updateUserUI(); showToast('Registered successfully'); document.getElementById('authModal').remove(); renderCurrentView();
+            }
+        };
+        document.getElementById('closeAuthBtn').onclick = () => document.getElementById('authModal').remove();
+    }
+    function logout(){ currentUser = null; localStorage.removeItem('currentUser'); updateUserUI(); navigateTo('home'); showToast('Logged out'); }
+    function updateUserUI(){
+        const desktopNameSpan = document.getElementById('desktopUserName');
+        if(desktopNameSpan) desktopNameSpan.innerText = currentUser ? currentUser.username : (t('login') || 'Login');
+        if(currentUser && document.getElementById('desktopUserDropdown')){/*保留dropdown*/}
+    }
+    // 账户管理视图
+    function showAccountView(){
+        if(!currentUser){ showAuthModal(); return; }
+        document.getElementById('accountInfo').innerHTML = `<p><strong>Username:</strong> ${currentUser.username}</p><p><strong>Email:</strong> ${currentUser.email}</p><p><strong>Role:</strong> ${currentUser.role}</p>`;
+        navigateTo('account');
+    }
+    function renderAdminPanels(){
+        // 产品表
+        document.getElementById('adminProductTable').innerHTML = products.map(p => `<tr><td>${p.id}</td><td>${p.name_en}</td><td>$${p.price}</td><td><button class="text-blue-600 adminEditProd" data-id="${p.id}">Edit</button> <button class="text-red-600 adminDelProd" data-id="${p.id}">Del</button></td></tr>`).join('');
+        document.querySelectorAll('.adminEditProd').forEach(btn=>btn.addEventListener('click',(e)=>{ const id=parseInt(btn.dataset.id); alert('Edit demo: implement full crud'); }));
+        document.querySelectorAll('.adminDelProd').forEach(btn=>btn.addEventListener('click',(e)=>{ products=products.filter(p=>p.id !== parseInt(btn.dataset.id)); saveProducts(); renderAdminPanels(); renderProductGrid(); showToast('Deleted'); }));
+        document.getElementById('adminNeedsTable').innerHTML = needs.map(n=>`<tr><td>${n.id}</td><td>${n.title}</td><td>${n.username}</td><td><button class="text-red-600 adminDelNeed" data-id="${n.id}">Delete</button></td></tr>`).join('');
+        document.querySelectorAll('.adminDelNeed').forEach(btn=>btn.addEventListener('click',(e)=>{ needs=needs.filter(n=>n.id !== parseInt(btn.dataset.id)); saveNeeds(); renderAdminPanels(); renderNeeds(); showToast('Need removed'); }));
+        document.getElementById('adminUsersTable').innerHTML = users.map(u=>`<tr><td>${u.id}</td><td>${u.username}</td><td>${u.email}</td><td>${u.role}</td><td>${u.role !== 'admin' ? '<button class="text-red-600 adminDelUser" data-id="'+u.id+'">Delete</button>' : '-'}</td></tr>`).join('');
+        document.querySelectorAll('.adminDelUser').forEach(btn=>btn.addEventListener('click',(e)=>{ const uid=parseInt(btn.dataset.id); users=users.filter(u=>u.id !== uid); localStorage.setItem('app_users', JSON.stringify(users)); if(currentUser && currentUser.id === uid) logout(); else renderAdminPanels(); showToast('Deleted'); }));
+    }
+    function saveProducts(){ localStorage.setItem('autoparts_products', JSON.stringify(products)); }
+    function renderProductGrid(){ const grid=document.getElementById('productGrid'); if(grid) grid.innerHTML = products.map(p=>`<div class="product-card bg-white rounded-xl p-4 shadow"><img src="${p.image}" class="h-40 w-full object-cover rounded"><h3 class="font-bold mt-2">${p.name_en}</h3><p class="text-blue-600">$${p.price}</p></div>`).join(''); }
+    function navigateTo(view){ document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden')); document.getElementById(`${view}View`).classList.remove('hidden'); if(view==='products') renderProductGrid(); if(view==='needs') renderNeeds(); if(view==='admin') renderAdminPanels(); if(view==='account') showAccountView(); window.scrollTo(0,0);}
+    function renderCurrentView(){ const visible = [...document.querySelectorAll('.view:not(.hidden)')][0]?.id?.replace('View',''); if(visible) navigateTo(visible); else navigateTo('home'); }
+
+    // 事件绑定
+    document.querySelectorAll('[data-nav]').forEach(link=>link.addEventListener('click',(e)=>{ e.preventDefault(); navigateTo(link.getAttribute('data-nav')); }));
+    document.querySelectorAll('.lang-switch, .lang-switch-mobile').forEach(btn=>btn.addEventListener('click',()=>setLang(btn.getAttribute('data-lang'))));
+    document.getElementById('homeRegisterBtn')?.addEventListener('click',()=>showAuthModal());
+    document.getElementById('postNeedBtn')?.addEventListener('click',()=>{ if(!currentUser) showAuthModal(); else openNeedModal(); });
+    document.getElementById('saveNeedBtn')?.addEventListener('click',saveNeedFromModal);
+    document.getElementById('closeNeedModal')?.addEventListener('click',()=>document.getElementById('needModal').classList.add('hidden'));
+    document.getElementById('inquiryForm')?.addEventListener('submit',(e)=>{ e.preventDefault(); showToast('Inquiry sent, we will contact you.'); e.target.reset(); });
+    document.getElementById('desktopUserBtn')?.addEventListener('click',()=>{ if(currentUser) document.getElementById('desktopUserDropdown')?.classList.toggle('hidden'); else showAuthModal(); });
+    document.getElementById('desktopLogoutLink')?.addEventListener('click',(e)=>{ e.preventDefault(); logout(); document.getElementById('desktopUserDropdown')?.classList.add('hidden'); });
+    document.getElementById('desktopAccountLink')?.addEventListener('click',(e)=>{ e.preventDefault(); navigateTo('account'); document.getElementById('desktopUserDropdown')?.classList.add('hidden'); });
+    document.getElementById('mobileUserIcon')?.addEventListener('click',()=>{ if(currentUser) showAccountView(); else showAuthModal(); });
+    document.getElementById('closeAccountView')?.addEventListener('click',()=>navigateTo('home'));
+    document.querySelectorAll('.admin-tab').forEach(tab=>tab.addEventListener('click',(e)=>{ const panel = tab.getAttribute('data-admin-tab'); document.querySelectorAll('[id^="admin"]').forEach(p=>p.classList.add('hidden')); document.getElementById(`admin${panel.charAt(0).toUpperCase()+panel.slice(1)}Panel`).classList.remove('hidden'); document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active-tab')); tab.classList.add('active-tab'); }));
+    document.getElementById('adminAddProduct')?.addEventListener('click',()=>{ let newName=prompt('Product name:'); if(newName) products.push({ id: nextProductId++, name_en: newName, sku:'NEW', price: 0, image:'https://picsum.photos/300/200', category:'engine'}); saveProducts(); renderAdminPanels(); renderProductGrid(); });
+    updateUserUI(); setLang(currentLang); navigateTo('home');
+</script>
+</body>
+</html>
