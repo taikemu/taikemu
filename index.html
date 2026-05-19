@@ -3,305 +3,349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoParts Hub - 汽配管理系统</title>
+    <title>AutoParts Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .view { display: block; }
         .hidden-view { display: none; }
-        .active-tab { background: #3b82f6; color: white; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .modal-container { background: white; border-radius: 12px; padding: 20px; max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; }
+        .active-tab { background: #2563eb; color: white; font-weight: 500; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .modal-container { background: white; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; }
+        .nav-active { color: #2563eb; font-weight: 600; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
     <!-- 顶部导航 -->
-    <header class="bg-white shadow sticky top-0 z-50">
+    <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <i class="fas fa-car text-blue-600 text-2xl"></i>
-                <h1 class="text-xl font-bold">AutoParts Hub</h1>
+                <h1 class="text-xl font-bold" data-i18n="brand">AutoParts Hub</h1>
             </div>
-            <nav class="hidden md:flex gap-6">
-                <a data-nav="home" class="nav-link cursor-pointer font-medium hover:text-blue-600">首页</a>
-                <a data-nav="products" class="nav-link cursor-pointer font-medium hover:text-blue-600">产品</a>
-                <a data-nav="needs" class="nav-link cursor-pointer font-medium hover:text-blue-600">需求</a>
-                <a data-nav="local" class="nav-link cursor-pointer font-medium hover:text-blue-600">同城</a>
-                <a data-nav="inquiry" class="nav-link cursor-pointer font-medium hover:text-blue-600">询价</a>
-                <a data-nav="admin" class="nav-link cursor-pointer font-medium hover:text-blue-600">管理后台</a>
+
+            <!-- 主导航 -->
+            <nav class="hidden md:flex gap-5 items-center">
+                <a data-nav="home" class="nav-link cursor-pointer hover:text-blue-600 transition" data-i18n="home">首页</a>
+                <a data-nav="products" class="nav-link cursor-pointer hover:text-blue-600 transition" data-i18n="products">产品</a>
+                <a data-nav="inquiry" class="nav-link cursor-pointer hover:text-blue-600 transition" data-i18n="inquiry">询价</a>
+                <a data-nav="admin" class="nav-link cursor-pointer hover:text-blue-600 transition" data-i18n="admin">管理后台</a>
             </nav>
+
+            <!-- 语言 + 用户 -->
             <div class="flex items-center gap-3">
-                <button class="lang-switch text-sm px-2 py-1 border rounded" data-lang="zh">中文</button>
-                <button class="lang-switch text-sm px-2 py-1 border rounded" data-lang="en">EN</button>
-                <button id="desktopUserBtn" class="flex items-center gap-1 px-3 py-1 bg-blue-100 rounded-full">
-                    <i class="fas fa-user"></i>
-                    <span id="userInfo">未登录</span>
-                </button>
+                <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="zh">中文</button>
+                <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="en">EN</button>
+                <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="fr">FR</button>
+                <div class="flex gap-2">
+                    <button id="loginBtn" class="px-3 py-1 bg-blue-600 text-white rounded" data-i18n="login">登录</button>
+                    <button id="logoutBtn" class="px-3 py-1 bg-gray-600 text-white rounded hidden" data-i18n="logout">注销</button>
+                </div>
+                <span id="userInfo" class="text-sm font-medium hidden"></span>
             </div>
         </div>
     </header>
 
-    <!-- 主内容区 -->
+    <!-- 主内容 -->
     <main class="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
         <!-- 首页 -->
         <div id="homeView" class="view">
-            <div class="bg-blue-50 rounded-xl p-6 text-center">
-                <h2 class="text-2xl font-bold mb-4">汽配智能搜索平台</h2>
+            <div class="bg-blue-50 rounded-xl p-8 text-center">
+                <h2 class="text-2xl font-bold mb-4" data-i18n="search_title">汽配智能搜索</h2>
                 <div class="max-w-2xl mx-auto flex gap-2">
-                    <input id="unifiedInput" placeholder="输入OEM码或VIN码" class="flex-1 p-3 border rounded-lg">
-                    <button id="unifiedSearchBtn" class="bg-blue-600 text-white px-4 rounded-lg">搜索</button>
+                    <input id="searchInput" class="flex-1 p-3 border rounded-lg" data-i18n="search_placeholder" placeholder="输入OEM/VIN">
+                    <button id="searchBtn" class="bg-blue-600 text-white px-4 rounded-lg" data-i18n="search">搜索</button>
                 </div>
-                <div id="unifiedSearchResult" class="mt-3 text-sm text-gray-600 hidden"></div>
             </div>
         </div>
 
         <!-- 产品 -->
         <div id="productsView" class="hidden-view">
-            <h2 class="text-xl font-bold mb-4">产品列表</h2>
-            <div id="productGrid" class="grid grid-cols-1 sm:cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-        </div>
-
-        <!-- 需求 -->
-        <div id="needsView" class="hidden-view">
-            <h2 class="text-xl font-bold mb-4">采购需求</h2>
-            <div class="bg-white p-4 rounded shadow">暂无需求</div>
-        </div>
-
-        <!-- 同城 -->
-        <div id="localView" class="hidden-view">
-            <h2 class="text-xl font-bold mb-4">同城服务</h2>
-            <div class="bg-white p-4 rounded shadow">暂无服务帖</div>
+            <h2 class="text-xl font-bold mb-4" data-i18n="products">产品列表</h2>
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </div>
 
         <!-- 询价 -->
         <div id="inquiryView" class="hidden-view">
-            <h2 class="text-xl font-bold mb-4">在线询价</h2>
+            <h2 class="text-xl font-bold mb-4" data-i18n="inquiry">在线询价</h2>
             <form id="inquiryForm" class="max-w-xl bg-white p-6 rounded-xl shadow space-y-4">
-                <input class="w-full p-2 border rounded" placeholder="姓名" required>
-                <input class="w-full p-2 border rounded" placeholder="电话" required>
-                <input class="w-full p-2 border rounded" placeholder="邮箱" required>
-                <textarea class="w-full p-2 border rounded h-24" placeholder="询价内容" required></textarea>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">提交询价</button>
+                <input class="w-full p-2 border rounded" data-i18n="name" placeholder="姓名" required>
+                <input class="w-full p-2 border rounded" data-i18n="phone" placeholder="电话" required>
+                <input class="w-full p-2 border rounded" data-i18n="email" placeholder="邮箱" required>
+                <textarea class="w-full p-2 border rounded h-24" data-i18n="content" placeholder="询价内容" required></textarea>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded" data-i18n="submit">提交</button>
             </form>
         </div>
 
         <!-- 管理后台 -->
         <div id="adminView" class="hidden-view">
-            <div class="flex gap-2 mb-4 flex-wrap">
-                <button class="admin-tab px-4 py-2 rounded" data-admin-tab="products">产品管理</button>
-                <button class="admin-tab px-4 py-2 rounded" data-admin-tab="vehicles">车型库</button>
-                <button class="admin-tab px-4 py-2 rounded" data-admin-tab="users">用户权限</button>
-                <button class="admin-tab px-4 py-2 rounded" data-admin-tab="needs">需求管理</button>
-                <button class="admin-tab px-4 py-2 rounded" data-admin-tab="local">同城审核</button>
+            <div class="bg-white p-4 rounded-lg shadow mb-4">
+                <h3 class="text-lg font-bold mb-2" data-i18n="admin_panel">管理后台</h3>
+                <p id="adminTip" class="text-sm text-gray-600"></p>
             </div>
-
-            <div id="adminProductsPanel" class="hidden"></div>
-            <div id="adminVehiclesPanel" class="hidden"></div>
-            <div id="adminUsersPanel" class="hidden"></div>
-            <div id="adminNeedsPanel" class="hidden"></div>
-            <div id="adminLocalPanel" class="hidden"></div>
+            <div class="flex gap-2 mb-4 flex-wrap" id="adminTabs">
+                <button class="admin-tab px-4 py-2 rounded border" data-admin-tab="products" data-i18n="product_mgt">产品管理</button>
+                <button class="admin-tab px-4 py-2 rounded border" data-admin-tab="users" data-i18n="user_mgt">用户管理</button>
+            </div>
+            <div id="adminProductsPanel" class="hidden bg-white p-4 rounded-xl shadow"></div>
+            <div id="adminUsersPanel" class="hidden bg-white p-4 rounded-xl shadow"></div>
         </div>
     </main>
 
-    <!-- 底部社媒（修复布局） -->
-    <footer class="bg-gray-800 text-white py-6 mt-8">
+    <!-- 底部 Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="text-center md:text-left">
                     <div class="font-bold text-lg">AutoParts Hub</div>
-                    <p class="text-sm text-gray-400">专业汽配管理 | 多语言 | 多权限</p>
+                    <p class="text-sm text-gray-400 mt-1" data-i18n="footer_desc">专业汽配跨境平台</p>
                 </div>
-                <div class="flex gap-4 text-xl">
-                    <a href="#" class="hover:text-blue-400"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="hover:text-blue-400"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" class="hover:text-blue-400"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="hover:text-blue-400"><i class="fab fa-youtube"></i></a>
-                    <a href="#" class="hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                <div class="flex gap-5 text-xl">
+                    <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-linkedin"></i></a>
                 </div>
             </div>
-            <div class="border-t border-gray-700 pt-4 text-center text-sm text-gray-400">© 2025 All Rights Reserved</div>
+            <div class="border-t border-gray-700 mt-4 pt-4 text-center text-sm text-gray-400">© 2025 All Rights Reserved</div>
         </div>
     </footer>
 
-    <!-- 右侧固定聊天窗口 -->
+    <!-- 右侧聊天窗口 -->
     <div class="fixed bottom-6 right-6 z-50">
-        <button id="openChatBtn" class="bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl">
+        <button id="openChat" class="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg text-2xl">
             <i class="fas fa-comments"></i>
         </button>
-        <div id="chatBox" class="hidden fixed bottom-20 right-6 w-80 bg-white rounded-xl shadow-2xl overflow-hidden">
+        <div id="chatBox" class="hidden w-80 bg-white rounded-xl shadow-2xl overflow-hidden fixed bottom-20 right-6">
             <div class="bg-blue-600 text-white p-3 flex justify-between items-center">
-                <span>在线客服</span>
-                <button id="closeChatBtn"><i class="fas fa-times"></i></button>
+                <span data-i18n="chat">在线客服</span>
+                <button id="closeChat"><i class="fas fa-times"></i></button>
             </div>
-            <div id="chatMessages" class="h-64 p-3 overflow-y-auto bg-gray-50"></div>
+            <div class="h-64 p-3 bg-gray-50 overflow-y-auto" id="chatMessages"></div>
             <div class="flex p-2 border-t">
-                <input id="chatInput" class="flex-1 p-2 border rounded-l-lg" placeholder="输入消息...">
-                <button id="sendChatBtn" class="bg-blue-600 text-white px-3 rounded-r-lg">发送</button>
+                <input id="chatInput" class="flex-1 p-2 border rounded-l" data-i18n="message" placeholder="输入消息">
+                <button id="sendChat" class="bg-blue-600 text-white px-3 rounded-r" data-i18n="send">发送</button>
             </div>
         </div>
     </div>
 
     <!-- 提示框 -->
-    <div id="toastMsg" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded z-50 hidden">
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded z-50 hidden">
         <span id="toastText"></span>
     </div>
 
     <script>
-        // 全局数据
-        let users = JSON.parse(localStorage.getItem('app_users')) || [
-            { id:1, username:'admin', password:'admin123', role:'super_admin', permissions:{products:true,vehicles:true,users:true,local:true,needs:true} },
-            { id:2, username:'editor', password:'editor123', role:'editor', permissions:{products:true,vehicles:false,users:false,local:true,needs:true} },
-            { id:3, username:'buyer', password:'123456', role:'user', permissions:{products:false,vehicles:false,users:false,local:false,needs:false} }
+        // ======================================
+        // 1. 三语翻译库（中 / 英 / 法）
+        // ======================================
+        const translations = {
+            zh: {
+                brand:"AutoParts Hub", home:"首页", products:"产品", inquiry:"询价", admin:"管理后台",
+                login:"登录", logout:"注销", search_title:"汽配智能搜索", search_placeholder:"输入OEM/VIN", search:"搜索",
+                name:"姓名", phone:"电话", email:"邮箱", content:"询价内容", submit:"提交",
+                chat:"在线客服", message:"输入消息", send:"发送", footer_desc:"专业汽配跨境平台",
+                admin_panel:"管理后台", product_mgt:"产品管理", user_mgt:"用户管理",
+                welcome:"欢迎", no_permission:"无权限", login_success:"登录成功", logout_success:"注销成功"
+            },
+            en: {
+                brand:"AutoParts Hub", home:"Home", products:"Products", inquiry:"Inquiry", admin:"Admin",
+                login:"Login", logout:"Logout", search_title:"Auto Parts Search", search_placeholder:"Enter OEM/VIN", search:"Search",
+                name:"Name", phone:"Phone", email:"Email", content:"Content", submit:"Submit",
+                chat:"Support", message:"Type message", send:"Send", footer_desc:"Professional Auto Parts Platform",
+                admin_panel:"Admin Panel", product_mgt:"Products", user_mgt:"Users",
+                welcome:"Welcome", no_permission:"No Permission", login_success:"Login Success", logout_success:"Logout Success"
+            },
+            fr: {
+                brand:"AutoParts Hub", home:"Accueil", products:"Produits", inquiry:"Demande", admin:"Admin",
+                login:"Connexion", logout:"Déconnexion", search_title:"Recherche de pièces auto", search_placeholder:"Saisir OEM/VIN", search:"Rechercher",
+                name:"Nom", phone:"Téléphone", email:"Email", content:"Contenu", submit:"Envoyer",
+                chat:"Support", message:"Taper un message", send:"Envoyer", footer_desc:"Plateforme professionnelle de pièces auto",
+                admin_panel:"Panneau d'administration", product_mgt:"Produits", user_mgt:"Utilisateurs",
+                welcome:"Bienvenue", no_permission:"Pas de permission", login_success:"Connexion réussie", logout_success:"Déconnexion réussie"
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'zh';
+
+        // 翻译函数
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        // 更新页面语言
+        function updateLang() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                el.innerText = t(el.dataset.i18n);
+            });
+            document.documentElement.lang = currentLang;
+            localStorage.setItem('lang', currentLang);
+        }
+
+        // ======================================
+        // 2. 用户权限系统（3个账号）
+        // ======================================
+        const users = [
+            { id:1, username:'admin', password:'admin123', role:'super', permissions:['products','users'] },
+            { id:2, username:'editor', password:'editor123', role:'editor', permissions:['products'] },
+            { id:3, username:'user', password:'123456', role:'guest', permissions:[] }
         ];
-        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || users[0];
-        let products = JSON.parse(localStorage.getItem('autoparts_products')) || [];
-        let vehicles = JSON.parse(localStorage.getItem('vehicle_database')) || [];
-        let needs = JSON.parse(localStorage.getItem('public_needs')) || [];
-        let localPosts = JSON.parse(localStorage.getItem('local_posts')) || [];
-        let currentLang = 'zh';
+
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 
         // 权限判断
-        function hasPermission(perm) {
-            if (!currentUser) return false;
-            if (currentUser.role === 'super_admin') return true;
-            return currentUser.permissions?.[perm] === true;
+        function hasPerm(perm) {
+            if(!currentUser) return false;
+            if(currentUser.role === 'super') return true;
+            return currentUser.permissions.includes(perm);
         }
 
-        // 提示框
+        // ======================================
+        // 3. 提示框
+        // ======================================
         function showToast(text) {
             document.getElementById('toastText').innerText = text;
-            document.getElementById('toastMsg').style.display = 'block';
-            setTimeout(()=>document.getElementById('toastMsg').style.display='none', 2500);
+            document.getElementById('toast').classList.remove('hidden');
+            setTimeout(() => document.getElementById('toast').classList.add('hidden'), 2500);
         }
 
-        // 聊天功能
-        const chatBox = document.getElementById('chatBox');
-        const openChatBtn = document.getElementById('openChatBtn');
-        const closeChatBtn = document.getElementById('closeChatBtn');
-        const sendChatBtn = document.getElementById('sendChatBtn');
-        const chatInput = document.getElementById('chatInput');
-        const chatMessages = document.getElementById('chatMessages');
+        // ======================================
+        // 4. 登录 / 注销
+        // ======================================
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userInfo = document.getElementById('userInfo');
 
-        openChatBtn.onclick = () => { chatBox.style.display='block'; openChatBtn.style.display='none'; };
-        closeChatBtn.onclick = () => { chatBox.style.display='none'; openChatBtn.style.display='flex'; };
-        sendChatBtn.onclick = sendMsg;
-        chatInput.addEventListener('keypress', e=>e.key==='Enter'&&sendMsg());
-
-        function sendMsg() {
-            const m = chatInput.value.trim(); if(!m) return;
-            chatMessages.innerHTML += `<div class="flex justify-end mb-2"><div class="bg-blue-600 text-white p-2 rounded-lg max-w-[80%]">${m}</div></div>`;
-            chatInput.value = '';
-            setTimeout(()=>{
-                chatMessages.innerHTML += `<div class="flex justify-start mb-2"><div class="bg-gray-200 p-2 rounded-lg max-w-[80%]">您好，已收到您的消息，我们会尽快回复！</div></div>`;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 600);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+        function renderUserUI() {
+            if(currentUser) {
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                userInfo.classList.remove('hidden');
+                userInfo.innerText = `${t('welcome')}: ${currentUser.username}`;
+            } else {
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                userInfo.classList.add('hidden');
+            }
         }
 
-        // 导航切换
-        document.querySelectorAll('.nav-link').forEach(link=>{
-            link.onclick = () => {
-                document.querySelectorAll('.view, .hidden-view').forEach(el=>{
-                    el.classList.remove('view'); el.classList.add('hidden-view');
-                });
-                const target = document.getElementById(link.dataset.nav+'View');
-                if(target) { target.classList.remove('hidden-view'); target.classList.add('view'); }
+        loginBtn.addEventListener('click', () => {
+            const user = prompt(t('login') + ' Username', 'admin');
+            const pwd = prompt('Password', 'admin123');
+            const target = users.find(u => u.username === user && u.password === pwd);
+            if(target) {
+                currentUser = target;
+                localStorage.setItem('currentUser', JSON.stringify(target));
+                renderUserUI();
+                renderAdminTabs();
+                showToast(t('login_success'));
+            } else {
+                showToast('账号密码错误');
             }
         });
 
-        // 后台TAB
-        function initAdminTabs() {
+        logoutBtn.addEventListener('click', () => {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            renderUserUI();
+            showToast(t('logout_success'));
+            switchView('home');
+        });
+
+        // ======================================
+        // 5. 视图切换
+        // ======================================
+        function switchView(viewName) {
+            document.querySelectorAll('.view, .hidden-view').forEach(el => {
+                el.classList.remove('view');
+                el.classList.add('hidden-view');
+            });
+            const target = document.getElementById(viewName + 'View');
+            if(target) target.classList.remove('hidden-view');
+        }
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const target = link.dataset.nav;
+                if(target === 'admin' && !currentUser) {
+                    showToast(t('login'));
+                    return;
+                }
+                switchView(target);
+            });
+        });
+
+        // ======================================
+        // 6. 管理后台权限TAB
+        // ======================================
+        function renderAdminTabs() {
             const tabs = document.querySelectorAll('.admin-tab');
-            tabs.forEach(t=>{
-                t.onclick = () => {
-                    const perm = t.dataset.adminTab;
-                    if(!hasPermission(perm)) { showToast('无权限'); return; }
-                    tabs.forEach(x=>x.classList.remove('active-tab'));
-                    t.classList.add('active-tab');
-                    document.querySelectorAll('[id^="admin"][Panel]').forEach(p=>p.classList.add('hidden'));
-                    const panel = document.getElementById(`admin${perm.charAt(0).toUpperCase()+perm.slice(1)}Panel`);
-                    if(panel) panel.classList.remove('hidden');
+            tabs.forEach(tab => {
+                const perm = tab.dataset.adminTab;
+                if(hasPerm(perm)) {
+                    tab.classList.remove('hidden');
+                } else {
+                    tab.classList.add('hidden');
                 }
             });
-            if(tabs.length) tabs[0].click();
+
+            // 绑定TAB事件
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const perm = tab.dataset.adminTab;
+                    if(!hasPerm(perm)) { showToast(t('no_permission')); return; }
+                    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active-tab'));
+                    tab.classList.add('active-tab');
+                    document.querySelectorAll('[id^="admin"][Panel]').forEach(p => p.classList.add('hidden'));
+                    document.getElementById(`admin${perm.charAt(0).toUpperCase()+perm.slice(1)}Panel`).classList.remove('hidden');
+                });
+            });
+
+            // 默认激活第一个
+            const first = Array.from(tabs).find(x => !x.classList.contains('hidden'));
+            if(first) first.click();
+            document.getElementById('adminTip').innerText = `${t('welcome')}：${currentUser.username} | ${currentUser.role}`;
         }
 
-        // 渲染产品表格
-        function renderAdminProductTable() {
-            const p = document.getElementById('adminProductsPanel');
-            p.innerHTML = `<div class="bg-white p-4 rounded-xl shadow"><button class="mb-3 px-3 py-1 bg-blue-600 text-white rounded" onclick="openProductModal()">添加产品</button><table class="w-full border text-sm"><thead><tr class="bg-gray-100"><td class="p-2">ID</td><td class="p-2">名称</td><td class="p-2">OEM</td><td class="p-2">操作</td></tr></thead><tbody id="adminProductsTable"></tbody></table></div>`;
-            const t = document.getElementById('adminProductsTable');
-            t.innerHTML = products.map((it,i)=>`<tr><td class="p-2">${i+1}</td><td class="p-2">${it.name}</td><td class="p-2">${it.oem}</td><td class="p-2"><button class="text-red-600" onclick="delProduct(${i})">删除</button></td></tr>`).join('');
-        }
+        // ======================================
+        // 7. 聊天窗口
+        // ======================================
+        const openChat = document.getElementById('openChat');
+        const closeChat = document.getElementById('closeChat');
+        const chatBox = document.getElementById('chatBox');
+        const sendChat = document.getElementById('sendChat');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
 
-        function openProductModal() {
-            const m = `<div class="modal-overlay" id="pModal"><div class="modal-container"><h3 class="font-bold text-lg mb-3">添加产品</h3><input id="pName" class="w-full p-2 border rounded mb-2" placeholder="产品名"><input id="pOem" class="w-full p-2 border rounded mb-2" placeholder="OEM码"><button class="w-full bg-blue-600 text-white p-2 rounded" onclick="saveProduct()">保存</button></div></div>`;
-            document.body.insertAdjacentHTML('beforeend', m);
-        }
+        openChat.onclick = () => { chatBox.classList.remove('hidden'); };
+        closeChat.onclick = () => { chatBox.classList.add('hidden'); };
+        sendChat.onclick = () => {
+            const msg = chatInput.value.trim();
+            if(!msg) return;
+            chatMessages.innerHTML += `<div class="flex justify-end mb-2"><div class="bg-blue-600 text-white p-2 rounded">${msg}</div></div>`;
+            chatInput.value = '';
+            setTimeout(() => {
+                chatMessages.innerHTML += `<div class="flex justify-start mb-2"><div class="bg-gray-200 p-2 rounded">Nous vous répondrons bientôt!</div></div>`;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 600);
+        };
 
-        function saveProduct() {
-            const n = document.getElementById('pName').value, o=document.getElementById('pOem').value;
-            if(!n||!o) return showToast('请填写完整');
-            products.push({name:n, oem:o});
-            localStorage.setItem('autoparts_products', JSON.stringify(products));
-            renderAdminProductTable();
-            document.getElementById('pModal').remove();
-            showToast('保存成功');
-        }
+        // ======================================
+        // 8. 语言切换按钮
+        // ======================================
+        document.querySelectorAll('.lang-switch').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentLang = btn.dataset.lang;
+                updateLang();
+            });
+        });
 
-        function delProduct(i) {
-            products.splice(i,1);
-            localStorage.setItem('autoparts_products', JSON.stringify(products));
-            renderAdminProductTable();
-            showToast('删除成功');
-        }
-
-        // 车型库
-        function renderVehicleDatabaseTable() {
-            const p = document.getElementById('adminVehiclesPanel');
-            p.innerHTML = `<div class="bg-white p-4 rounded-xl shadow"><button class="mb-3 px-3 py-1 bg-blue-600 text-white rounded" onclick="addVehicle()">添加车型</button><table class="w-full border text-sm"><thead><tr class="bg-gray-100"><td class="p-2">品牌</td><td class="p-2">车型</td><td class="p-2">VIN段</td></tr></thead><tbody id="adminVehiclesTable"></tbody></table></div>`;
-            const t = document.getElementById('adminVehiclesTable');
-            t.innerHTML = vehicles.map(it=>`<tr><td class="p-2">${it.brand}</td><td class="p-2">${it.model}</td><td class="p-2">${it.vin}</td></tr>`).join('');
-        }
-
-        function addVehicle() {
-            const b=prompt('品牌'), m=prompt('车型'), v=prompt('VIN段');
-            if(b&&m&&v) { vehicles.push({brand:b,model:m,vin:v}); localStorage.setItem('vehicle_database',JSON.stringify(vehicles)); renderVehicleDatabaseTable(); showToast('添加成功'); }
-        }
-
-        // 用户权限
-        function renderAdminUsersTable() {
-            const p = document.getElementById('adminUsersPanel');
-            p.innerHTML = `<div class="bg-white p-4 rounded-xl shadow"><table class="w-full border text-sm"><thead><tr class="bg-gray-100"><td class="p-2">用户</td><td class="p-2">角色</td><td class="p-2">权限</td></tr></thead><tbody id="adminUsersTable"></tbody></table></div>`;
-            const t = document.getElementById('adminUsersTable');
-            t.innerHTML = users.map(u=>`<tr><td class="p-2">${u.username}</td><td class="p-2">${u.role}</td><td class="p-2"><button class="text-blue-600" onclick="editPerm(${u.id})">编辑</button></td></tr>`).join('');
-        }
-
-        function editPerm(uid) {
-            const u = users.find(x=>x.id===uid);
-            if(!u) return;
-            showToast(`用户：${u.username}，角色：${u.role}`);
-        }
-
-        // 其他面板
-        document.getElementById('adminNeedsPanel').innerHTML = `<div class="bg-white p-4 rounded-xl shadow text-center py-6">需求管理（无权限则隐藏）</div>`;
-        document.getElementById('adminLocalPanel').innerHTML = `<div class="bg-white p-4 rounded-xl shadow text-center py-6">同城审核（无权限则隐藏）</div>`;
-
-        // 产品网格
-        function renderProductGrid() {
-            const g = document.getElementById('productGrid');
-            g.innerHTML = products.length ? products.map(it=>`<div class="bg-white p-4 rounded shadow"><h3 class="font-bold">${it.name}</h3><p class="text-sm text-gray-500">OEM: ${it.oem}</p></div>`).join('') : '<div class="col-span-4 text-center py-6 text-gray-500">暂无产品</div>';
-        }
-
-        // 初始化
+        // ======================================
+        // 9. 初始化
+        // ======================================
         window.onload = () => {
-            document.getElementById('userInfo').innerText = currentUser.username;
-            initAdminTabs();
-            renderAdminProductTable();
-            renderVehicleDatabaseTable();
-            renderAdminUsersTable();
-            renderProductGrid();
-            showToast(`欢迎：${currentUser.username} (${currentUser.role})`);
+            updateLang();
+            renderUserUI();
+            renderAdminTabs();
         };
     </script>
 </body>
