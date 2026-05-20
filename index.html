@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TAIKEMU Auto Parts - 专业汽配跨境平台</title>
+    <title>TAIKEMU Auto Parts - Genuine Auto Parts Worldwide</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,7 +13,7 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .modal-container { background: white; border-radius: 12px; padding: 24px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; }
         .nav-active { color: #2563eb; font-weight: 600; }
-        /* EPC电子目录专属样式（1:1还原TMCEPCW3） */
+        /* EPC电子目录专属样式 */
         .epc-hotspot { position: absolute; width: 26px; height: 26px; background: rgba(37, 99, 235, 0.9); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .epc-hotspot:hover { transform: scale(1.3); background: #1d4ed8; }
         .epc-hotspot.active { background: #10b981; transform: scale(1.3); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3); }
@@ -25,28 +25,34 @@
             0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
             50% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
         }
+        /* Partsouq风格新增样式 */
+        .brand-card { transition: all 0.2s; }
+        .brand-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .stat-number { font-size: 3rem; font-weight: 800; color: #2563eb; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
-<!-- 顶部导航（完全保留原有，新增EPC入口） -->
-<header class="bg-white shadow sticky top-0 z-50">
+<!-- 顶部导航栏（Partsouq风格） -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <i class="fas fa-car text-blue-600 text-2xl"></i>
             <h1 class="text-xl font-bold" data-i18n="brand">TAIKEMU Auto Parts</h1>
         </div>
-        <nav class="hidden md:flex gap-5">
-            <a data-nav="home" class="nav-link cursor-pointer hover:text-blue-600" data-i18n="home">首页</a>
-            <a data-nav="epc" class="nav-link cursor-pointer hover:text-blue-600 font-semibold" data-i18n="epc">电子目录</a>
-            <a data-nav="products" class="nav-link cursor-pointer hover:text-blue-600" data-i18n="products">产品</a>
-            <a data-nav="local" class="nav-link cursor-pointer hover:text-blue-600" data-i18n="local">同城</a>
-            <a data-nav="inquiry" class="nav-link cursor-pointer hover:text-blue-600" data-i18n="inquiry">询价</a>
-            <a data-nav="admin" class="nav-link cursor-pointer hover:text-blue-600" data-i18n="admin">管理后台</a>
+        <nav class="hidden md:flex gap-6">
+            <a data-nav="home" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-i18n="home">首页</a>
+            <a data-nav="epc" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-i18n="epc">电子目录</a>
+            <a data-nav="products" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-i18n="products">产品</a>
+            <a data-nav="local" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-i18n="local">同城服务</a>
+            <a data-nav="inquiry" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-i18n="inquiry">询价</a>
+            <a data-nav="admin" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-i18n="admin">管理后台</a>
         </nav>
-        <div class="flex items-center gap-3">
-            <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="zh">中</button>
-            <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="en">EN</button>
-            <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="fr">FR</button>
+        <div class="flex items-center gap-4">
+            <div class="flex gap-1">
+                <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="zh">中</button>
+                <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="en">EN</button>
+                <button class="lang-switch px-2 py-1 text-sm border rounded" data-lang="fr">FR</button>
+            </div>
             <button id="loginBtn" class="px-3 py-1 bg-blue-600 text-white rounded" data-i18n="login">登录</button>
             <button id="logoutBtn" class="px-3 py-1 bg-gray-600 text-white rounded hidden" data-i18n="logout">注销</button>
             <span id="userInfo" class="hidden text-sm font-medium"></span>
@@ -54,118 +60,256 @@
     </div>
 </header>
 
-<main class="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
-    <!-- 首页（新增完整VIN/OEM搜索功能） -->
+<main class="flex-1 w-full">
+    <!-- 首页（Partsouq风格完整复刻） -->
     <div id="homeView" class="view">
-        <div class="bg-blue-50 rounded-xl p-8 text-center">
-            <h2 class="text-2xl font-bold mb-4" data-i18n="search_title">VIN/OEM 智能配件查询</h2>
-            <div class="max-w-2xl mx-auto flex gap-2">
-                <input id="searchInput" class="flex-1 p-3 border rounded-lg text-lg font-mono" 
-                       placeholder="输入17位车架号(VIN) 或 OEM零件号" data-i18n="search_placeholder">
-                <button id="searchBtn" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-lg">
-                    <i class="fas fa-search mr-2"></i><span data-i18n="search">搜索</span>
-                </button>
+        <!-- 英雄区：大搜索框+品牌快速入口 -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
+            <div class="max-w-5xl mx-auto px-4 text-center">
+                <h2 class="text-4xl font-bold mb-2" data-i18n="hero_title">Genuine Auto Parts Around the World</h2>
+                <p class="text-xl mb-8 opacity-90" data-i18n="hero_subtitle">专业汽配跨境平台 | 非洲市场专供</p>
+                
+                <!-- 大搜索框（Partsouq核心） -->
+                <div class="max-w-3xl mx-auto mb-10">
+                    <div class="flex gap-0 rounded-lg overflow-hidden shadow-2xl">
+                        <input id="heroSearchInput" class="flex-1 p-4 text-gray-800 text-lg" 
+                               placeholder="输入17位车架号(VIN) 或 OEM零件号" data-i18n="search_placeholder">
+                        <button id="heroSearchBtn" class="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold">
+                            <i class="fas fa-search mr-2"></i><span data-i18n="search">搜索</span>
+                        </button>
+                    </div>
+                    <div id="heroSearchResult" class="mt-4 text-left bg-white text-gray-800 rounded-lg p-4 hidden"></div>
+                </div>
+
+                <!-- 热门品牌快速入口 -->
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#" onclick="quickSearchBrand('toyota')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">Toyota</a>
+                    <a href="#" onclick="quickSearchBrand('honda')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">Honda</a>
+                    <a href="#" onclick="quickSearchBrand('nissan')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">Nissan</a>
+                    <a href="#" onclick="quickSearchBrand('mitsubishi')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">Mitsubishi</a>
+                    <a href="#" onclick="quickSearchBrand('ford')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">Ford</a>
+                    <a href="#" onclick="quickSearchBrand('bmw')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">BMW</a>
+                </div>
             </div>
-            <div id="searchResult" class="mt-4 text-left hidden"></div>
+        </div>
+
+        <!-- 核心优势卡片（Partsouq风格） -->
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow text-center">
+                    <i class="fas fa-mouse-pointer text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2" data-i18n="advantage1_title">Easy to Use</h3>
+                    <p class="text-gray-600" data-i18n="advantage1_desc">简单易用的在线目录，快速找到所需配件</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow text-center">
+                    <i class="fas fa-book text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2" data-i18n="advantage2_title">Online Catalogue</h3>
+                    <p class="text-gray-600" data-i18n="advantage2_desc">完整的电子配件目录，支持VIN和OEM搜索</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow text-center">
+                    <i class="fas fa-tags text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2" data-i18n="advantage3_title">Best Prices</h3>
+                    <p class="text-gray-600" data-i18n="advantage3_desc">直接从工厂采购，提供最具竞争力的价格</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow text-center">
+                    <i class="fas fa-shipping-fast text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2" data-i18n="advantage4_title">Worldwide Shipping</h3>
+                    <p class="text-gray-600" data-i18n="advantage4_desc">全球发货，覆盖190多个国家和地区</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 品牌目录区（Partsouq核心布局） -->
+        <div class="bg-gray-100 py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-10" data-i18n="brand_catalog">Genuine Parts Online Catalogs</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <a href="#" onclick="goToBrand('toyota')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Toyota</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('honda')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Honda</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('nissan')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Nissan</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('mitsubishi')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Mitsubishi</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('subaru')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Subaru</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('mazda')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Mazda</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('hyundai')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Hyundai</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('kia')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Kia</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('ford')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Ford</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('bmw')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">BMW</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('mercedes')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Mercedes</div>
+                    </a>
+                    <a href="#" onclick="goToBrand('volkswagen')" class="brand-card bg-white p-4 rounded-lg shadow text-center">
+                        <div class="text-2xl font-bold text-gray-800">Volkswagen</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计数据区（Partsouq风格） -->
+        <div class="bg-white py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <div class="stat-number">197K+</div>
+                        <p class="text-gray-600 text-lg" data-i18n="stat_clients">Satisfied Clients</p>
+                    </div>
+                    <div>
+                        <div class="stat-number">190+</div>
+                        <p class="text-gray-600 text-lg" data-i18n="stat_countries">Countries We Ship</p>
+                    </div>
+                    <div>
+                        <div class="stat-number">17M+</div>
+                        <p class="text-gray-600 text-lg" data-i18n="stat_parts">Parts in Database</p>
+                    </div>
+                    <div>
+                        <div class="stat-number">2 Days</div>
+                        <p class="text-gray-600 text-lg" data-i18n="stat_dispatch">Average Dispatch</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关于我们区 -->
+        <div class="bg-gray-50 py-12">
+            <div class="max-w-5xl mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-8" data-i18n="about_us">About TAIKEMU Auto Parts</h2>
+                <div class="bg-white p-8 rounded-lg shadow">
+                    <p class="text-gray-700 text-lg leading-relaxed mb-4" data-i18n="about_text1">
+                        TAIKEMU Auto Parts是专业的汽配跨境平台，专注于非洲市场。我们提供广泛的原厂和副厂汽车配件，覆盖丰田、本田、日产、三菱等主流品牌。
+                    </p>
+                    <p class="text-gray-700 text-lg leading-relaxed" data-i18n="about_text2">
+                        我们拥有完整的电子配件目录系统，支持VIN码和OEM编号搜索，帮助您快速准确地找到所需配件。我们与全球300多家可靠供应商建立了长期合作关系，确保为您提供最优质的产品和最具竞争力的价格。
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 完整EPC电子目录（1:1复刻TMCEPCW3核心） -->
+    <!-- 完整EPC电子目录（保留原有功能） -->
     <div id="epcView" class="hidden-view">
-        <h2 class="text-xl font-bold mb-4" data-i18n="epc_title">电子配件目录</h2>
-        
-        <!-- 车型选择栏（和TMCEPCW3操作逻辑完全一致） -->
-        <div class="bg-white p-4 rounded-lg shadow mb-4 flex flex-wrap gap-3">
-            <select id="epcBrand" class="p-2 border rounded min-w-[120px]">
-                <option value="" data-i18n="select_brand">选择品牌</option>
-                <option value="toyota">Toyota 丰田</option>
-                <option value="honda">Honda 本田</option>
-                <option value="mitsubishi">Mitsubishi 三菱</option>
-                <option value="nissan">Nissan 日产</option>
-            </select>
-            <select id="epcModel" class="p-2 border rounded min-w-[120px]" disabled>
-                <option value="" data-i18n="select_model">选择车型</option>
-            </select>
-            <select id="epcYear" class="p-2 border rounded min-w-[120px]" disabled>
-                <option value="" data-i18n="select_year">选择年份</option>
-            </select>
-            <select id="epcSystem" class="p-2 border rounded min-w-[120px]" disabled>
-                <option value="" data-i18n="select_system">选择系统</option>
-            </select>
-        </div>
-
-        <!-- 左图右数据核心布局（TMCEPCW3经典界面） -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- 左侧：爆炸图 + 热点 -->
-            <div class="bg-white p-4 rounded-lg shadow relative min-h-[500px]" id="epcImageContainer">
-                <div class="text-center text-gray-500 py-24" id="epcImagePlaceholder">
-                    <i class="fas fa-car-side text-6xl mb-4 text-gray-300"></i>
-                    <p data-i18n="select_vehicle_first">请先选择车辆</p>
-                </div>
-                <img id="epcExplodedView" class="w-full hidden rounded" src="" alt="零件爆炸图">
-                <!-- 热点会通过JS动态生成 -->
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <h2 class="text-xl font-bold mb-4" data-i18n="epc_title">电子配件目录</h2>
+            
+            <!-- 车型选择栏 -->
+            <div class="bg-white p-4 rounded-lg shadow mb-4 flex flex-wrap gap-3">
+                <select id="epcBrand" class="p-2 border rounded min-w-[120px]">
+                    <option value="" data-i18n="select_brand">选择品牌</option>
+                    <option value="toyota">Toyota 丰田</option>
+                    <option value="honda">Honda 本田</option>
+                    <option value="mitsubishi">Mitsubishi 三菱</option>
+                    <option value="nissan">Nissan 日产</option>
+                </select>
+                <select id="epcModel" class="p-2 border rounded min-w-[120px]" disabled>
+                    <option value="" data-i18n="select_model">选择车型</option>
+                </select>
+                <select id="epcYear" class="p-2 border rounded min-w-[120px]" disabled>
+                    <option value="" data-i18n="select_year">选择年份</option>
+                </select>
+                <select id="epcSystem" class="p-2 border rounded min-w-[120px]" disabled>
+                    <option value="" data-i18n="select_system">选择系统</option>
+                </select>
             </div>
 
-            <!-- 右侧：配件列表 -->
-            <div class="bg-white p-4 rounded-lg shadow">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg" data-i18n="parts_list">配件列表</h3>
-                    <button id="addAllToInquiry" class="bg-blue-600 text-white px-3 py-1 rounded text-sm" data-i18n="add_all_to_inquiry">全部加入询价</button>
+            <!-- 左图右数据核心布局 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 左侧：爆炸图 + 热点 -->
+                <div class="bg-white p-4 rounded-lg shadow relative min-h-[500px]" id="epcImageContainer">
+                    <div class="text-center text-gray-500 py-24" id="epcImagePlaceholder">
+                        <i class="fas fa-car-side text-6xl mb-4 text-gray-300"></i>
+                        <p data-i18n="select_vehicle_first">请先选择车辆</p>
+                    </div>
+                    <img id="epcExplodedView" class="w-full hidden rounded" src="" alt="零件爆炸图">
+                    <!-- 热点会通过JS动态生成 -->
                 </div>
-                <div id="epcPartsList" class="space-y-2 max-h-[600px] overflow-y-auto pr-2">
-                    <div class="text-center text-gray-500 py-10" data-i18n="no_parts_yet">暂无配件</div>
+
+                <!-- 右侧：配件列表 -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg" data-i18n="parts_list">配件列表</h3>
+                        <button id="addAllToInquiry" class="bg-blue-600 text-white px-3 py-1 rounded text-sm" data-i18n="add_all_to_inquiry">全部加入询价</button>
+                    </div>
+                    <div id="epcPartsList" class="space-y-2 max-h-[600px] overflow-y-auto pr-2">
+                        <div class="text-center text-gray-500 py-10" data-i18n="no_parts_yet">暂无配件</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 产品列表（完全保留原有） -->
+    <!-- 产品列表（保留原有功能） -->
     <div id="productsView" class="hidden-view">
-        <h2 class="text-xl font-bold mb-4" data-i18n="products">产品列表</h2>
-        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <h2 class="text-xl font-bold mb-4" data-i18n="products">产品列表</h2>
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        </div>
     </div>
 
-    <!-- 同城服务（完全保留原有） -->
+    <!-- 同城服务（保留原有功能） -->
     <div id="localView" class="hidden-view">
-        <h2 class="text-xl font-bold mb-4" data-i18n="local">同城服务</h2>
-        <div class="bg-white p-4 rounded shadow mb-4">
-            <input id="localTitle" class="w-full p-2 border rounded mb-2" placeholder="标题" data-i18n="title">
-            <textarea id="localContent" class="w-full p-2 border rounded h-20 mb-2" placeholder="内容" data-i18n="content"></textarea>
-            <button id="publishLocal" class="bg-blue-600 text-white px-4 py-2 rounded" data-i18n="publish">发布</button>
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <h2 class="text-xl font-bold mb-4" data-i18n="local">同城服务</h2>
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <input id="localTitle" class="w-full p-2 border rounded mb-2" placeholder="标题" data-i18n="title">
+                <textarea id="localContent" class="w-full p-2 border rounded h-20 mb-2" placeholder="内容" data-i18n="content"></textarea>
+                <button id="publishLocal" class="bg-blue-600 text-white px-4 py-2 rounded" data-i18n="publish">发布</button>
+            </div>
+            <div id="localList" class="space-y-3"></div>
         </div>
-        <div id="localList" class="space-y-3"></div>
     </div>
 
-    <!-- 在线询价（完全保留原有） -->
+    <!-- 在线询价（保留原有功能） -->
     <div id="inquiryView" class="hidden-view">
-        <h2 class="text-xl font-bold mb-4" data-i18n="inquiry">在线询价</h2>
-        <form id="inquiryForm" class="max-w-xl bg-white p-6 rounded-xl shadow space-y-4">
-            <input class="w-full p-2 border rounded" placeholder="姓名" data-i18n="name" required>
-            <input class="w-full p-2 border rounded" placeholder="电话" data-i18n="phone" required>
-            <input class="w-full p-2 border rounded" placeholder="邮箱" data-i18n="email" required>
-            <textarea class="w-full p-2 border rounded h-24" placeholder="询价内容" data-i18n="content" required></textarea>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded" data-i18n="submit">提交</button>
-        </form>
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <h2 class="text-xl font-bold mb-4" data-i18n="inquiry">在线询价</h2>
+            <form id="inquiryForm" class="max-w-xl bg-white p-6 rounded-xl shadow space-y-4">
+                <input class="w-full p-2 border rounded" placeholder="姓名" data-i18n="name" required>
+                <input class="w-full p-2 border rounded" placeholder="电话" data-i18n="phone" required>
+                <input class="w-full p-2 border rounded" placeholder="邮箱" data-i18n="email" required>
+                <textarea class="w-full p-2 border rounded h-24" placeholder="询价内容" data-i18n="content" required></textarea>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded" data-i18n="submit">提交</button>
+            </form>
+        </div>
     </div>
 
-    <!-- 管理后台（完全保留原有） -->
+    <!-- 管理后台（保留原有功能） -->
     <div id="adminView" class="hidden-view">
-        <div class="bg-white p-4 rounded-lg shadow mb-4">
-            <h3 class="text-lg font-bold" data-i18n="admin_panel">管理后台</h3>
-            <p id="adminRole" class="text-sm text-gray-600 mt-1"></p>
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="bg-white p-4 rounded-lg shadow mb-4">
+                <h3 class="text-lg font-bold" data-i18n="admin_panel">管理后台</h3>
+                <p id="adminRole" class="text-sm text-gray-600 mt-1"></p>
+            </div>
+            <div class="flex gap-2 mb-4 flex-wrap" id="adminTabs">
+                <button class="admin-tab px-4 py-2 rounded border" data-admin-tab="products" data-i18n="product_mgt">产品管理</button>
+                <button class="admin-tab px-4 py-2 rounded border" data-admin-tab="local" data-i18n="local_mgt">同城审核</button>
+                <button class="admin-tab px-4 py-2 rounded border" data-admin-tab="users" data-i18n="user_mgt">用户管理</button>
+            </div>
+            <div id="adminProductsPanel" class="hidden bg-white p-4 rounded-xl shadow"></div>
+            <div id="adminLocalPanel" class="hidden bg-white p-4 rounded-xl shadow"></div>
+            <div id="adminUsersPanel" class="hidden bg-white p-4 rounded-xl shadow"></div>
         </div>
-        <div class="flex gap-2 mb-4 flex-wrap" id="adminTabs">
-            <button class="admin-tab px-4 py-2 rounded border" data-admin-tab="products" data-i18n="product_mgt">产品管理</button>
-            <button class="admin-tab px-4 py-2 rounded border" data-admin-tab="local" data-i18n="local_mgt">同城审核</button>
-            <button class="admin-tab px-4 py-2 rounded border" data-admin-tab="users" data-i18n="user_mgt">用户管理</button>
-        </div>
-        <div id="adminProductsPanel" class="hidden bg-white p-4 rounded-xl shadow"></div>
-        <div id="adminLocalPanel" class="hidden bg-white p-4 rounded-xl shadow"></div>
-        <div id="adminUsersPanel" class="hidden bg-white p-4 rounded-xl shadow"></div>
     </div>
 </main>
 
-<!-- 底部栏（完全保留原有） -->
+<!-- 底部栏（完全保留你原来的样式和内容） -->
 <footer class="bg-gray-800 text-white py-6 mt-auto">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -184,7 +328,7 @@
     </div>
 </footer>
 
-<!-- 右侧聊天窗口（完全保留原有） -->
+<!-- 右侧聊天窗口（完全保留你原来的样式和功能） -->
 <div class="fixed bottom-6 right-6 z-50">
     <button id="openChat" class="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg text-2xl">
         <i class="fas fa-comments"></i>
@@ -202,17 +346,17 @@
     </div>
 </div>
 
-<!-- 提示框（完全保留原有） -->
+<!-- 提示框（保留原有功能） -->
 <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded z-50 hidden">
     <span id="toastText"></span>
 </div>
 
 <script>
-// ====================== 1. 三语翻译库（完整覆盖所有功能） ======================
+// ====================== 1. 三语翻译库（扩展Partsouq风格词条） ======================
 const translations = {
     zh: {
-        brand:"TAIKEMU Auto Parts",home:"首页",epc:"电子目录",products:"产品",local:"同城",inquiry:"询价",admin:"管理后台",
-        login:"登录",logout:"注销",search_title:"VIN/OEM 智能配件查询",search_placeholder:"输入17位车架号(VIN) 或 OEM零件号",search:"搜索",
+        brand:"TAIKEMU Auto Parts",home:"首页",epc:"电子目录",products:"产品",local:"同城服务",inquiry:"询价",admin:"管理后台",
+        login:"登录",logout:"注销",search:"搜索",search_placeholder:"输入17位车架号(VIN) 或 OEM零件号",
         name:"姓名",phone:"电话",email:"邮箱",content:"内容",title:"标题",publish:"发布",submit:"提交",
         chat:"在线客服",message:"消息",send:"发送",footer_desc:"专业汽配跨境平台 | 非洲市场专供",
         admin_panel:"管理后台",product_mgt:"产品管理",local_mgt:"同城审核",user_mgt:"用户管理",
@@ -220,17 +364,28 @@ const translations = {
         pending:"待审核",approved:"已审核",publish_success:"发布成功，等待管理员审核",
         product_img:"产品图片",product_name:"产品名称",oem_code:"OEM编号",save:"保存",edit:"编辑",delete:"删除",
         upload_img:"上传图片",audit:"审核",pass:"通过",
-        // EPC电子目录完整词条
+        // EPC电子目录词条
         epc_title:"电子配件目录",select_brand:"选择品牌",select_model:"选择车型",select_year:"选择年份",select_system:"选择系统",
         select_vehicle_first:"请先选择车辆",parts_list:"配件列表",add_all_to_inquiry:"全部加入询价",no_parts_yet:"暂无配件",
         add_to_inquiry:"加入询价",part_added:"已加入询价单",loading:"加载中...",
         // 搜索功能词条
         search_result_found:"找到 {count} 个匹配配件",search_result_none:"未找到匹配配件，请检查VIN或OEM号",
-        vin_detected:"检测到VIN码，自动匹配车型：{model}",oem_detected:"检测到OEM号"
+        vin_detected:"检测到VIN码，自动匹配车型：{model}",oem_detected:"检测到OEM号",
+        // Partsouq风格新增词条
+        hero_title:"全球原厂汽车配件",hero_subtitle:"专业汽配跨境平台 | 非洲市场专供",
+        advantage1_title:"简单易用",advantage1_desc:"简单易用的在线目录，快速找到所需配件",
+        advantage2_title:"在线目录",advantage2_desc:"完整的电子配件目录，支持VIN和OEM搜索",
+        advantage3_title:"最优价格",advantage3_desc:"直接从工厂采购，提供最具竞争力的价格",
+        advantage4_title:"全球发货",advantage4_desc:"全球发货，覆盖190多个国家和地区",
+        brand_catalog:"原厂配件在线目录",
+        stat_clients:"满意客户",stat_countries:"发货国家",stat_parts:"数据库零件数",stat_dispatch:"平均发货时间",
+        about_us:"关于TAIKEMU Auto Parts",
+        about_text1:"TAIKEMU Auto Parts是专业的汽配跨境平台，专注于非洲市场。我们提供广泛的原厂和副厂汽车配件，覆盖丰田、本田、日产、三菱等主流品牌。",
+        about_text2:"我们拥有完整的电子配件目录系统，支持VIN码和OEM编号搜索，帮助您快速准确地找到所需配件。我们与全球300多家可靠供应商建立了长期合作关系，确保为您提供最优质的产品和最具竞争力的价格。"
     },
     en: {
         brand:"TAIKEMU Auto Parts",home:"Home",epc:"EPC Catalog",products:"Products",local:"Local",inquiry:"Inquiry",admin:"Admin",
-        login:"Login",logout:"Logout",search_title:"VIN/OEM Smart Search",search_placeholder:"Enter 17-digit VIN or OEM Number",search:"Search",
+        login:"Login",logout:"Logout",search:"Search",search_placeholder:"Enter 17-digit VIN or OEM Number",
         name:"Name",phone:"Phone",email:"Email",content:"Content",title:"Title",publish:"Publish",submit:"Submit",
         chat:"Support",message:"Message",send:"Send",footer_desc:"Professional Auto Parts Platform | Africa Specialized",
         admin_panel:"Admin Panel",product_mgt:"Products",local_mgt:"Local Audit",user_mgt:"Users",
@@ -238,17 +393,28 @@ const translations = {
         pending:"Pending",approved:"Approved",publish_success:"Published, waiting for audit",
         product_img:"Image",product_name:"Name",oem_code:"OEM",save:"Save",edit:"Edit",delete:"Delete",
         upload_img:"Upload",audit:"Audit",pass:"Pass",
-        // EPC电子目录完整词条
+        // EPC电子目录词条
         epc_title:"EPC Parts Catalog",select_brand:"Select Brand",select_model:"Select Model",select_year:"Select Year",select_system:"Select System",
         select_vehicle_first:"Please select vehicle first",parts_list:"Parts List",add_all_to_inquiry:"Add All to Inquiry",no_parts_yet:"No Parts Yet",
         add_to_inquiry:"Add to Inquiry",part_added:"Added to Inquiry",loading:"Loading...",
         // 搜索功能词条
         search_result_found:"Found {count} matching parts",search_result_none:"No matching parts found",
-        vin_detected:"VIN detected, auto-matched model: {model}",oem_detected:"OEM number detected"
+        vin_detected:"VIN detected, auto-matched model: {model}",oem_detected:"OEM number detected",
+        // Partsouq风格新增词条
+        hero_title:"Genuine Auto Parts Around the World",hero_subtitle:"Professional Auto Parts Platform | Africa Specialized",
+        advantage1_title:"Easy to Use",advantage1_desc:"Easy-to-use online catalog to quickly find the parts you need",
+        advantage2_title:"Online Catalogue",advantage2_desc:"Complete electronic parts catalog with VIN and OEM search",
+        advantage3_title:"Best Prices",advantage3_desc:"Direct factory procurement for the most competitive prices",
+        advantage4_title:"Worldwide Shipping",advantage4_desc:"Worldwide shipping to over 190 countries and regions",
+        brand_catalog:"Genuine Parts Online Catalogs",
+        stat_clients:"Satisfied Clients",stat_countries:"Countries We Ship",stat_parts:"Parts in Database",stat_dispatch:"Average Dispatch",
+        about_us:"About TAIKEMU Auto Parts",
+        about_text1:"TAIKEMU Auto Parts is a professional auto parts cross-border platform focusing on the African market. We offer a wide range of genuine and aftermarket auto parts covering Toyota, Honda, Nissan, Mitsubishi and other major brands.",
+        about_text2:"We have a complete electronic parts catalog system supporting VIN and OEM number search, helping you find the parts you need quickly and accurately. We have established long-term partnerships with over 300 reliable suppliers worldwide to ensure the best quality products and most competitive prices for you."
     },
     fr: {
         brand:"TAIKEMU Auto Parts",home:"Accueil",epc:"Catalogue EPC",products:"Produits",local:"Local",inquiry:"Demande",admin:"Admin",
-        login:"Connexion",logout:"Déconnexion",search_title:"Recherche VIN/OEM",search_placeholder:"Entrez VIN 17 chiffres ou numéro OEM",search:"Rechercher",
+        login:"Connexion",logout:"Déconnexion",search:"Rechercher",search_placeholder:"Entrez VIN 17 chiffres ou numéro OEM",
         name:"Nom",phone:"Téléphone",email:"Email",content:"Contenu",title:"Titre",publish:"Publier",submit:"Envoyer",
         chat:"Support",message:"Message",send:"Envoyer",footer_desc:"Plateforme Auto Parts | Spécialisé Afrique",
         admin_panel:"Panneau Admin",product_mgt:"Produits",local_mgt:"Vérification",user_mgt:"Utilisateurs",
@@ -256,13 +422,24 @@ const translations = {
         pending:"En attente",approved:"Approuvé",publish_success:"Publié, en attente de vérification",
         product_img:"Image",product_name:"Nom",oem_code:"OEM",save:"Enregistrer",edit:"Modifier",delete:"Supprimer",
         upload_img:"Télécharger",audit:"Vérifier",pass:"Approuver",
-        // EPC电子目录完整词条
+        // EPC电子目录词条
         epc_title:"Catalogue Pièces EPC",select_brand:"Choisir Marque",select_model:"Choisir Modèle",select_year:"Choisir Année",select_system:"Choisir Système",
         select_vehicle_first:"Veuillez sélectionner un véhicule",parts_list:"Liste des Pièces",add_all_to_inquiry:"Ajouter Tout",no_parts_yet:"Aucune Pièce",
         add_to_inquiry:"Ajouter",part_added:"Ajouté à la demande",loading:"Chargement...",
         // 搜索功能词条
         search_result_found:"{count} pièces trouvées",search_result_none:"Aucune pièce trouvée",
-        vin_detected:"VIN détecté, modèle correspondant: {model}",oem_detected:"Numéro OEM détecté"
+        vin_detected:"VIN détecté, modèle correspondant: {model}",oem_detected:"Numéro OEM détecté",
+        // Partsouq风格新增词条
+        hero_title:"Pièces Auto d'Origine dans le Monde",hero_subtitle:"Plateforme Auto Parts | Spécialisé Afrique",
+        advantage1_title:"Facile à Utiliser",advantage1_desc:"Catalogue en ligne facile à utiliser pour trouver rapidement les pièces dont vous avez besoin",
+        advantage2_title:"Catalogue en Ligne",advantage2_desc:"Catalogue électronique complet avec recherche VIN et OEM",
+        advantage3_title:"Meilleurs Prix",advantage3_desc:"Approvisionnement direct usine pour les prix les plus compétitifs",
+        advantage4_title:"Livraison Mondiale",advantage4_desc:"Livraison mondiale dans plus de 190 pays et régions",
+        brand_catalog:"Catalogues en Ligne de Pièces d'Origine",
+        stat_clients:"Clients Satisfaits",stat_countries:"Pays Livrés",stat_parts:"Pièces dans la Base",stat_dispatch:"Délai Moyen",
+        about_us:"À Propos de TAIKEMU Auto Parts",
+        about_text1:"TAIKEMU Auto Parts est une plateforme transfrontalière professionnelle de pièces auto axée sur le marché africain. Nous proposons une large gamme de pièces auto d'origine et de rechange couvrant Toyota, Honda, Nissan, Mitsubishi et d'autres grandes marques.",
+        about_text2:"Nous disposons d'un système de catalogue électronique complet prenant en charge la recherche par numéro VIN et OEM, vous aidant à trouver rapidement et précisément les pièces dont vous avez besoin. Nous avons établi des partenariats à long terme avec plus de 300 fournisseurs fiables dans le monde entier pour garantir les meilleurs produits de qualité et les prix les plus compétitifs pour vous."
     }
 };
 let currentLang = localStorage.getItem('lang') || 'zh';
@@ -278,9 +455,9 @@ const users = [
 let currentUser = JSON.parse(localStorage.getItem('currentUser'))||null;
 function hasPerm(p){if(!currentUser)return false;if(currentUser.role==='super')return true;return currentUser.perms.includes(p);}
 
-// ====================== 3. 已导入的TMCEPCW3数据（丰田海拉克斯完整刹车系统） ======================
+// ====================== 3. 数据存储（完全保留原有） ======================
 let products = JSON.parse(localStorage.getItem('products'))||[
-    // ====================== 丰田海拉克斯 2012-2015 刹车系统 ======================
+    // 丰田海拉克斯 2012-2015 刹车系统
     {id:1,name:"前刹车片",name_en:"Front Brake Pads",name_fr:"Plaquettes de frein avant",oem:"04465-0K090",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",vinSegment:"GUN12",image:"https://picsum.photos/id/23/300/200",price:38.5,hotspotId:"1"},
     {id:2,name:"后刹车片",name_en:"Rear Brake Pads",name_fr:"Plaquettes de frein arrière",oem:"04466-0K070",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",vinSegment:"GUN12",image:"https://picsum.photos/id/24/300/200",price:32.0,hotspotId:"2"},
     {id:3,name:"前刹车盘",name_en:"Front Brake Disc",name_fr:"Disque de frein avant",oem:"43512-0K060",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",vinSegment:"GUN12",image:"https://picsum.photos/id/25/300/200",price:65.0,hotspotId:"3"},
@@ -293,14 +470,14 @@ let products = JSON.parse(localStorage.getItem('products'))||[
 let localPosts = JSON.parse(localStorage.getItem('localPosts'))||[];
 let inquiryCart = []; // 询价购物车
 
-// VIN码车型映射表（你可以继续添加更多）
+// VIN码车型映射表
 const vinModelMap = {
     "GUN12": {brand:"toyota", model:"Hilux 海拉克斯", year:"2012-2015"},
     "KUN16": {brand:"toyota", model:"Hilux 海拉克斯", year:"2005-2011"},
     "GUN13": {brand:"toyota", model:"Hilux 海拉克斯", year:"2016-2020"}
 };
 
-// EPC车型数据库（已包含丰田海拉克斯完整数据）
+// EPC车型数据库
 const epcVehicleData = {
     toyota: {
         models: ["Hilux 海拉克斯", "Corolla 卡罗拉", "Land Cruiser 兰德酷路泽"],
@@ -340,7 +517,7 @@ const epcVehicleData = {
     }
 };
 
-// EPC爆炸图热点坐标（已包含丰田海拉克斯刹车系统精确坐标）
+// EPC爆炸图热点坐标
 const epcHotspotPositions = {
     "toyota-Hilux 海拉克斯-2012-2015-brake": [
         {id:"1", top:"18%", left:"25%"}, // 前刹车片
@@ -352,7 +529,6 @@ const epcHotspotPositions = {
         {id:"7", top:"28%", left:"15%"}, // 刹车助力泵
         {id:"8", top:"48%", left:"80%"}, // ABS传感器
     ]
-    // 你只需要在这里继续添加其他系统的坐标
 };
 
 // ====================== 4. 通用工具函数 ======================
@@ -373,11 +549,11 @@ document.getElementById('loginBtn').onclick=()=>{
 };
 document.getElementById('logoutBtn').onclick=()=>{currentUser=null;localStorage.removeItem('currentUser');renderUser();showToast(t('logout_success'));switchView('home');};
 
-// ====================== 6. 视图切换系统（新增EPC视图） ======================
+// ====================== 6. 视图切换系统（完全保留原有） ======================
 function switchView(v){document.querySelectorAll('.view,.hidden-view').forEach(e=>{e.classList.remove('view');e.classList.add('hidden-view');});document.getElementById(v+'View').classList.add('view');}
 document.querySelectorAll('.nav-link').forEach(l=>l.onclick=()=>{const v=l.dataset.nav;if(v==='admin'&&!currentUser){showToast(t('login'));return;}switchView(v);});
 
-// ====================== 7. 产品管理系统（完全保留原有，与EPC打通） ======================
+// ====================== 7. 产品管理系统（完全保留原有） ======================
 function renderProducts(){
     const g=document.getElementById('productGrid');
     g.innerHTML=products.length?products.map((p,i)=>`
@@ -465,13 +641,13 @@ document.getElementById('sendChat').onclick=()=>{
 // ====================== 11. 语言切换系统（完全保留原有） ======================
 document.querySelectorAll('.lang-switch').forEach(b=>b.onclick=()=>{currentLang=b.dataset.lang;updateLang();renderProducts();renderEpcPartsList();});
 
-// ====================== 12. 新增：完整VIN/OEM智能搜索功能 ======================
-document.getElementById('searchBtn').addEventListener('click', performSearch);
-document.getElementById('searchInput').addEventListener('keypress', (e) => e.key === 'Enter' && performSearch());
+// ====================== 12. 新增：Partsouq风格首页搜索功能 ======================
+document.getElementById('heroSearchBtn').addEventListener('click', performHeroSearch);
+document.getElementById('heroSearchInput').addEventListener('keypress', (e) => e.key === 'Enter' && performHeroSearch());
 
-function performSearch() {
-    const query = document.getElementById('searchInput').value.trim().toUpperCase();
-    const resultDiv = document.getElementById('searchResult');
+function performHeroSearch() {
+    const query = document.getElementById('heroSearchInput').value.trim().toUpperCase();
+    const resultDiv = document.getElementById('heroSearchResult');
     
     if (!query) {
         resultDiv.classList.add('hidden');
@@ -485,12 +661,9 @@ function performSearch() {
     // 1. 判断是否是VIN码（17位）
     if (query.length === 17) {
         searchType = 'vin';
-        // 提取VIN第4-8位车型段
         const vinSegment = query.substring(3, 8);
-        // 匹配车型
         matchedModel = vinModelMap[vinSegment];
         if (matchedModel) {
-            // 查找该车型的所有配件
             matchedParts = products.filter(p => 
                 p.brand === matchedModel.brand && 
                 p.model === matchedModel.model && 
@@ -501,7 +674,6 @@ function performSearch() {
     // 2. 否则按OEM号搜索
     else {
         searchType = 'oem';
-        // 精确匹配+模糊匹配
         matchedParts = products.filter(p => 
             p.oem.toUpperCase().includes(query) || 
             p.name.toUpperCase().includes(query) ||
@@ -515,7 +687,6 @@ function performSearch() {
     if (matchedParts.length > 0) {
         let resultHtml = '';
         
-        // 显示搜索类型提示
         if (searchType === 'vin' && matchedModel) {
             resultHtml += `<div class="text-green-600 font-medium mb-2">✅ ${t('vin_detected').replace('{model}', matchedModel.model)}</div>`;
         } else if (searchType === 'oem') {
@@ -527,7 +698,7 @@ function performSearch() {
         
         matchedParts.forEach(p => {
             resultHtml += `
-            <div class="bg-white p-3 rounded shadow search-result-highlight cursor-pointer" onclick="goToEpcPart('${p.brand}', '${p.model}', '${p.year}', '${p.system}', '${p.hotspotId}')">
+            <div class="bg-gray-50 p-3 rounded shadow-sm search-result-highlight cursor-pointer" onclick="goToEpcPart('${p.brand}', '${p.model}', '${p.year}', '${p.system}', '${p.hotspotId}')">
                 <div class="flex gap-3">
                     <img src="${p.image}" class="w-16 h-16 object-cover rounded">
                     <div>
@@ -547,12 +718,28 @@ function performSearch() {
     }
 }
 
+// 品牌快速搜索
+function quickSearchBrand(brand) {
+    switchView('epc');
+    setTimeout(() => {
+        document.getElementById('epcBrand').value = brand;
+        document.getElementById('epcBrand').dispatchEvent(new Event('change'));
+    }, 100);
+}
+
+// 品牌目录跳转
+function goToBrand(brand) {
+    switchView('epc');
+    setTimeout(() => {
+        document.getElementById('epcBrand').value = brand;
+        document.getElementById('epcBrand').dispatchEvent(new Event('change'));
+    }, 100);
+}
+
 // 跳转到EPC页面并高亮对应配件
 function goToEpcPart(brand, model, year, system, hotspotId) {
-    // 切换到EPC视图
     switchView('epc');
     
-    // 自动选择对应的车型系统
     document.getElementById('epcBrand').value = brand;
     document.getElementById('epcBrand').dispatchEvent(new Event('change'));
     
@@ -568,7 +755,6 @@ function goToEpcPart(brand, model, year, system, hotspotId) {
                 document.getElementById('epcSystem').value = system;
                 document.getElementById('epcSystem').dispatchEvent(new Event('change'));
                 
-                // 加载完成后高亮对应配件
                 setTimeout(() => {
                     const partItem = document.querySelector(`.epc-part-item[data-hotspot-id="${hotspotId}"]`);
                     const hotspot = document.querySelector(`.epc-hotspot[data-hotspot-id="${hotspotId}"]`);
@@ -586,15 +772,13 @@ function goToEpcPart(brand, model, year, system, hotspotId) {
     }, 100);
 }
 
-// ====================== 13. EPC电子目录核心逻辑（1:1复刻TMCEPCW3） ======================
-// 车型选择四级联动
+// ====================== 13. EPC电子目录核心逻辑（完全保留原有） ======================
 document.getElementById('epcBrand').addEventListener('change', function() {
     const brand = this.value;
     const modelSelect = document.getElementById('epcModel');
     const yearSelect = document.getElementById('epcYear');
     const systemSelect = document.getElementById('epcSystem');
     
-    // 重置下级选择框
     modelSelect.innerHTML = '<option value="">' + t('select_model') + '</option>';
     yearSelect.innerHTML = '<option value="">' + t('select_year') + '</option>';
     systemSelect.innerHTML = '<option value="">' + t('select_system') + '</option>';
@@ -602,7 +786,6 @@ document.getElementById('epcBrand').addEventListener('change', function() {
     systemSelect.disabled = true;
     
     if (brand) {
-        // 加载对应品牌的车型
         epcVehicleData[brand].models.forEach(model => {
             const option = document.createElement('option');
             option.value = model;
@@ -627,7 +810,6 @@ document.getElementById('epcModel').addEventListener('change', function() {
     systemSelect.disabled = true;
     
     if (model) {
-        // 加载对应车型的年份
         epcVehicleData[brand].years[model].forEach(year => {
             const option = document.createElement('option');
             option.value = year;
@@ -648,7 +830,6 @@ document.getElementById('epcYear').addEventListener('change', function() {
     systemSelect.innerHTML = '<option value="">' + t('select_system') + '</option>';
     
     if (this.value) {
-        // 加载对应品牌的系统
         epcVehicleData[brand].systems.forEach(system => {
             const option = document.createElement('option');
             option.value = system.split(' ')[0];
@@ -670,7 +851,6 @@ document.getElementById('epcSystem').addEventListener('change', function() {
     }
 });
 
-// 加载EPC数据（爆炸图+配件列表+热点）
 function loadEpcData() {
     const brand = document.getElementById('epcBrand').value;
     const model = document.getElementById('epcModel').value;
@@ -678,10 +858,8 @@ function loadEpcData() {
     const system = document.getElementById('epcSystem').value;
     const key = `${brand}-${model}-${year}-${system}`;
     
-    // 显示加载状态
     document.getElementById('epcImagePlaceholder').innerHTML = `<i class="fas fa-spinner fa-spin text-4xl mb-4"></i><p>${t('loading')}</p>`;
     
-    // 筛选匹配的配件
     const matchedParts = products.filter(p => 
         p.brand === brand && 
         p.model === model && 
@@ -689,22 +867,17 @@ function loadEpcData() {
         p.system === system
     );
     
-    // 加载爆炸图（你可以替换成自己TMCEPCW3的真实图片）
     setTimeout(() => {
         document.getElementById('epcImagePlaceholder').classList.add('hidden');
         const explodedView = document.getElementById('epcExplodedView');
-        explodedView.src = `https://picsum.photos/seed/${key}/800/600`; // 替换成你的真实图片URL
+        explodedView.src = `https://picsum.photos/seed/${key}/800/600`;
         explodedView.classList.remove('hidden');
         
-        // 渲染配件列表
         renderEpcPartsList(matchedParts);
-        
-        // 生成热点
         generateEpcHotspots(key, matchedParts);
     }, 300);
 }
 
-// 渲染配件列表
 function renderEpcPartsList(parts) {
     const list = document.getElementById('epcPartsList');
     if (parts.length === 0) {
@@ -728,23 +901,18 @@ function renderEpcPartsList(parts) {
     </div>
     `).join('');
     
-    // 绑定配件点击事件（点击配件高亮对应热点）
     document.querySelectorAll('.epc-part-item').forEach(item => {
         item.addEventListener('click', function() {
             const hotspotId = this.dataset.hotspotId;
-            // 高亮配件项
             document.querySelectorAll('.epc-part-item').forEach(i => i.classList.remove('active'));
             this.classList.add('active');
-            // 高亮对应热点
             document.querySelectorAll('.epc-hotspot').forEach(h => h.classList.remove('active'));
             document.querySelector(`.epc-hotspot[data-hotspot-id="${hotspotId}"]`)?.classList.add('active');
         });
     });
 }
 
-// 生成图片热点（和TMCEPCW3完全一致的交互）
 function generateEpcHotspots(key, parts) {
-    // 清除旧热点
     document.querySelectorAll('.epc-hotspot').forEach(h => h.remove());
     
     const container = document.getElementById('epcImageContainer');
@@ -760,11 +928,9 @@ function generateEpcHotspots(key, parts) {
             hotspot.style.top = pos.top;
             hotspot.style.left = pos.left;
             
-            // 点击热点高亮对应配件（TMCEPCW3核心交互）
             hotspot.addEventListener('click', function() {
                 document.querySelectorAll('.epc-hotspot').forEach(h => h.classList.remove('active'));
                 this.classList.add('active');
-                // 高亮右侧配件并自动滚动
                 const partItem = document.querySelector(`.epc-part-item[data-hotspot-id="${pos.id}"]`);
                 if (partItem) {
                     document.querySelectorAll('.epc-part-item').forEach(i => i.classList.remove('active'));
@@ -778,7 +944,6 @@ function generateEpcHotspots(key, parts) {
     });
 }
 
-// 清空EPC视图
 function clearEpcView() {
     document.getElementById('epcImagePlaceholder').classList.remove('hidden');
     document.getElementById('epcImagePlaceholder').innerHTML = `<i class="fas fa-car-side text-6xl mb-4 text-gray-300"></i><p>${t('select_vehicle_first')}</p>`;
@@ -787,7 +952,6 @@ function clearEpcView() {
     document.querySelectorAll('.epc-hotspot').forEach(h => h.remove());
 }
 
-// 加入询价单
 function addPartToInquiry(partId) {
     const part = products.find(p => p.id === partId);
     if (part) {
@@ -796,7 +960,6 @@ function addPartToInquiry(partId) {
     }
 }
 
-// 全部加入询价单
 document.getElementById('addAllToInquiry').addEventListener('click', function() {
     const brand = document.getElementById('epcBrand').value;
     const model = document.getElementById('epcModel').value;
