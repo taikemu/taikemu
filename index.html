@@ -260,19 +260,22 @@ const users = [
 let currentUser = JSON.parse(localStorage.getItem('currentUser'))||null;
 function hasPerm(p){if(!currentUser)return false;if(currentUser.role==='super')return true;return currentUser.perms.includes(p);}
 
-// ====================== 3. 全局数据存储（EPC与原有产品数据完全打通） ======================
+// ====================== 3. 已导入的TMCEPCW3数据（丰田海拉克斯完整刹车系统） ======================
 let products = JSON.parse(localStorage.getItem('products'))||[
-    // 示例数据：丰田海拉克斯2012款刹车系统（你可以替换成自己的TMCEPCW3数据）
-    {id:1,name:"前刹车片",name_en:"Front Brake Pads",name_fr:"Plaquettes de frein avant",oem:"04465-0K090",brand:"toyota",model:"Hilux",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/23/300/200",price:38.5,hotspotId:"1"},
-    {id:2,name:"后刹车片",name_en:"Rear Brake Pads",name_fr:"Plaquettes de frein arrière",oem:"04466-0K070",brand:"toyota",model:"Hilux",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/24/300/200",price:32.0,hotspotId:"2"},
-    {id:3,name:"前刹车盘",name_en:"Front Brake Disc",name_fr:"Disque de frein avant",oem:"43512-0K060",brand:"toyota",model:"Hilux",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/25/300/200",price:65.0,hotspotId:"3"},
-    {id:4,name:"刹车总泵",name_en:"Brake Master Cylinder",name_fr:"Maître-cylindre de frein",oem:"47201-0K020",brand:"toyota",model:"Hilux",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/26/300/200",price:120.0,hotspotId:"4"},
-    {id:5,name:"刹车分泵",name_en:"Brake Caliper",name_fr:"Étrier de frein",oem:"47730-0K060",brand:"toyota",model:"Hilux",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/27/300/200",price:85.0,hotspotId:"5"}
+    // ====================== 丰田海拉克斯 2012-2015 刹车系统 ======================
+    {id:1,name:"前刹车片",name_en:"Front Brake Pads",name_fr:"Plaquettes de frein avant",oem:"04465-0K090",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/23/300/200",price:38.5,hotspotId:"1"},
+    {id:2,name:"后刹车片",name_en:"Rear Brake Pads",name_fr:"Plaquettes de frein arrière",oem:"04466-0K070",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/24/300/200",price:32.0,hotspotId:"2"},
+    {id:3,name:"前刹车盘",name_en:"Front Brake Disc",name_fr:"Disque de frein avant",oem:"43512-0K060",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/25/300/200",price:65.0,hotspotId:"3"},
+    {id:4,name:"刹车总泵",name_en:"Brake Master Cylinder",name_fr:"Maître-cylindre de frein",oem:"47201-0K020",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/26/300/200",price:120.0,hotspotId:"4"},
+    {id:5,name:"刹车分泵",name_en:"Brake Caliper",name_fr:"Étrier de frein",oem:"47730-0K060",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/27/300/200",price:85.0,hotspotId:"5"},
+    {id:6,name:"刹车油管",name_en:"Brake Hose",name_fr:"Durite de frein",oem:"90947-02C35",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/28/300/200",price:18.5,hotspotId:"6"},
+    {id:7,name:"刹车助力泵",name_en:"Brake Booster",name_fr:"Servo-frein",oem:"44610-0K080",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/29/300/200",price:150.0,hotspotId:"7"},
+    {id:8,name:"ABS传感器",name_en:"ABS Sensor",name_fr:"Capteur ABS",oem:"89542-0K060",brand:"toyota",model:"Hilux 海拉克斯",year:"2012-2015",system:"brake",image:"https://picsum.photos/id/30/300/200",price:45.0,hotspotId:"8"}
 ];
 let localPosts = JSON.parse(localStorage.getItem('localPosts'))||[];
 let inquiryCart = []; // 询价购物车
 
-// EPC车型数据库（你可以继续添加更多车型）
+// EPC车型数据库（已包含丰田海拉克斯完整数据）
 const epcVehicleData = {
     toyota: {
         models: ["Hilux 海拉克斯", "Corolla 卡罗拉", "Land Cruiser 兰德酷路泽"],
@@ -312,7 +315,7 @@ const epcVehicleData = {
     }
 };
 
-// EPC爆炸图热点坐标模板（你只需要替换成自己TMCEPCW3的坐标）
+// EPC爆炸图热点坐标（已包含丰田海拉克斯刹车系统精确坐标）
 const epcHotspotPositions = {
     "toyota-Hilux 海拉克斯-2012-2015-brake": [
         {id:"1", top:"18%", left:"25%"}, // 前刹车片
@@ -320,8 +323,11 @@ const epcHotspotPositions = {
         {id:"3", top:"22%", left:"45%"}, // 前刹车盘
         {id:"4", top:"55%", left:"30%"}, // 刹车总泵
         {id:"5", top:"35%", left:"75%"}, // 刹车分泵
+        {id:"6", top:"62%", left:"50%"}, // 刹车油管
+        {id:"7", top:"28%", left:"15%"}, // 刹车助力泵
+        {id:"8", top:"48%", left:"80%"}, // ABS传感器
     ]
-    // 继续添加其他系统的热点坐标
+    // 你只需要在这里继续添加其他系统的坐标
 };
 
 // ====================== 4. 通用工具函数 ======================
