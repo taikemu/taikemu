@@ -52,7 +52,6 @@
 </header>
 
 <main class="flex-1 w-full">
-    <!-- 首页 -->
     <div id="homeView" class="view">
         <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
             <div class="max-w-5xl mx-auto px-4 text-center">
@@ -83,7 +82,6 @@
         </div>
     </div>
 
-    <!-- EPC -->
     <div id="epcView" class="hidden-view">
         <div class="max-w-7xl mx-auto px-4 py-6">
             <h2 class="text-xl font-bold mb-4" data-lang="epc_title">电子配件目录</h2>
@@ -111,7 +109,6 @@
         </div>
     </div>
 
-    <!-- 产品 -->
     <div id="productsView" class="hidden-view">
         <div class="max-w-7xl mx-auto px-4 py-6">
             <div class="flex flex-wrap gap-3 mb-4">
@@ -123,7 +120,6 @@
         </div>
     </div>
 
-    <!-- 同城服务 -->
     <div id="localView" class="hidden-view">
         <div class="max-w-7xl mx-auto px-4 py-6">
             <h2 class="text-xl font-bold mb-4" data-lang="local_title">同城服务</h2>
@@ -138,16 +134,19 @@
         </div>
     </div>
 
-    <!-- 询价 -->
     <div id="inquiryView" class="hidden-view">
         <div class="max-w-7xl mx-auto px-4 py-6">
             <h2 class="text-xl font-bold mb-4" data-lang="inquiry_title">我的询价单</h2>
-            <button onclick="exportInquiry()" class="bg-green-600 text-white px-3 py-1 rounded mb-4" data-lang="export">导出询价单</button>
+            <div class="flex gap-3 mb-4">
+                <button onclick="exportInquiry()" class="bg-green-600 text-white px-3 py-1 rounded" data-lang="export">导出询价单</button>
+                <input id="buyNum" type="number" min="1" value="1" class="w-20 p-2 border rounded" data-lang="buy_num" placeholder="采购数量">
+                <input id="buyRemark" class="flex-1 p-2 border rounded" data-lang="buy_remark" placeholder="备注要求">
+            </div>
+            <div class="font-bold mb-3" data-lang="total_price">合计总价：$<span id="totalPriceShow">0</span></div>
             <div id="inquiryList" class="space-y-3"></div>
         </div>
     </div>
 
-    <!-- 个人中心 -->
     <div id="userView" class="hidden-view">
         <div class="max-w-7xl mx-auto px-4 py-6">
             <div class="bg-white p-6 rounded-lg shadow mb-4">
@@ -159,7 +158,6 @@
         </div>
     </div>
 
-    <!-- 管理后台 -->
     <div id="adminView" class="hidden-view">
         <div class="max-w-7xl mx-auto px-4 py-6">
             <div class="bg-white p-4 rounded-lg shadow mb-4"><h3 class="text-lg font-bold" data-lang="admin_title">管理后台</h3><p id="adminRole"></p></div>
@@ -189,7 +187,6 @@
     </div>
 </footer>
 
-<!-- 客服 -->
 <div class="fixed bottom-6 right-6 z-50">
     <button id="openChat" class="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg text-2xl"><i class="fas fa-comments"></i></button>
     <div id="chatBox" class="hidden w-80 bg-white rounded-xl shadow-2xl overflow-hidden fixed bottom-20 right-6">
@@ -202,7 +199,16 @@
 <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded z-50 hidden"><span id="toastText"></span></div>
 
 <script>
-// ===================== 三语语言包 =====================
+// 域名防盗校验
+const ALLOW_DOMAINS = ["localhost","127.0.0.1"];
+const currentHost = window.location.hostname;
+const isDev = window.location.protocol === "file:";
+if(!isDev && !ALLOW_DOMAINS.includes(currentHost)){
+    document.body.innerHTML = `<div style="padding:30px;text-align:center;"><h1>未经授权禁止访问</h1></div>`;
+    throw new Error("Unauthorized");
+}
+
+// 三语语言包
 const langData = {
     zh: {
         nav_home:"首页",nav_epc:"电子目录",nav_products:"产品",nav_local:"同城服务",nav_inquiry:"我的询价",nav_profile:"个人中心",nav_admin:"管理后台",
@@ -212,11 +218,12 @@ const langData = {
         epc_title:"电子配件目录",select_brand:"选择品牌",select_model:"选择车型",select_year:"选择年份",select_system:"选择系统",epc_tip:"请先选择车辆",parts_list:"配件列表",add_all:"全部加入询价",no_parts:"暂无配件",
         all_brand:"全部品牌",max_price:"最高价格",filter:"筛选",
         local_title:"同城服务",repair:"维修",parts:"配件",title:"标题",content:"内容",contact:"联系方式",publish:"发布",
-        inquiry_title:"我的询价单",export:"导出询价单",
+        inquiry_title:"我的询价单",export:"导出询价单",buy_num:"数量",buy_remark:"备注",total_price:"合计总价",
         profile_title:"个人资料",nickname:"昵称",phone:"电话",save:"保存资料",
         admin_title:"管理后台",product_mgr:"产品管理",local_mgr:"同城审核",add_product:"+ 上传新商品",img:"图片",p_name:"商品名称",price:"价格",stock:"库存",action:"操作",
         service:"在线客服",msg:"输入消息",send:"发送",footer_desc:"专业汽配跨境平台 | 非洲市场专供",
-        login_required:"请登录",no_permission:"无管理员权限",success:"操作成功",delete_confirm:"确定删除？"
+        login_required:"请登录",no_permission:"无管理员权限",success:"操作成功",delete_confirm:"确定删除？",
+        img_limit:"仅支持JPG/PNG格式，大小不超过2MB",empty_tip:"请完善必填信息",stock_warn:"库存不足",exist_tip:"商品已存在"
     },
     en: {
         nav_home:"Home",nav_epc:"EPC Catalog",nav_products:"Products",nav_local:"Local Service",nav_inquiry:"My Inquiry",nav_profile:"Profile",nav_admin:"Admin",
@@ -226,11 +233,12 @@ const langData = {
         epc_title:"EPC Parts Catalog",select_brand:"Select Brand",select_model:"Select Model",select_year:"Select Year",select_system:"Select System",epc_tip:"Select Vehicle First",parts_list:"Parts List",add_all:"Add All To Inquiry",no_parts:"No Parts",
         all_brand:"All Brands",max_price:"Max Price",filter:"Filter",
         local_title:"Local Service",repair:"Repair",parts:"Parts",title:"Title",content:"Content",contact:"Contact",publish:"Publish",
-        inquiry_title:"My Inquiry",export:"Export Inquiry",
+        inquiry_title:"My Inquiry",export:"Export Inquiry",buy_num:"Qty",buy_remark:"Remark",total_price:"Total Price",
         profile_title:"My Profile",nickname:"Nickname",phone:"Phone",save:"Save Profile",
         admin_title:"Admin Panel",product_mgr:"Product Manage",local_mgr:"Local Audit",add_product:"+ Add Product",img:"Image",p_name:"Name",price:"Price",stock:"Stock",action:"Action",
         service:"Online Service",msg:"Enter Message",send:"Send",footer_desc:"Professional Auto Parts | Africa Market",
-        login_required:"Please Login",no_permission:"No Permission",success:"Success",delete_confirm:"Confirm Delete?"
+        login_required:"Please Login",no_permission:"No Permission",success:"Success",delete_confirm:"Confirm Delete?",
+        img_limit:"Only JPG/PNG, max 2MB",empty_tip:"Fill required fields",stock_warn:"Insufficient stock",exist_tip:"Product exists"
     },
     fr: {
         nav_home:"Accueil",nav_epc:"Catalogue EPC",nav_products:"Produits",nav_local:"Service Local",nav_inquiry:"Ma Demande",nav_profile:"Profil",nav_admin:"Admin",
@@ -240,18 +248,16 @@ const langData = {
         epc_title:"Catalogue Pièces EPC",select_brand:"Sélectionner Marque",select_model:"Sélectionner Modèle",select_year:"Sélectionner Année",select_system:"Sélectionner Système",epc_tip:"Sélectionner Véhicule D'abord",parts_list:"Liste Pièces",add_all:"Ajouter Tout À Demande",no_parts:"Aucune Pièce",
         all_brand:"Toutes Marques",max_price:"Prix Max",filter:"Filtrer",
         local_title:"Service Local",repair:"Réparation",parts:"Pièces",title:"Titre",content:"Contenu",contact:"Contact",publish:"Publier",
-        inquiry_title:"Ma Demande",export:"Exporter Demande",
+        inquiry_title:"Ma Demande",export:"Exporter Demande",buy_num:"Qté",buy_remark:"Remarque",total_price:"Prix Total",
         profile_title:"Mon Profil",nickname:"Surnom",phone:"Téléphone",save:"Enregistrer Profil",
         admin_title:"Panneau Admin",product_mgr:"Gérer Produits",local_mgr:"Audit Local",add_product:"+ Ajouter Produit",img:"Image",p_name:"Nom",price:"Prix",stock:"Stock",action:"Action",
         service:"Service En Ligne",msg:"Entrer Message",send:"Envoyer",footer_desc:"Pièces Auto Professionnelles | Marché Africain",
-        login_required:"Veuillez Vous Connecter",no_permission:"Pas D'autorisation",success:"Succès",delete_confirm:"Confirmer La Suppression?"
+        login_required:"Veuillez Vous Connecter",no_permission:"Pas D'autorisation",success:"Succès",delete_confirm:"Confirmer La Suppression?",
+        img_limit:"JPG/PNG seulement, 2MB max",empty_tip:"Remplir champs obligatoires",stock_warn:"Stock insuffisant",exist_tip:"Produit existant"
     }
 };
 
-// 当前语言
 let currentLang = localStorage.getItem('lang') || 'zh';
-
-// 切换语言
 function changeLang(lang) {
     currentLang = lang;
     localStorage.setItem('lang', lang);
@@ -259,25 +265,35 @@ function changeLang(lang) {
     document.querySelectorAll('[data-lang]').forEach(el => {
         const key = el.getAttribute('data-lang');
         if(langData[lang][key]) el.innerText = langData[lang][key];
-    });
-    document.querySelectorAll('[data-lang]').forEach(el => {
-        const key = el.getAttribute('data-lang');
         if(el.placeholder && langData[lang][key]) el.placeholder = langData[lang][key];
     });
+    calcTotalPrice();
 }
 
-// ===================== 核心数据 =====================
+// 基础数据
 let users = JSON.parse(localStorage.getItem('users')) || [{id:1,username:'admin',password:'admin123',role:'super',nickname:'Admin',phone:''}];
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 let products = JSON.parse(localStorage.getItem('products')) || [{id:1,name:"Front Brake Pad",oem:"04465-0K090",brand:"toyota",price:38.5,stock:100,image:"https://picsum.photos/id/23/300/200"}];
 let localPosts = JSON.parse(localStorage.getItem('localPosts')) || [];
 let inquiryList = JSON.parse(localStorage.getItem('inquiryList')) || [];
 let editProductId = null;
+const ADMIN_ACCOUNT = "admin";
 
-// 工具函数
-const toast = (msg) => {const key = msg in langData[currentLang] ? langData[currentLang][msg] : msg;document.getElementById('toastText').innerText=key;document.getElementById('toast').classList.remove('hidden');setTimeout(()=>document.getElementById('toast').classList.add('hidden'),2000)};
-const saveData = () => {localStorage.setItem('users',JSON.stringify(users));localStorage.setItem('products',JSON.stringify(products));localStorage.setItem('localPosts',JSON.stringify(localPosts));localStorage.setItem('inquiryList',JSON.stringify(inquiryList));localStorage.setItem('currentUser',JSON.stringify(currentUser));};
-const isAdmin = () => currentUser && currentUser.role === 'super';
+// 工具方法
+const toast = (key) => {
+    let txt = langData[currentLang][key] || key;
+    document.getElementById('toastText').innerText = txt;
+    document.getElementById('toast').classList.remove('hidden');
+    setTimeout(()=>document.getElementById('toast').classList.add('hidden'),2000);
+};
+const saveData = () => {
+    localStorage.setItem('users',JSON.stringify(users));
+    localStorage.setItem('products',JSON.stringify(products));
+    localStorage.setItem('localPosts',JSON.stringify(localPosts));
+    localStorage.setItem('inquiryList',JSON.stringify(inquiryList));
+    localStorage.setItem('currentUser',JSON.stringify(currentUser));
+};
+const isAdmin = () => currentUser && currentUser.username === ADMIN_ACCOUNT;
 
 // 视图切换
 const switchView = (v) => {
@@ -287,42 +303,68 @@ const switchView = (v) => {
 };
 document.querySelectorAll('.nav-link').forEach(e=>e.onclick=()=>switchView(e.dataset.nav));
 
-// 权限控制
-const checkAdminNav = () => {document.getElementById('adminNav').classList.toggle('hidden', !isAdmin());};
+const checkAdminNav = () => document.getElementById('adminNav').classList.toggle('hidden',!isAdmin());
 
-// 登录/注册/注销
+// 登录注册注销
 document.getElementById('loginBtn').onclick=()=>{
-    const u=prompt(langData[currentLang].username||"Username");
-    const p=prompt(langData[currentLang].password||"Password");
-    const user=users.find(x=>x.username===u&&x.password===p);
-    if(!user)return toast('error');
-    currentUser=user;saveData();renderUser();checkAdminNav();changeLang(currentLang);toast('success');
+    let u = prompt("Username");
+    let p = prompt("Password");
+    let user = users.find(x=>x.username===u&&x.password===p);
+    if(!user) return toast("账号密码错误");
+    currentUser = user;
+    saveData();
+    renderUser();
+    checkAdminNav();
+    changeLang(currentLang);
+    toast('success');
 };
 document.getElementById('registerBtn').onclick=()=>{
-    const u=prompt(langData[currentLang].username||"Username");
-    const p=prompt(langData[currentLang].password||"Password");
-    if(!u||!p||users.some(x=>x.username===u))return toast('exist');
-    users.push({id:users.length+1,username:u,password:p,role:'user',nickname:u,phone:''});
-    saveData();toast('success');
+    let u = prompt("Username");
+    let p = prompt("Password");
+    if(!u||!p||users.some(x=>x.username===u)) return toast("用户名已存在");
+    users.push({id:Date.now(),username:u,password:p,role:'user',nickname:u,phone:''});
+    saveData();
+    toast('success');
 };
-document.getElementById('logoutBtn').onclick=()=>{currentUser=null;localStorage.removeItem('currentUser');renderUser();checkAdminNav();toast('success');switchView('home');};
+document.getElementById('logoutBtn').onclick=()=>{
+    currentUser=null;
+    localStorage.removeItem('currentUser');
+    renderUser();
+    checkAdminNav();
+    toast('success');
+    switchView('home');
+};
 
 const renderUser = () => {
     document.getElementById('loginBtn').classList.toggle('hidden',currentUser);
     document.getElementById('registerBtn').classList.toggle('hidden',currentUser);
     document.getElementById('logoutBtn').classList.toggle('hidden',!currentUser);
     document.getElementById('userInfo').classList.toggle('hidden',!currentUser);
-    if(currentUser)document.getElementById('userInfo').innerText=`${langData[currentLang].hello}: ${currentUser.nickname}`;
+    if(currentUser) document.getElementById('userInfo').innerText = `Hi, ${currentUser.nickname}`;
 };
 
-// ===================== 产品管理 =====================
+// 询价总价计算
+function calcTotalPrice(){
+    let num = Number(document.getElementById('buyNum').value) || 1;
+    let total = 0;
+    inquiryList.forEach(item=> total += item.price * num);
+    document.getElementById('totalPriceShow').innerText = total.toFixed(2);
+}
+document.getElementById('buyNum').addEventListener('input',calcTotalPrice);
+
+// 产品渲染
 const renderProducts = (list=products) => {
     document.getElementById('productGrid').innerHTML=list.map(p=>`
-    <div class="bg-white rounded shadow p-4"><img src="${p.image}" class="w-full h-40 object-cover rounded mb-2">
-    <h3 class="font-bold">${p.name}</h3><p class="text-sm">OEM: ${p.oem}</p>
-    <p class="text-green-600">${langData[currentLang].stock}: ${p.stock}</p><p class="text-blue-600 font-bold">$${p.price}</p>
-    <button onclick="addInquiry(${p.id})" class="mt-2 w-full bg-orange-500 text-white py-1 rounded">${langData[currentLang].add_inquiry}</button></div>`).join('');
+    <div class="bg-white rounded shadow p-4">
+        <img src="${p.image}" class="w-full h-40 object-cover rounded mb-2">
+        <h3 class="font-bold">${p.name}</h3>
+        <p class="text-sm">OEM: ${p.oem}</p>
+        <p class="text-green-600">${langData[currentLang].stock}: ${p.stock}</p>
+        <p class="text-blue-600 font-bold">$${p.price}</p>
+        <button onclick="addInquiry(${p.id})" class="mt-2 w-full bg-orange-500 text-white py-1 rounded">加入询价</button>
+    </div>`).join('');
 };
+
 const renderAdminProducts = () => {
     const tbody = document.getElementById('productTableBody');
     tbody.innerHTML = products.map(p=>`
@@ -333,79 +375,240 @@ const renderAdminProducts = () => {
         <td class="border p-2">$${p.price}</td>
         <td class="border p-2">${p.stock}</td>
         <td class="border p-2 gap-2 flex">
-            <button onclick="editProduct(${p.id})" class="px-2 py-1 bg-yellow-500 text-white rounded">${langData[currentLang].edit}</button>
-            <button onclick="deleteProduct(${p.id})" class="px-2 py-1 bg-red-500 text-white rounded">${langData[currentLang].delete}</button>
+            <button onclick="editProduct(${p.id})" class="px-2 py-1 bg-yellow-500 text-white rounded">编辑</button>
+            <button onclick="deleteProduct(${p.id})" class="px-2 py-1 bg-red-500 text-white rounded">删除</button>
         </td>
     </tr>`).join('');
 };
+
+// 新增商品
 const addProduct = () => {
     editProductId = null;
-    const modal = `<div class="modal-overlay" id="productModal"><div class="bg-white p-6 rounded-lg w-full max-w-md">
-    <h3 class="text-lg font-bold mb-4">${langData[currentLang].add_product}</h3>
-    <input type="file" id="productImg" accept="image/*" class="w-full p-2 border rounded mb-2">
-    <input id="productName" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].p_name}">
-    <input id="productOem" class="w-full p-2 border rounded mb-2" placeholder="OEM">
-    <input id="productPrice" type="number" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].price}">
-    <input id="productStock" type="number" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].stock}">
-    <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-2 rounded">${langData[currentLang].save}</button>
-    <button onclick="closeModal()" class="w-full mt-2 bg-gray-500 text-white py-2 rounded">${langData[currentLang].cancel}</button></div></div>`;
-    document.body.insertAdjacentHTML('beforeend', modal);
+    let modal = `<div class="modal-overlay" id="productModal">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md">
+        <h3 class="text-lg font-bold mb-4">${langData[currentLang].add_product}</h3>
+        <input type="file" id="productImg" accept="image/jpeg,image/png" class="w-full p-2 border rounded mb-2">
+        <input id="productName" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].p_name}">
+        <input id="productOem" class="w-full p-2 border rounded mb-2" placeholder="OEM">
+        <input id="productPrice" type="number" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].price}">
+        <input id="productStock" type="number" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].stock}">
+        <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-2 rounded">${langData[currentLang].save}</button>
+        <button onclick="closeModal()" class="w-full mt-2 bg-gray-500 text-white py-2 rounded">取消</button>
+    </div></div>`;
+    document.body.insertAdjacentHTML('beforeend',modal);
 };
+
+// 编辑商品
 const editProduct = (id) => {
-    const p = products.find(x=>x.id===id);
+    let p = products.find(x=>x.id===id);
     editProductId = id;
-    const modal = `<div class="modal-overlay" id="productModal"><div class="bg-white p-6 rounded-lg w-full max-w-md">
-    <h3 class="text-lg font-bold mb-4">${langData[currentLang].edit}</h3>
-    <img src="${p.image}" class="w-24 h-24 object-cover mb-2">
-    <input type="file" id="productImg" accept="image/*" class="w-full p-2 border rounded mb-2">
-    <input id="productName" value="${p.name}" class="w-full p-2 border rounded mb-2">
-    <input id="productOem" value="${p.oem}" class="w-full p-2 border rounded mb-2">
-    <input id="productPrice" value="${p.price}" type="number" class="w-full p-2 border rounded mb-2">
-    <input id="productStock" value="${p.stock}" type="number" class="w-full p-2 border rounded mb-2">
-    <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-2 rounded">${langData[currentLang].save}</button>
-    <button onclick="closeModal()" class="w-full mt-2 bg-gray-500 text-white py-2 rounded">${langData[currentLang].cancel}</button></div></div>`;
-    document.body.insertAdjacentHTML('beforeend', modal);
+    let modal = `<div class="modal-overlay" id="productModal">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md">
+        <h3 class="text-lg font-bold mb-4">编辑商品</h3>
+        <img src="${p.image}" class="w-24 h-24 object-cover mb-2">
+        <input type="file" id="productImg" accept="image/jpeg,image/png" class="w-full p-2 border rounded mb-2">
+        <input id="productName" value="${p.name}" class="w-full p-2 border rounded mb-2">
+        <input id="productOem" value="${p.oem}" class="w-full p-2 border rounded mb-2">
+        <input id="productPrice" value="${p.price}" type="number" class="w-full p-2 border rounded mb-2">
+        <input id="productStock" value="${p.stock}" type="number" class="w-full p-2 border rounded mb-2">
+        <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-2 rounded">保存</button>
+        <button onclick="closeModal()" class="w-full mt-2 bg-gray-500 text-white py-2 rounded">取消</button>
+    </div></div>`;
+    document.body.insertAdjacentHTML('beforeend',modal);
 };
+
+// 保存商品+图片校验
 const saveProduct = () => {
-    const name = document.getElementById('productName').value;
-    const oem = document.getElementById('productOem').value;
-    const price = document.getElementById('productPrice').value;
-    const stock = document.getElementById('productStock').value;
-    const file = document.getElementById('productImg').files[0];
-    if(!name || !oem || !price || !stock) return toast('required');
+    let name = document.getElementById('productName').value.trim();
+    let oem = document.getElementById('productOem').value.trim();
+    let price = document.getElementById('productPrice').value;
+    let stock = document.getElementById('productStock').value;
+    let file = document.getElementById('productImg').files[0];
+
+    if(!name||!oem||!price||!stock) return toast('empty_tip');
+    if(Number(stock)<0) return toast('stock_warn');
+
+    const maxSize = 2*1024*1024;
+    const allowType = ["image/jpeg","image/jpg","image/png"];
+
     if(editProductId){
-        const index = products.findIndex(x=>x.id===editProductId);
-        if(file){const reader=new FileReader();reader.onload=e=>{products[index]={...products[index],name,oem,price:Number(price),stock:Number(stock),image:e.target.result};saveData();renderProducts();renderAdminProducts();closeModal();toast('success');};reader.readAsDataURL(file);}
-        else{products[index]={...products[index],name,oem,price:Number(price),stock:Number(stock)};saveData();renderProducts();renderAdminProducts();closeModal();toast('success');}
+        let idx = products.findIndex(x=>x.id===editProductId);
+        if(file){
+            if(!allowType.includes(file.type)||file.size>maxSize) return toast('img_limit');
+            let reader = new FileReader();
+            reader.onload = e=>{
+                products[idx] = {...products[idx],name,oem,price:Number(price),stock:Number(stock),image:e.target.result};
+                saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
+            };
+            reader.readAsDataURL(file);
+        }else{
+            products[idx] = {...products[idx],name,oem,price:Number(price),stock:Number(stock)};
+            saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
+        }
     }else{
-        if(!file) return toast('img_required');
-        const reader=new FileReader();reader.onload=e=>{products.push({id:Date.now(),name,oem,brand:'toyota',price:Number(price),stock:Number(stock),image:e.target.result});saveData();renderProducts();renderAdminProducts();closeModal();toast('success');};reader.readAsDataURL(file);
+        if(!file) return toast('img_limit');
+        if(!allowType.includes(file.type)||file.size>maxSize) return toast('img_limit');
+        let reader = new FileReader();
+        reader.onload = e=>{
+            products.push({id:Date.now(),name,oem,brand:'toyota',price:Number(price),stock:Number(stock),image:e.target.result});
+            saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
+        };
+        reader.readAsDataURL(file);
     }
 };
-const deleteProduct = (id) => {if(!confirm(langData[currentLang].delete_confirm)) return;products=products.filter(x=>x.id!==id);inquiryList=inquiryList.filter(x=>x.id!==id);saveData();renderProducts();renderAdminProducts();toast('success');};
-const closeModal = () => {document.getElementById('productModal')?.remove();};
-const filterProducts = () => {const b=document.getElementById('filterBrand').value,p=document.getElementById('filterPrice').value;let list=products;if(b)list=list.filter(x=>x.brand===b);if(p)list=list.filter(x=>x.price<=p);renderProducts(list);};
 
-// ===================== 其他功能（询价/同城/EPC/客服）保留不变 =====================
-// 篇幅精简，核心功能完整保留，三语全覆盖
-const addInquiry=(id)=>{if(!currentUser)return toast('login_required');const p=products.find(x=>x.id===id);if(inquiryList.some(x=>x.id===id))return toast('exist');inquiryList.push(p);saveData();toast('success');};
-const renderInquiry=()=>{if(!currentUser)return toast('login_required');document.getElementById('inquiryList').innerHTML=inquiryList.length?inquiryList.map(p=>`<div class="bg-white p-4 rounded shadow flex justify-between"><div><h4 class="font-bold">${p.name}</h4><p>OEM: ${p.oem} | $${p.price}</p></div><button onclick="delInquiry(${p.id})" class="text-red-600">${langData[currentLang].delete}</button></div>`).join(''):`<div class="text-center py-6 text-gray-500">${langData[currentLang].no_inquiry}</div>`;};
-const delInquiry=(id)=>{inquiryList=inquiryList.filter(x=>x.id!==id);saveData();renderInquiry();toast('success');};
-const exportInquiry=()=>{if(!inquiryList.length)return toast('no_inquiry');const c=inquiryList.map(p=>`${p.name} | OEM:${p.oem} | $${p.price}`).join('\n');const b=new Blob([c],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Inquiry.txt';a.click();};
-document.getElementById('publishLocal').onclick=()=>{if(!currentUser)return toast('login_required');const t=document.getElementById('localTitle').value,c=document.getElementById('localContent').value,ty=document.getElementById('localType').value,co=document.getElementById('localContact').value;if(!t||!c)return toast('required');localPosts.push({id:Date.now(),title:t,content:c,type:ty,contact:co,user:currentUser.username,status:'approved'});saveData();renderLocal();document.getElementById('localTitle').value='';document.getElementById('localContent').value='';toast('success');};
-const renderLocal=()=>{document.getElementById('localList').innerHTML=localPosts.map(p=>`<div class="bg-white p-4 rounded shadow"><h3 class="font-bold">${p.type} | ${p.title}</h3><p class="text-sm">${p.content}</p><p class="text-xs text-gray-500">${langData[currentLang].contact}: ${p.contact} | ${p.user}</p></div>`).join('');};
-const quickSearchBrand=(b)=>{switchView('epc');document.getElementById('epcBrand').value=b;document.getElementById('epcBrand').onchange();};
-document.getElementById('epcBrand').onchange=()=>{document.getElementById('epcModel').disabled=false;};
-document.getElementById('epcModel').onchange=()=>{document.getElementById('epcYear').disabled=false;};
-document.getElementById('epcYear').onchange=()=>{document.getElementById('epcSystem').disabled=false;};
-document.getElementById('epcSystem').onchange=()=>{document.getElementById('epcImagePlaceholder').classList.add('hidden');document.getElementById('epcExplodedView').src='https://picsum.photos/seed/brake/800/600';document.getElementById('epcExplodedView').classList.remove('hidden');document.getElementById('epcPartsList').innerHTML=products.map(p=>`<div class="epc-part-item p-3 border rounded"><div class="flex justify-between"><span>${p.name}</span><button onclick="addInquiry(${p.id})" class="bg-blue-600 text-white px-2 py-1 rounded text-sm">${langData[currentLang].add_inquiry}</button></div></div>`).join('');};
+const deleteProduct = (id) => {
+    if(!confirm(langData[currentLang].delete_confirm))return;
+    products = products.filter(x=>x.id!==id);
+    inquiryList = inquiryList.filter(x=>x.id!==id);
+    saveData();renderProducts();renderAdminProducts();toast('success');
+    calcTotalPrice();
+};
+const closeModal = ()=>document.getElementById('productModal')?.remove();
+const filterProducts = ()=>{
+    let b = document.getElementById('filterBrand').value;
+    let p = document.getElementById('filterPrice').value;
+    let list = products;
+    if(b) list = list.filter(x=>x.brand===b);
+    if(p) list = list.filter(x=>x.price<=Number(p));
+    renderProducts(list);
+};
+
+// 询价相关
+const addInquiry = (id) => {
+    if(!currentUser) return toast('login_required');
+    let item = products.find(x=>x.id===id);
+    if(inquiryList.some(x=>x.id===id)) return toast('exist_tip');
+    inquiryList.push(item);
+    saveData();
+    renderInquiry();
+    calcTotalPrice();
+    toast('success');
+};
+const renderInquiry = () => {
+    if(!currentUser) return toast('login_required');
+    document.getElementById('inquiryList').innerHTML = inquiryList.length
+    ? inquiryList.map(p=>`
+    <div class="bg-white p-4 rounded shadow flex justify-between items-center">
+        <div>
+            <h4 class="font-bold">${p.name}</h4>
+            <p>OEM: ${p.oem} | $${p.price}</p>
+        </div>
+        <button onclick="delInquiry(${p.id})" class="text-red-600">删除</button>
+    </div>`).join('')
+    : `<div class="text-center py-6 text-gray-500">暂无询价商品</div>`;
+};
+const delInquiry = (id) => {
+    inquiryList = inquiryList.filter(x=>x.id!==id);
+    saveData();
+    renderInquiry();
+    calcTotalPrice();
+    toast('success');
+};
+const exportInquiry = () => {
+    if(!inquiryList.length) return toast('暂无数据');
+    let num = document.getElementById('buyNum').value||1;
+    let remark = document.getElementById('buyRemark').value;
+    let text = `采购数量：${num}\n备注：${remark}\n--------------------\n`;
+    inquiryList.forEach(p=>{
+        text += `${p.name} | OEM:${p.oem} | 单价$${p.price}\n`;
+    });
+    text += `--------------------\n总计金额：$${document.getElementById('totalPriceShow').innerText}`;
+    let blob = new Blob([text],{type:'text/plain'});
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "询价订单.txt";
+    a.click();
+};
+
+// 同城服务
+document.getElementById('publishLocal').onclick=()=>{
+    if(!currentUser) return toast('login_required');
+    let t = document.getElementById('localTitle').value.trim();
+    let c = document.getElementById('localContent').value.trim();
+    let type = document.getElementById('localType').value;
+    let contact = document.getElementById('localContact').value.trim();
+    if(!t||!c) return toast('empty_tip');
+    localPosts.push({id:Date.now(),title:t,content:c,type,contact,user:currentUser.username,status:'pending'});
+    saveData();renderLocal();
+    document.getElementById('localTitle').value='';
+    document.getElementById('localContent').value='';
+    toast('success');
+};
+const renderLocal = () => {
+    document.getElementById('localList').innerHTML = localPosts.map(p=>`
+    <div class="bg-white p-4 rounded shadow">
+        <h3 class="font-bold">${p.type} | ${p.title}</h3>
+        <p class="text-sm my-2">${p.content}</p>
+        <p class="text-xs text-gray-500">联系方式：${p.contact} | 发布人：${p.user}</p>
+    </div>`).join('');
+};
+
+// EPC目录
+const quickSearchBrand = (b) => {
+    switchView('epc');
+    document.getElementById('epcBrand').value = b;
+    document.getElementById('epcBrand').onchange();
+};
+document.getElementById('epcBrand').onchange=()=>document.getElementById('epcModel').disabled=false;
+document.getElementById('epcModel').onchange=()=>document.getElementById('epcYear').disabled=false;
+document.getElementById('epcYear').onchange=()=>document.getElementById('epcSystem').disabled=false;
+document.getElementById('epcSystem').onchange=()=>{
+    document.getElementById('epcImagePlaceholder').classList.add('hidden');
+    document.getElementById('epcExplodedView').src='https://picsum.photos/seed/brake/800/600';
+    document.getElementById('epcExplodedView').classList.remove('hidden');
+    document.getElementById('epcPartsList').innerHTML = products.map(p=>`
+    <div class="epc-part-item p-3 border rounded flex justify-between items-center">
+        <span>${p.name}</span>
+        <button onclick="addInquiry(${p.id})" class="bg-blue-600 text-white px-2 py-1 rounded text-sm">加入询价</button>
+    </div>`).join('');
+};
+
+// 客服
 document.getElementById('openChat').onclick=()=>document.getElementById('chatBox').classList.remove('hidden');
 document.getElementById('closeChat').onclick=()=>document.getElementById('chatBox').classList.add('hidden');
-document.getElementById('sendChat').onclick=()=>{const m=document.getElementById('chatInput').value;if(!m)return;document.getElementById('chatMessages').innerHTML+=`<div class="text-right my-1"><span class="bg-blue-600 text-white p-2 rounded">${m}</span></div>`;document.getElementById('chatInput').value='';setTimeout(()=>document.getElementById('chatMessages').innerHTML+=`<div class="text-left my-1"><span class="bg-gray-200 p-2 rounded">${langData[currentLang].reply}</span></div>`,500);};
-document.querySelectorAll('.admin-tab').forEach(t=>{t.onclick=()=>{document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active-tab'));t.classList.add('active-tab');document.querySelectorAll('#adminProducts,#adminLocal').forEach(x=>x.classList.add('hidden'));document.getElementById('admin'+t.dataset.panel.charAt(0).toUpperCase()+t.dataset.panel.slice(1)).classList.remove('hidden');};});
-const saveUserInfo=()=>{if(!currentUser)return toast('login_required');currentUser.nickname=document.getElementById('userNickname').value;currentUser.phone=document.getElementById('userPhone').value;const i=users.findIndex(x=>x.id===currentUser.id);users[i]=currentUser;saveData();toast('success');renderUser();};
+document.getElementById('sendChat').onclick=()=>{
+    let msg = document.getElementById('chatInput').value.trim();
+    if(!msg)return;
+    document.getElementById('chatMessages').innerHTML += `<div class="text-right my-1"><span class="bg-blue-600 text-white p-2 rounded">${msg}</span></div>`;
+    document.getElementById('chatInput').value='';
+    setTimeout(()=>{
+        document.getElementById('chatMessages').innerHTML += `<div class="text-left my-1"><span class="bg-gray-200 p-2 rounded">我们将尽快回复您</span></div>`;
+    },600);
+};
 
-// 初始化
+// 管理标签切换
+document.querySelectorAll('.admin-tab').forEach(tab=>{
+    tab.onclick=()=>{
+        document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active-tab'));
+        tab.classList.add('active-tab');
+        document.querySelectorAll('#adminProducts,#adminLocal').forEach(p=>p.classList.add('hidden'));
+        let panelId = 'admin'+tab.dataset.panel.charAt(0).toUpperCase()+tab.dataset.panel.slice(1);
+        document.getElementById(panelId).classList.remove('hidden');
+    };
+});
+
+// 个人资料保存
+const saveUserInfo = () => {
+    if(!currentUser) return toast('login_required');
+    currentUser.nickname = document.getElementById('userNickname').value.trim();
+    currentUser.phone = document.getElementById('userPhone').value.trim();
+    let idx = users.findIndex(x=>x.id===currentUser.id);
+    users[idx] = currentUser;
+    saveData();
+    toast('success');
+    renderUser();
+};
+
+// APP返回键适配
+document.addEventListener('keydown',function(e){
+    if(e.key === "Backspace" && window.history.length>1){
+        e.preventDefault();
+        window.history.back();
+    }
+});
+
+// 初始化加载
 window.onload=()=>{
     changeLang(currentLang);
     renderUser();
@@ -415,6 +618,7 @@ window.onload=()=>{
     renderLocal();
     renderAdminProducts();
     switchView('home');
+    calcTotalPrice();
 };
 </script>
 </body>
