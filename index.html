@@ -1,770 +1,373 @@
+
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TAIKEMU Auto Parts</title>
+    <title>外贸汽配网站功能概览</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .view { display: block !important; }
-        .hidden-view { display: none !important; }
-        .active-tab { background: #2563eb; color: white; }
-        .nav-active { color: #2563eb; font-weight: 600; }
-        .epc-hotspot { position: absolute; width: 26px; height: 26px; background: rgba(37,99,235,0.9); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .epc-hotspot:hover { transform: scale(1.3); background: #1d4ed8; }
-        .epc-hotspot.active { background: #10b981; transform: scale(1.3); }
-        .epc-part-item.active { background: #dbeafe; border-left: 4px solid #2563eb; }
-        .epc-part-item { transition: all 0.15s; }
-        .search-result-highlight { animation: pulse 1.5s infinite; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,0.4);}50%{box-shadow:0 0 0 10px rgba(37,99,235,0);} }
-        .brand-card { transition: all 0.2s; }
-        .brand-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
-        .mobile-menu.open { transform: translateX(0); }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #FFFFFF;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 1.25rem; /* 20px */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+            position: relative;
+        }
+        .highlight-gradient-blue {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0), rgba(59, 130, 246, 0.05));
+        }
+        .highlight-gradient-green {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0), rgba(16, 185, 129, 0.05));
+        }
+        .highlight-gradient-purple {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0), rgba(139, 92, 246, 0.05));
+        }
+        .highlight-gradient-orange {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0), rgba(249, 115, 22, 0.05));
+        }
+        .highlight-gradient-red {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0), rgba(239, 68, 68, 0.05));
+        }
+        .highlight-gradient-teal {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0), rgba(20, 184, 166, 0.05));
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
-<!-- 移动端侧边导航 -->
-<div id="mobileMenu" class="mobile-menu fixed left-0 top-0 h-full w-64 bg-white shadow-xl z-50">
-    <div class="p-4 border-b flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <i class="fas fa-car text-blue-600 text-xl"></i>
-            <span class="font-bold">TAIKEMU</span>
-        </div>
-        <button onclick="toggleMobileMenu()" class="text-gray-500"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="p-4 space-y-3">
-        <a data-nav="home" class="mobile-nav-link block py-2 hover:text-blue-600 font-medium" data-lang="nav_home">首页</a>
-        <a data-nav="epc" class="mobile-nav-link block py-2 hover:text-blue-600 font-medium" data-lang="nav_epc">电子目录</a>
-        <a data-nav="products" class="mobile-nav-link block py-2 hover:text-blue-600 font-medium" data-lang="nav_products">产品</a>
-        <a data-nav="local" class="mobile-nav-link block py-2 hover:text-blue-600 font-medium" data-lang="nav_local">同城服务</a>
-        <a data-nav="inquiry" class="mobile-nav-link block py-2 hover:text-blue-600 font-medium" data-lang="nav_inquiry">我的询价</a>
-        <a data-nav="user" class="mobile-nav-link block py-2 hover:text-blue-600 font-medium" data-lang="nav_profile">个人中心</a>
-        <a data-nav="admin" class="mobile-nav-link block py-2 hover:text-blue-600 font-medium hidden" id="adminNavMobile" data-lang="nav_admin">管理后台</a>
-    </div>
-</div>
-<div id="mobileOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleMobileMenu()"></div>
-
-<header class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        <!-- 移动端汉堡按钮 -->
-        <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700 text-xl mr-2">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="flex items-center gap-2">
-            <i class="fas fa-car text-blue-600 text-2xl"></i>
-            <h1 class="text-xl font-bold">TAIKEMU Auto Parts</h1>
-        </div>
-        <nav class="hidden md:flex gap-6">
-            <a data-nav="home" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-lang="nav_home">首页</a>
-            <a data-nav="epc" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-lang="nav_epc">电子目录</a>
-            <a data-nav="products" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-lang="nav_products">产品</a>
-            <a data-nav="local" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-lang="nav_local">同城服务</a>
-            <a data-nav="inquiry" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-lang="nav_inquiry">我的询价</a>
-            <a data-nav="user" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-lang="nav_profile">个人中心</a>
-            <a data-nav="admin" class="nav-link cursor-pointer hover:text-blue-600 font-medium hidden" id="adminNav" data-lang="nav_admin">管理后台</a>
-        </nav>
-        <div class="flex items-center gap-2">
-            <div class="hidden md:flex gap-2">
-                <button onclick="changeLang('zh')" class="px-2 py-1 border rounded text-sm">中文</button>
-                <button onclick="changeLang('en')" class="px-2 py-1 border rounded text-sm">EN</button>
-                <button onclick="changeLang('fr')" class="px-2 py-1 border rounded text-sm">FR</button>
-            </div>
-            <button id="loginBtn" class="px-2 py-1 bg-blue-600 text-white rounded text-sm" data-lang="login">登录</button>
-            <button id="registerBtn" class="px-2 py-1 bg-gray-600 text-white rounded text-sm hidden md:block" data-lang="register">注册</button>
-            <button id="logoutBtn" class="px-2 py-1 bg-red-600 text-white rounded text-sm hidden" data-lang="logout">注销</button>
-            <span id="userInfo" class="hidden text-sm font-medium"></span>
-        </div>
-    </div>
-</header>
-
-<main class="flex-1 w-full">
-    <div id="homeView" class="view">
-        <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-            <div class="max-w-5xl mx-auto px-4 text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-2" data-lang="home_title">Genuine Auto Parts Around the World</h2>
-                <p class="text-lg md:text-xl mb-8 opacity-90" data-lang="home_sub">专业汽配跨境平台 | 非洲市场专供</p>
-                <div class="max-w-3xl mx-auto mb-10">
-                    <div class="flex flex-col md:flex-row gap-2 md:gap-0 rounded-lg overflow-hidden shadow-2xl">
-                        <input id="heroSearchInput" class="flex-1 p-4 text-gray-800 text-lg" data-lang="search_placeholder" placeholder="输入VIN码 或 OEM零件号">
-                        <button id="heroSearchBtn" class="bg-orange-500 hover:orange-600 text-white px-8 py-4 text-lg font-semibold">
-                            <i class="fas fa-search mr-2"></i><span data-lang="search">搜索</span>
-                        </button>
+<body class="bg-white">
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
+            <!-- 标题卡片 -->
+            <div class="card md:col-span-4 p-8 flex flex-col justify-center items-center text-center">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-blue"></div>
+                <div class="relative">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+                        <i class="fa-solid fa-car text-3xl text-blue-600"></i>
                     </div>
-                    <div id="heroSearchResult" class="mt-4 text-left bg-white text-gray-800 rounded-lg p-4 hidden"></div>
-                </div>
-                <div class="flex flex-wrap justify-center gap-4">
-                    <button onclick="quickSearchBrand('toyota')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">Toyota</button>
-                    <button onclick="quickSearchBrand('honda')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">Honda</button>
-                    <button onclick="quickSearchBrand('bmw')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">BMW</button>
-                    <button onclick="quickSearchBrand('mercedes')" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition">Mercedes</button>
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">外贸汽配网站功能概览</h1>
+                    <p class="text-xl text-gray-600 max-w-3xl">Global Auto Parts 平台完整单页代码，整合所有核心功能，可直接运行</p>
                 </div>
             </div>
-        </div>
-        <div class="max-w-7xl mx-auto px-4 py-12">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow text-center"><i class="fas fa-mouse-pointer text-4xl text-blue-600 mb-4"></i><h3 class="text-xl font-bold" data-lang="feat1">简单易用</h3><p class="text-gray-600" data-lang="feat1_desc">快速查找配件</p></div>
-                <div class="bg-white p-6 rounded-lg shadow text-center"><i class="fas fa-book text-4xl text-blue-600 mb-4"></i><h3 class="text-xl font-bold" data-lang="feat2">EPC电子目录</h3><p class="text-gray-600" data-lang="feat2_desc">原厂配件数据</p></div>
-                <div class="bg-white p-6 rounded-lg shadow text-center"><i class="fas fa-tags text-4xl text-blue-600 mb-4"></i><h3 class="text-xl font-bold" data-lang="feat3">最优价格</h3><p class="text-gray-600" data-lang="feat3_desc">工厂直供价格</p></div>
-                <div class="bg-white p-6 rounded-lg shadow text-center"><i class="fas fa-shipping-fast text-4xl text-blue-600 mb-4"></i><h3 class="text-xl font-bold" data-lang="feat4">全球发货</h3><p class="text-gray-600" data-lang="feat4_desc">覆盖非洲全境</p></div>
-            </div>
-        </div>
-    </div>
 
-    <div id="epcView" class="hidden-view">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <h2 class="text-xl font-bold mb-4" data-lang="epc_title">电子配件目录</h2>
-            <div class="bg-white p-4 rounded-lg shadow mb-4 flex flex-wrap gap-3">
-                <select id="epcBrand" class="p-2 border rounded min-w-[120px]"><option value="" data-lang="select_brand">选择品牌</option><option value="toyota">Toyota</option><option value="honda">Honda</option><option value="bmw">BMW</option><option value="mercedes">Mercedes</option></select>
-                <select id="epcModel" class="p-2 border rounded min-w-[120px]" disabled><option value="" data-lang="select_model">选择车型</option></select>
-                <select id="epcYear" class="p-2 border rounded min-w-[120px]" disabled><option value="" data-lang="select_year">选择年份</option></select>
-                <select id="epcSystem" class="p-2 border rounded min-w-[120px]" disabled><option value="" data-lang="select_system">选择系统</option></select>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white p-4 rounded-lg shadow relative min-h-[500px]" id="epcImageContainer">
-                    <div class="text-center text-gray-500 py-24" id="epcImagePlaceholder"><i class="fas fa-car-side text-6xl mb-4 text-gray-300"></i><p data-lang="epc_tip">请先选择车辆</p></div>
-                    <img id="epcExplodedView" class="w-full hidden rounded" src="">
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-lg" data-lang="parts_list">配件列表</h3>
-                        <button id="addAllToInquiry" class="bg-blue-600 text-white px-3 py-1 rounded text-sm" data-lang="add_all">全部加入询价</button>
+            <!-- 核心功能统计 -->
+            <div class="card md:col-span-2 md:row-span-1 p-8 flex flex-col justify-center">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-green"></div>
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">核心功能</h2>
+                        <i class="fa-solid fa-cogs text-3xl text-green-500"></i>
                     </div>
-                    <div id="epcPartsList" class="space-y-2 max-h-[600px] overflow-y-auto pr-2">
-                        <div class="text-center text-gray-500 py-10" data-lang="no_parts">暂无配件</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="productsView" class="hidden-view">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="flex flex-wrap gap-3 mb-4">
-                <select id="filterBrand" class="p-2 border rounded"><option value="" data-lang="all_brand">全部品牌</option><option value="toyota">Toyota</option><option value="honda">Honda</option><option value="bmw">BMW</option><option value="mercedes">Mercedes</option></select>
-                <input id="filterPrice" type="number" data-lang="max_price" placeholder="最高价格" class="p-2 border rounded w-32">
-                <button onclick="filterProducts()" class="bg-blue-600 text-white px-3 py-1 rounded" data-lang="filter">筛选</button>
-            </div>
-            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-        </div>
-    </div>
-
-    <div id="localView" class="hidden-view">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <h2 class="text-xl font-bold mb-4" data-lang="local_title">同城服务</h2>
-            <div class="bg-white p-4 rounded shadow mb-4">
-                <select id="localType" class="w-full p-2 border rounded mb-2"><option value="Repair" data-lang="repair">维修</option><option value="Parts" data-lang="parts">配件</option></select>
-                <input id="localTitle" class="w-full p-2 border rounded mb-2" data-lang="title" placeholder="标题">
-                <textarea id="localContent" class="w-full p-2 border rounded h-20 mb-2" data-lang="content" placeholder="内容"></textarea>
-                <input id="localContact" class="w-full p-2 border rounded mb-2" data-lang="contact" placeholder="联系方式">
-                <button id="publishLocal" class="bg-blue-600 text-white px-4 py-2 rounded" data-lang="publish">发布</button>
-            </div>
-            <div id="localList" class="space-y-3"></div>
-        </div>
-    </div>
-
-    <div id="inquiryView" class="hidden-view">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <h2 class="text-xl font-bold mb-4" data-lang="inquiry_title">我的询价单</h2>
-            <div class="flex gap-3 mb-4 flex-wrap">
-                <button onclick="exportInquiry()" class="bg-green-600 text-white px-3 py-1 rounded" data-lang="export">导出询价单</button>
-                <input id="buyNum" type="number" min="1" value="1" class="w-20 p-2 border rounded" data-lang="buy_num" placeholder="采购数量">
-                <input id="buyRemark" class="flex-1 p-2 border rounded" data-lang="buy_remark" placeholder="备注要求">
-            </div>
-            <div class="font-bold mb-3" data-lang="total_price">合计总价：$<span id="totalPriceShow">0</span></div>
-            <div id="inquiryList" class="space-y-3"></div>
-        </div>
-    </div>
-
-    <div id="userView" class="hidden-view">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="bg-white p-6 rounded-lg shadow mb-4">
-                <h3 class="text-lg font-bold mb-4" data-lang="profile_title">个人资料</h3>
-                <input id="userNickname" class="w-full p-2 border rounded mb-2" data-lang="nickname" placeholder="昵称">
-                <input id="userPhone" class="w-full p-2 border rounded mb-2" data-lang="phone" placeholder="电话">
-                <button onclick="saveUserInfo()" class="bg-blue-600 text-white px-3 py-1 rounded" data-lang="save">保存资料</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="adminView" class="hidden-view">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="bg-white p-4 rounded-lg shadow mb-4"><h3 class="text-lg font-bold" data-lang="admin_title">管理后台</h3><p id="adminRole"></p></div>
-            <div class="flex gap-2 mb-4 flex-wrap">
-                <button class="admin-tab px-4 py-2 rounded border active-tab" data-panel="products" data-lang="product_mgr">产品管理</button>
-                <button class="admin-tab px-4 py-2 rounded border" data-panel="local" data-lang="local_mgr">同城审核</button>
-            </div>
-            <div id="adminProducts" class="bg-white p-4 rounded shadow">
-                <button onclick="addProduct()" class="mb-4 px-4 py-2 bg-blue-600 text-white rounded" data-lang="add_product">+ 上传新商品</button>
-                <div class="overflow-x-auto"><table class="w-full border-collapse border"><thead><tr class="bg-gray-100"><th class="border p-2" data-lang="img">图片</th><th class="border p-2" data-lang="p_name">商品名称</th><th class="border p-2">OEM</th><th class="border p-2" data-lang="price">价格</th><th class="border p-2" data-lang="stock">库存</th><th class="border p-2" data-lang="action">操作</th></tr></thead><tbody id="productTableBody"></tbody></table></div>
-            </div>
-            <div id="adminLocal" class="hidden bg-white p-4 rounded shadow"></div>
-        </div>
-    </div>
-</main>
-
-<footer class="bg-gray-800 text-white py-6 mt-auto">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div><div class="font-bold text-lg">TAIKEMU Auto Parts</div><p class="text-sm text-gray-400" data-lang="footer_desc">专业汽配跨境平台 | 非洲市场专供</p></div>
-            <div class="flex gap-5 text-xl">
-                <a href="#" class="hover:text-blue-400"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="hover:text-green-400"><i class="fab fa-whatsapp"></i></a>
-            </div>
-        </div>
-        <div class="border-t border-gray-700 mt-4 pt-4 text-center text-sm text-gray-400">© 2025 TAIKEMU All Rights Reserved</div>
-    </div>
-</footer>
-
-<div class="fixed bottom-6 right-6 z-50">
-    <button id="openChat" class="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg text-2xl"><i class="fas fa-comments"></i></button>
-    <div id="chatBox" class="hidden w-80 bg-white rounded-xl shadow-2xl overflow-hidden fixed bottom-20 right-6">
-        <div class="bg-blue-600 text-white p-3 flex justify-between items-center"><span data-lang="service">在线客服</span><button id="closeChat"><i class="fas fa-times"></i></button></div>
-        <div class="h-64 p-3 bg-gray-50 overflow-y-auto" id="chatMessages"></div>
-        <div class="flex p-2 border-t"><input id="chatInput" class="flex-1 p-2 border rounded-l" data-lang="msg" placeholder="输入消息"><button id="sendChat" class="bg-blue-600 text-white px-3 rounded-r" data-lang="send">发送</button></div>
-    </div>
-</div>
-
-<div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded z-50 hidden"><span id="toastText"></span></div>
-
-<script>
-// 域名白名单 已添加你的官方域名
-const ALLOW_DOMAINS = [
-    "localhost",
-    "127.0.0.1",
-    "taikemu-autoparts.com",
-    "www.taikemu-autoparts.com"
-];
-const currentHost = window.location.hostname;
-const isDev = window.location.protocol === "file:";
-if(!isDev && !ALLOW_DOMAINS.includes(currentHost)){
-    document.body.innerHTML = `<div style="padding:30px;text-align:center;"><h1>未经授权禁止访问</h1></div>`;
-    throw new Error("Unauthorized");
-}
-
-// 三语语言包 补全所有缺失翻译
-const langData = {
-    zh: {
-        nav_home:"首页",nav_epc:"电子目录",nav_products:"产品",nav_local:"同城服务",nav_inquiry:"我的询价",nav_profile:"个人中心",nav_admin:"管理后台",
-        login:"登录",register:"注册",logout:"注销",search:"搜索",search_placeholder:"输入VIN码 或 OEM零件号",
-        home_title:"全球正品汽车配件",home_sub:"专业汽配跨境平台 | 非洲市场专供",
-        feat1:"简单易用",feat1_desc:"快速查找配件",feat2:"EPC电子目录",feat2_desc:"原厂配件数据",feat3:"最优价格",feat3_desc:"工厂直供价格",feat4:"全球发货",feat4_desc:"覆盖非洲全境",
-        epc_title:"电子配件目录",select_brand:"选择品牌",select_model:"选择车型",select_year:"选择年份",select_system:"选择系统",epc_tip:"请先选择车辆",parts_list:"配件列表",add_all:"全部加入询价",no_parts:"暂无配件",
-        all_brand:"全部品牌",max_price:"最高价格",filter:"筛选",
-        local_title:"同城服务",repair:"维修",parts:"配件",title:"标题",content:"内容",contact:"联系方式",publish:"发布",
-        inquiry_title:"我的询价单",export:"导出询价单",buy_num:"数量",buy_remark:"备注",total_price:"合计总价",
-        profile_title:"个人资料",nickname:"昵称",phone:"电话",save:"保存资料",
-        admin_title:"管理后台",product_mgr:"产品管理",local_mgr:"同城审核",add_product:"+ 上传新商品",img:"图片",p_name:"商品名称",price:"价格",stock:"库存",action:"操作",
-        service:"在线客服",msg:"输入消息",send:"发送",footer_desc:"专业汽配跨境平台 | 非洲市场专供",
-        login_required:"请登录",no_permission:"无管理员权限",success:"操作成功",delete_confirm:"确定删除？",
-        img_limit:"仅支持JPG/PNG格式，大小不超过2MB",empty_tip:"请完善必填信息",stock_warn:"库存不足",exist_tip:"商品已存在",
-        input_username:"请输入用户名",input_password:"请输入密码",search_no_result:"未找到匹配的配件",search_result_title:"找到以下匹配配件"
-    },
-    en: {
-        nav_home:"Home",nav_epc:"EPC Catalog",nav_products:"Products",nav_local:"Local Service",nav_inquiry:"My Inquiry",nav_profile:"Profile",nav_admin:"Admin",
-        login:"Login",register:"Register",logout:"Logout",search:"Search",search_placeholder:"Enter VIN or OEM Number",
-        home_title:"Genuine Auto Parts Around the World",home_sub:"Professional Auto Parts | Africa Market",
-        feat1:"Easy To Use",feat1_desc:"Find Parts Quickly",feat2:"EPC Catalog",feat2_desc:"Genuine Parts Data",feat3:"Best Price",feat3_desc:"Factory Direct Supply",feat4:"Global Shipping",feat4_desc:"Cover All Africa",
-        epc_title:"EPC Parts Catalog",select_brand:"Select Brand",select_model:"Select Model",select_year:"Select Year",select_system:"Select System",epc_tip:"Select Vehicle First",parts_list:"Parts List",add_all:"Add All To Inquiry",no_parts:"No Parts",
-        all_brand:"All Brands",max_price:"Max Price",filter:"Filter",
-        local_title:"Local Service",repair:"Repair",parts:"Parts",title:"Title",content:"Content",contact:"Contact",publish:"Publish",
-        inquiry_title:"My Inquiry",export:"Export Inquiry",buy_num:"Qty",buy_remark:"Remark",total_price:"Total Price",
-        profile_title:"My Profile",nickname:"Nickname",phone:"Phone",save:"Save Profile",
-        admin_title:"Admin Panel",product_mgr:"Product Manage",local_mgr:"Local Audit",add_product:"+ Add Product",img:"Image",p_name:"Name",price:"Price",stock:"Stock",action:"Action",
-        service:"Online Service",msg:"Enter Message",send:"Send",footer_desc:"Professional Auto Parts | Africa Market",
-        login_required:"Please Login",no_permission:"No Permission",success:"Success",delete_confirm:"Confirm Delete?",
-        img_limit:"Only JPG/PNG, max 2MB",empty_tip:"Fill required fields",stock_warn:"Insufficient stock",exist_tip:"Product exists",
-        input_username:"Enter Username",input_password:"Enter Password",search_no_result:"No matching parts found",search_result_title:"Found matching parts"
-    },
-    fr: {
-        nav_home:"Accueil",nav_epc:"Catalogue EPC",nav_products:"Produits",nav_local:"Service Local",nav_inquiry:"Ma Demande",nav_profile:"Profil",nav_admin:"Admin",
-        login:"Connexion",register:"S'inscrire",logout:"Déconnexion",search:"Rechercher",search_placeholder:"Entrer VIN ou OEM",
-        home_title:"Pièces Auto Authentiques Dans Le Monde",home_sub:"Pièces Auto Professionnelles | Marché Africain",
-        feat1:"Facile À Utiliser",feat1_desc:"Trouver Pièces Rapidement",feat2:"Catalogue EPC",feat2_desc:"Données Pièces D'origine",feat3:"Meilleur Prix",feat3_desc:"Fourniture Directe Usine",feat4:"Expédition Mondiale",feat4_desc:"Couvrir Toute L'Afrique",
-        epc_title:"Catalogue Pièces EPC",select_brand:"Sélectionner Marque",select_model:"Sélectionner Modèle",select_year:"Sélectionner Année",select_system:"Sélectionner Système",epc_tip:"Sélectionner Véhicule D'abord",parts_list:"Liste Pièces",add_all:"Ajouter Tout À Demande",no_parts:"Aucune Pièce",
-        all_brand:"Toutes Marques",max_price:"Prix Max",filter:"Filtrer",
-        local_title:"Service Local",repair:"Réparation",parts:"Pièces",title:"Titre",content:"Contenu",contact:"Contact",publish:"Publier",
-        inquiry_title:"Ma Demande",export:"Exporter Demande",buy_num:"Qté",buy_remark:"Remarque",total_price:"Prix Total",
-        profile_title:"Mon Profil",nickname:"Surnom",phone:"Téléphone",save:"Enregistrer Profil",
-        admin_title:"Panneau Admin",product_mgr:"Gérer Produits",local_mgr:"Audit Local",add_product:"+ Ajouter Produit",img:"Image",p_name:"Nom",price:"Prix",stock:"Stock",action:"Action",
-        service:"Service En Ligne",msg:"Entrer Message",send:"Envoyer",footer_desc:"Pièces Auto Professionnelles | Marché Africain",
-        login_required:"Veuillez Vous Connecter",no_permission:"Pas D'autorisation",success:"Succès",delete_confirm:"Confirmer La Suppression?",
-        img_limit:"JPG/PNG seulement, 2MB max",empty_tip:"Remplir champs obligatoires",stock_warn:"Stock insuffisant",exist_tip:"Produit existant",
-        input_username:"Entrez le nom d'utilisateur",input_password:"Entrez le mot de passe",search_no_result:"Aucune pièce correspondante trouvée",search_result_title:"Pièces correspondantes trouvées"
-    }
-};
-
-let currentLang = localStorage.getItem('lang') || 'zh';
-function changeLang(lang) {
-    currentLang = lang;
-    localStorage.setItem('lang', lang);
-    document.documentElement.lang = lang;
-    document.querySelectorAll('[data-lang]').forEach(el => {
-        const key = el.getAttribute('data-lang');
-        if(langData[lang][key]) el.innerText = langData[lang][key];
-        if(el.placeholder && langData[lang][key]) el.placeholder = langData[lang][key];
-    });
-    calcTotalPrice();
-}
-
-// 移动端菜单切换
-function toggleMobileMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
-    document.getElementById('mobileOverlay').classList.toggle('hidden');
-}
-
-// 基础数据
-let users = JSON.parse(localStorage.getItem('users')) || [{id:1,username:'admin',password:'admin123',role:'super',nickname:'Admin',phone:''}];
-let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-let products = JSON.parse(localStorage.getItem('products')) || [{id:1,name:"Front Brake Pad",oem:"04465-0K090",brand:"toyota",price:38.5,stock:100,image:"https://picsum.photos/id/23/300/200"}];
-let localPosts = JSON.parse(localStorage.getItem('localPosts')) || [];
-let inquiryList = JSON.parse(localStorage.getItem('inquiryList')) || [];
-let editProductId = null;
-const ADMIN_ACCOUNT = "admin";
-const API_BASE = "/api"; // 后端接口地址
-
-// 工具方法
-const toast = (key) => {
-    let txt = langData[currentLang][key] || key;
-    document.getElementById('toastText').innerText = txt;
-    document.getElementById('toast').classList.remove('hidden');
-    setTimeout(()=>document.getElementById('toast').classList.add('hidden'),2000);
-};
-const saveData = () => {
-    localStorage.setItem('users',JSON.stringify(users));
-    localStorage.setItem('products',JSON.stringify(products));
-    localStorage.setItem('localPosts',JSON.stringify(localPosts));
-    localStorage.setItem('inquiryList',JSON.stringify(inquiryList));
-    localStorage.setItem('currentUser',JSON.stringify(currentUser));
-};
-const isAdmin = () => currentUser && currentUser.username === ADMIN_ACCOUNT;
-
-// 视图切换
-const switchView = (v) => {
-    toggleMobileMenu(); // 切换视图时关闭移动端菜单
-    document.querySelectorAll('[id$="View"]').forEach(e=>e.classList.add('hidden-view'));
-    document.getElementById(v+'View').classList.remove('hidden-view');
-    if(v === 'admin' && !isAdmin()){ toast('no_permission'); switchView('home'); }
-};
-document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(e=>e.onclick=()=>switchView(e.dataset.nav));
-
-const checkAdminNav = () => {
-    document.getElementById('adminNav').classList.toggle('hidden',!isAdmin());
-    document.getElementById('adminNavMobile').classList.toggle('hidden',!isAdmin());
-};
-
-// 登录注册注销 修复硬编码文字
-document.getElementById('loginBtn').onclick=()=>{
-    let u = prompt(langData[currentLang].input_username);
-    if(!u) return;
-    let p = prompt(langData[currentLang].input_password);
-    if(!p) return;
-    // 后续对接后端接口，这里先兼容本地
-    let user = users.find(x=>x.username===u&&x.password===p);
-    if(!user) return toast("账号密码错误");
-    currentUser = user;
-    saveData();
-    renderUser();
-    checkAdminNav();
-    changeLang(currentLang);
-    toast('success');
-};
-document.getElementById('registerBtn').onclick=()=>{
-    let u = prompt(langData[currentLang].input_username);
-    if(!u) return;
-    let p = prompt(langData[currentLang].input_password);
-    if(!p) return;
-    if(users.some(x=>x.username===u)) return toast("用户名已存在");
-    users.push({id:Date.now(),username:u,password:p,role:'user',nickname:u,phone:''});
-    saveData();
-    toast('success');
-};
-document.getElementById('logoutBtn').onclick=()=>{
-    currentUser=null;
-    localStorage.removeItem('currentUser');
-    renderUser();
-    checkAdminNav();
-    toast('success');
-    switchView('home');
-};
-
-const renderUser = () => {
-    document.getElementById('loginBtn').classList.toggle('hidden',currentUser);
-    document.getElementById('registerBtn').classList.toggle('hidden',currentUser);
-    document.getElementById('logoutBtn').classList.toggle('hidden',!currentUser);
-    document.getElementById('userInfo').classList.toggle('hidden',!currentUser);
-    if(currentUser) document.getElementById('userInfo').innerText = `Hi, ${currentUser.nickname}`;
-};
-
-// 询价总价计算
-function calcTotalPrice(){
-    let num = Number(document.getElementById('buyNum').value) || 1;
-    let total = 0;
-    inquiryList.forEach(item=> total += item.price * num);
-    document.getElementById('totalPriceShow').innerText = total.toFixed(2);
-}
-document.getElementById('buyNum').addEventListener('input',calcTotalPrice);
-
-// 产品渲染
-const renderProducts = (list=products) => {
-    document.getElementById('productGrid').innerHTML=list.map(p=>`
-    <div class="bg-white rounded shadow p-4">
-        <img src="${p.image}" class="w-full h-40 object-cover rounded mb-2">
-        <h3 class="font-bold">${p.name}</h3>
-        <p class="text-sm">OEM: ${p.oem}</p>
-        <p class="text-green-600">${langData[currentLang].stock}: ${p.stock}</p>
-        <p class="text-blue-600 font-bold">$${p.price}</p>
-        <button onclick="addInquiry(${p.id})" class="mt-2 w-full bg-orange-500 text-white py-1 rounded">加入询价</button>
-    </div>`).join('');
-};
-
-const renderAdminProducts = () => {
-    const tbody = document.getElementById('productTableBody');
-    tbody.innerHTML = products.map(p=>`
-    <tr>
-        <td class="border p-2"><img src="${p.image}" class="w-12 h-12 object-cover"></td>
-        <td class="border p-2">${p.name}</td>
-        <td class="border p-2">${p.oem}</td>
-        <td class="border p-2">$${p.price}</td>
-        <td class="border p-2">${p.stock}</td>
-        <td class="border p-2 gap-2 flex">
-            <button onclick="editProduct(${p.id})" class="px-2 py-1 bg-yellow-500 text-white rounded">编辑</button>
-            <button onclick="deleteProduct(${p.id})" class="px-2 py-1 bg-red-500 text-white rounded">删除</button>
-        </td>
-    </tr>`).join('');
-};
-
-// 新增商品
-const addProduct = () => {
-    editProductId = null;
-    let modal = `<div class="modal-overlay" id="productModal">
-    <div class="bg-white p-6 rounded-lg w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4">${langData[currentLang].add_product}</h3>
-        <input type="file" id="productImg" accept="image/jpeg,image/png" class="w-full p-2 border rounded mb-2">
-        <input id="productName" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].p_name}">
-        <input id="productOem" class="w-full p-2 border rounded mb-2" placeholder="OEM">
-        <input id="productPrice" type="number" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].price}">
-        <input id="productStock" type="number" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].stock}">
-        <select id="productBrand" class="w-full p-2 border rounded mb-2">
-            <option value="toyota">Toyota</option>
-            <option value="honda">Honda</option>
-            <option value="bmw">BMW</option>
-            <option value="mercedes">Mercedes</option>
-        </select>
-        <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-2 rounded">${langData[currentLang].save}</button>
-        <button onclick="closeModal()" class="w-full mt-2 bg-gray-500 text-white py-2 rounded">取消</button>
-    </div></div>`;
-    document.body.insertAdjacentHTML('beforeend',modal);
-};
-
-// 编辑商品
-const editProduct = (id) => {
-    let p = products.find(x=>x.id===id);
-    editProductId = id;
-    let modal = `<div class="modal-overlay" id="productModal">
-    <div class="bg-white p-6 rounded-lg w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4">编辑商品</h3>
-        <img src="${p.image}" class="w-24 h-24 object-cover mb-2">
-        <input type="file" id="productImg" accept="image/jpeg,image/png" class="w-full p-2 border rounded mb-2">
-        <input id="productName" value="${p.name}" class="w-full p-2 border rounded mb-2">
-        <input id="productOem" value="${p.oem}" class="w-full p-2 border rounded mb-2">
-        <input id="productPrice" value="${p.price}" type="number" class="w-full p-2 border rounded mb-2">
-        <input id="productStock" value="${p.stock}" type="number" class="w-full p-2 border rounded mb-2">
-        <select id="productBrand" class="w-full p-2 border rounded mb-2">
-            <option value="toyota" ${p.brand==='toyota'?'selected':''}>Toyota</option>
-            <option value="honda" ${p.brand==='honda'?'selected':''}>Honda</option>
-            <option value="bmw" ${p.brand==='bmw'?'selected':''}>BMW</option>
-            <option value="mercedes" ${p.brand==='mercedes'?'selected':''}>Mercedes</option>
-        </select>
-        <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-2 rounded">保存</button>
-        <button onclick="closeModal()" class="w-full mt-2 bg-gray-500 text-white py-2 rounded">取消</button>
-    </div></div>`;
-    document.body.insertAdjacentHTML('beforeend',modal);
-};
-
-// 保存商品+图片校验
-const saveProduct = () => {
-    let name = document.getElementById('productName').value.trim();
-    let oem = document.getElementById('productOem').value.trim();
-    let price = document.getElementById('productPrice').value;
-    let stock = document.getElementById('productStock').value;
-    let brand = document.getElementById('productBrand').value;
-    let file = document.getElementById('productImg').files[0];
-
-    if(!name||!oem||!price||!stock) return toast('empty_tip');
-    if(Number(stock)<0) return toast('stock_warn');
-
-    const maxSize = 2*1024*1024;
-    const allowType = ["image/jpeg","image/jpg","image/png"];
-
-    if(editProductId){
-        let idx = products.findIndex(x=>x.id===editProductId);
-        if(file){
-            if(!allowType.includes(file.type)||file.size>maxSize) return toast('img_limit');
-            let reader = new FileReader();
-            reader.onload = e=>{
-                products[idx] = {...products[idx],name,oem,brand,price:Number(price),stock:Number(stock),image:e.target.result};
-                saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
-            };
-            reader.readAsDataURL(file);
-        }else{
-            products[idx] = {...products[idx],name,oem,brand,price:Number(price),stock:Number(stock)};
-            saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
-        }
-    }else{
-        if(!file) return toast('img_limit');
-        if(!allowType.includes(file.type)||file.size>maxSize) return toast('img_limit');
-        let reader = new FileReader();
-        reader.onload = e=>{
-            products.push({id:Date.now(),name,oem,brand,price:Number(price),stock:Number(stock),image:e.target.result});
-            saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
-        };
-        reader.readAsDataURL(file);
-    }
-};
-
-const deleteProduct = (id) => {
-    if(!confirm(langData[currentLang].delete_confirm))return;
-    products = products.filter(x=>x.id!==id);
-    inquiryList = inquiryList.filter(x=>x.id!==id);
-    saveData();renderProducts();renderAdminProducts();toast('success');
-    calcTotalPrice();
-};
-const closeModal = ()=>document.getElementById('productModal')?.remove();
-const filterProducts = ()=>{
-    let b = document.getElementById('filterBrand').value;
-    let p = document.getElementById('filterPrice').value;
-    let list = products;
-    if(b) list = list.filter(x=>x.brand===b);
-    if(p) list = list.filter(x=>x.price<=Number(p));
-    renderProducts(list);
-};
-
-// 询价相关
-const addInquiry = (id) => {
-    if(!currentUser) return toast('login_required');
-    let item = products.find(x=>x.id===id);
-    if(inquiryList.some(x=>x.id===id)) return toast('exist_tip');
-    inquiryList.push(item);
-    saveData();
-    renderInquiry();
-    calcTotalPrice();
-    toast('success');
-};
-const renderInquiry = () => {
-    if(!currentUser) return toast('login_required');
-    document.getElementById('inquiryList').innerHTML = inquiryList.length
-    ? inquiryList.map(p=>`
-    <div class="bg-white p-4 rounded shadow flex justify-between items-center">
-        <div>
-            <h4 class="font-bold">${p.name}</h4>
-            <p>OEM: ${p.oem} | $${p.price}</p>
-        </div>
-        <button onclick="delInquiry(${p.id})" class="text-red-600">删除</button>
-    </div>`).join('')
-    : `<div class="text-center py-6 text-gray-500">暂无询价商品</div>`;
-};
-const delInquiry = (id) => {
-    inquiryList = inquiryList.filter(x=>x.id!==id);
-    saveData();
-    renderInquiry();
-    calcTotalPrice();
-    toast('success');
-};
-const exportInquiry = () => {
-    if(!inquiryList.length) return toast('暂无数据');
-    let num = document.getElementById('buyNum').value||1;
-    let remark = document.getElementById('buyRemark').value;
-    let text = `采购数量：${num}\n备注：${remark}\n--------------------\n`;
-    inquiryList.forEach(p=>{
-        text += `${p.name} | OEM:${p.oem} | 单价$${p.price}\n`;
-    });
-    text += `--------------------\n总计金额：$${document.getElementById('totalPriceShow').innerText}`;
-    let blob = new Blob([text],{type:'text/plain'});
-    let a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "询价订单.txt";
-    a.click();
-};
-
-// 同城服务
-document.getElementById('publishLocal').onclick=()=>{
-    if(!currentUser) return toast('login_required');
-    let t = document.getElementById('localTitle').value.trim();
-    let c = document.getElementById('localContent').value.trim();
-    let type = document.getElementById('localType').value;
-    let contact = document.getElementById('localContact').value.trim();
-    if(!t||!c) return toast('empty_tip');
-    localPosts.push({id:Date.now(),title:t,content:c,type,contact,user:currentUser.username,status:'pending'});
-    saveData();renderLocal();
-    document.getElementById('localTitle').value='';
-    document.getElementById('localContent').value='';
-    toast('success');
-};
-const renderLocal = () => {
-    document.getElementById('localList').innerHTML = localPosts.map(p=>`
-    <div class="bg-white p-4 rounded shadow">
-        <h3 class="font-bold">${p.type} | ${p.title}</h3>
-        <p class="text-sm my-2">${p.content}</p>
-        <p class="text-xs text-gray-500">联系方式：${p.contact} | 发布人：${p.user}</p>
-    </div>`).join('');
-};
-
-// EPC目录
-const quickSearchBrand = (b) => {
-    switchView('epc');
-    document.getElementById('epcBrand').value = b;
-    document.getElementById('epcBrand').onchange();
-};
-document.getElementById('epcBrand').onchange=()=>document.getElementById('epcModel').disabled=false;
-document.getElementById('epcModel').onchange=()=>document.getElementById('epcYear').disabled=false;
-document.getElementById('epcYear').onchange=()=>document.getElementById('epcSystem').disabled=false;
-document.getElementById('epcSystem').onchange=()=>{
-    document.getElementById('epcImagePlaceholder').classList.add('hidden');
-    document.getElementById('epcExplodedView').src='https://picsum.photos/seed/brake/800/600';
-    document.getElementById('epcExplodedView').classList.remove('hidden');
-    let brand = document.getElementById('epcBrand').value;
-    let list = products.filter(x=>x.brand===brand);
-    document.getElementById('epcPartsList').innerHTML = list.map(p=>`
-    <div class="epc-part-item p-3 border rounded flex justify-between items-center">
-        <span>${p.name}</span>
-        <button onclick="addInquiry(${p.id})" class="bg-blue-600 text-white px-2 py-1 rounded text-sm">加入询价</button>
-    </div>`).join('');
-};
-
-// 首页搜索功能 VIN/OEM搜索
-document.getElementById('heroSearchBtn').onclick = async () => {
-    let keyword = document.getElementById('heroSearchInput').value.trim().toUpperCase();
-    if(!keyword) return;
-    let resultDiv = document.getElementById('heroSearchResult');
-    resultDiv.classList.remove('hidden');
-    
-    // 调用后端搜索接口
-    try {
-        let res = await fetch(`${API_BASE}/search`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({keyword})
-        });
-        let data = await res.json();
-        
-        if(data.list && data.list.length>0){
-            resultDiv.innerHTML = `
-                <div class="font-bold mb-2">${langData[currentLang].search_result_title} (${data.brand?`品牌:${data.brand}`:'OEM搜索'})</div>
-                <div class="space-y-2">
-                    ${data.list.map(p=>`
-                    <div class="border-b pb-2 flex justify-between items-center">
-                        <div>
-                            <div class="font-medium">${p.name}</div>
-                            <div class="text-sm text-gray-500">OEM: ${p.oem} | $${p.price}</div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="text-center">
+                            <div class="text-5xl font-bold text-green-600 mb-2">6</div>
+                            <div class="text-gray-600">主要功能模块</div>
                         </div>
-                        <button onclick="addInquiry(${p.id})" class="bg-orange-500 text-white px-3 py-1 rounded text-sm">加入询价</button>
-                    </div>
-                    `).join('')}
-                </div>
-            `;
-        }else{
-            resultDiv.innerHTML = `<div class="text-gray-500">${langData[currentLang].search_no_result}</div>`;
-        }
-    }catch(e){
-        // 兼容本地模式
-        let list, brand = null;
-        if(keyword.length === 17){ // VIN码
-            // 简单VIN解析，前3位WMI
-            let wmi = keyword.substring(0,3);
-            const wmiMap = {
-                '4T1':'toyota','5YJ':'toyota','JTD':'toyota','1HG':'honda','5J6':'honda',
-                'WBA':'bmw','WBS':'bmw','WDD':'mercedes','WDB':'mercedes'
-            };
-            brand = wmiMap[wmi];
-            if(brand){
-                list = products.filter(x=>x.brand===brand);
-            }else{
-                list = products.filter(x=>x.oem.includes(keyword) || x.name.toUpperCase().includes(keyword));
-            }
-        }else{ // OEM搜索
-            list = products.filter(x=>x.oem.includes(keyword) || x.name.toUpperCase().includes(keyword));
-        }
-        
-        if(list.length>0){
-            resultDiv.innerHTML = `
-                <div class="font-bold mb-2">${langData[currentLang].search_result_title} (${brand?`品牌:${brand}`:'OEM搜索'})</div>
-                <div class="space-y-2">
-                    ${list.map(p=>`
-                    <div class="border-b pb-2 flex justify-between items-center">
-                        <div>
-                            <div class="font-medium">${p.name}</div>
-                            <div class="text-sm text-gray-500">OEM: ${p.oem} | $${p.price}</div>
+                        <div class="text-center">
+                            <div class="text-5xl font-bold text-green-600 mb-2">3</div>
+                            <div class="text-gray-600">支持语言</div>
                         </div>
-                        <button onclick="addInquiry(${p.id})" class="bg-orange-500 text-white px-3 py-1 rounded text-sm">加入询价</button>
+                        <div class="text-center">
+                            <div class="text-5xl font-bold text-green-600 mb-2">6</div>
+                            <div class="text-gray-600">社交媒体平台</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-5xl font-bold text-green-600 mb-2">200+</div>
+                            <div class="text-gray-600">覆盖车型</div>
+                        </div>
                     </div>
-                    `).join('')}
                 </div>
-            `;
-        }else{
-            resultDiv.innerHTML = `<div class="text-gray-500">${langData[currentLang].search_no_result}</div>`;
-        }
-    }
-};
+            </div>
 
-// 客服
-document.getElementById('openChat').onclick=()=>document.getElementById('chatBox').classList.remove('hidden');
-document.getElementById('closeChat').onclick=()=>document.getElementById('chatBox').classList.add('hidden');
-document.getElementById('sendChat').onclick=()=>{
-    let msg = document.getElementById('chatInput').value.trim();
-    if(!msg)return;
-    document.getElementById('chatMessages').innerHTML += `<div class="text-right my-1"><span class="bg-blue-600 text-white p-2 rounded">${msg}</span></div>`;
-    document.getElementById('chatInput').value='';
-    setTimeout(()=>{
-        document.getElementById('chatMessages').innerHTML += `<div class="text-left my-1"><span class="bg-gray-200 p-2 rounded">我们将尽快回复您</span></div>`;
-    },600);
-};
+            <!-- 技术栈 -->
+            <div class="card md:col-span-2 md:row-span-1 p-8 flex flex-col justify-center">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-purple"></div>
+                <div class="relative">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">技术栈</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <i class="fa-brands fa-html5 text-3xl text-orange-500 mr-4"></i>
+                            <div>
+                                <div class="font-semibold">HTML5</div>
+                                <div class="text-sm text-gray-500">基础结构</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <i class="fa-brands fa-css3-alt text-3xl text-blue-500 mr-4"></i>
+                            <div>
+                                <div class="font-semibold">CSS3</div>
+                                <div class="text-sm text-gray-500">样式设计</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <i class="fa-brands fa-js-square text-3xl text-yellow-500 mr-4"></i>
+                            <div>
+                                <div class="font-semibold">JavaScript</div>
+                                <div class="text-sm text-gray-500">交互功能</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <i class="fa-solid fa-wind text-3xl text-blue-400 mr-4"></i>
+                            <div>
+                                <div class="font-semibold">Tailwind CSS</div>
+                                <div class="text-sm text-gray-500">样式框架</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-// 管理标签切换
-document.querySelectorAll('.admin-tab').forEach(tab=>{
-    tab.onclick=()=>{
-        document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active-tab'));
-        tab.classList.add('active-tab');
-        document.querySelectorAll('#adminProducts,#adminLocal').forEach(p=>p.classList.add('hidden'));
-        let panelId = 'admin'+tab.dataset.panel.charAt(0).toUpperCase()+tab.dataset.panel.slice(1);
-        document.getElementById(panelId).classList.remove('hidden');
-    };
-});
+            <!-- 主要功能卡片1 -->
+            <div class="card md:col-span-2 md:row-span-1 p-8">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-orange"></div>
+                <div class="relative flex items-center h-full">
+                    <div class="w-1/3">
+                        <i class="fa-solid fa-mobile-screen-button text-7xl text-orange-500"></i>
+                    </div>
+                    <div class="w-2/3">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">响应式导航</h3>
+                        <p class="text-gray-600 mb-4">移动端汉堡折叠导航、PC端横向导航，完美适配各种设备尺寸</p>
+                        <div class="flex space-x-2">
+                            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm">移动端适配</span>
+                            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm">桌面端适配</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-// 个人资料保存
-const saveUserInfo = () => {
-    if(!currentUser) return toast('login_required');
-    currentUser.nickname = document.getElementById('userNickname').value.trim();
-    currentUser.phone = document.getElementById('userPhone').value.trim();
-    let idx = users.findIndex(x=>x.id===currentUser.id);
-    users[idx] = currentUser;
-    saveData();
-    toast('success');
-    renderUser();
-};
+            <!-- 主要功能卡片2 -->
+            <div class="card md:col-span-2 md:row-span-1 p-8">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-red"></div>
+                <div class="relative flex items-center h-full">
+                    <div class="w-1/3">
+                        <i class="fa-solid fa-magnifying-glass text-7xl text-red-500"></i>
+                    </div>
+                    <div class="w-2/3">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">智能搜索</h3>
+                        <p class="text-gray-600 mb-4">首页VIN/OEM组合搜索框、品牌自动解析、结果跳转产品页</p>
+                        <div class="flex space-x-2">
+                            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">VIN解析</span>
+                            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">OEM查询</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-// APP返回键适配
-document.addEventListener('keydown',function(e){
-    if(e.key === "Backspace" && window.history.length>1){
-        e.preventDefault();
-        window.history.back();
-    }
-});
+            <!-- 主要功能卡片3 -->
+            <div class="card md:col-span-2 md:row-span-1 p-8">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-teal"></div>
+                <div class="relative flex items-center h-full">
+                    <div class="w-1/3">
+                        <i class="fa-solid fa-language text-7xl text-teal-500"></i>
+                    </div>
+                    <div class="w-2/3">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">多语言支持</h3>
+                        <p class="text-gray-600 mb-4">全站中/英/法三语切换，包含所有交互弹窗、提示文本</p>
+                        <div class="flex space-x-2">
+                            <span class="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm">中文</span>
+                            <span class="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm">English</span>
+                            <span class="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm">Français</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-// 初始化加载
-window.onload=()=>{
-    changeLang(currentLang);
-    renderUser();
-    checkAdminNav();
-    renderProducts();
-    renderInquiry();
-    renderLocal();
-    renderAdminProducts();
-    switchView('home');
-    calcTotalPrice();
-};
-</script>
+            <!-- 主要功能卡片4 -->
+            <div class="card md:col-span-2 md:row-span-1 p-8">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-blue"></div>
+                <div class="relative flex items-center h-full">
+                    <div class="w-1/3">
+                        <i class="fa-solid fa-gears text-7xl text-blue-500"></i>
+                    </div>
+                    <div class="w-2/3">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">管理后台</h3>
+                        <p class="text-gray-600 mb-4">系统设置模块，控制页脚社交媒体图标的显示/隐藏</p>
+                        <div class="flex space-x-2">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">系统配置</span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">UI控制</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 社交媒体图标 -->
+            <div class="card md:col-span-4 md:row-span-1 p-8">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-green"></div>
+                <div class="relative">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">社交媒体矩阵</h2>
+                    <div class="flex flex-wrap justify-center gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-brands fa-facebook-f text-4xl text-blue-600"></i>
+                            </div>
+                            <span class="text-gray-700 font-medium">Facebook</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-brands fa-whatsapp text-4xl text-green-600"></i>
+                            </div>
+                            <span class="text-gray-700 font-medium">WhatsApp</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-brands fa-instagram text-4xl text-pink-600"></i>
+                            </div>
+                            <span class="text-gray-700 font-medium">Instagram</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-20 h-20 bg-sky-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-brands fa-twitter text-4xl text-sky-600"></i>
+                            </div>
+                            <span class="text-gray-700 font-medium">Twitter</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-brands fa-telegram text-4xl text-blue-500"></i>
+                            </div>
+                            <span class="text-gray-700 font-medium">Telegram</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-brands fa-weixin text-4xl text-green-500"></i>
+                            </div>
+                            <span class="text-gray-700 font-medium">微信</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 性能特点 -->
+            <div class="card md:col-span-4 md:row-span-1 p-8">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-purple"></div>
+                <div class="relative">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">架构与性能</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 rounded-xl p-6">
+                            <div class="flex items-center mb-4">
+                                <i class="fa-solid fa-server text-3xl text-purple-600 mr-4"></i>
+                                <h3 class="text-xl font-semibold">独立前端架构</h3>
+                            </div>
+                            <p class="text-gray-600">无需部署环境，本地直接运行，简化开发与部署流程</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-6">
+                            <div class="flex items-center mb-4">
+                                <i class="fa-solid fa-rocket text-3xl text-purple-600 mr-4"></i>
+                                <h3 class="text-xl font-semibold">快速加载</h3>
+                            </div>
+                            <p class="text-gray-600">优化的代码结构与资源加载策略，确保快速的页面响应</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-6">
+                            <div class="flex items-center mb-4">
+                                <i class="fa-solid fa-shield-halved text-3xl text-purple-600 mr-4"></i>
+                                <h3 class="text-xl font-semibold">安全可靠</h3>
+                            </div>
+                            <p class="text-gray-600">遵循最佳实践，确保网站安全性与稳定性</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表展示 -->
+            <div class="card md:col-span-4 md:row-span-2 p-8">
+                <div class="absolute top-0 left-0 w-full h-full highlight-gradient-blue"></div>
+                <div class="relative flex flex-col h-full">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">功能使用统计</h2>
+                    <div class="flex-grow h-64">
+                        <canvas id="featuresChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+<script>
+    // 初始化图表
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('featuresChart').getContext('2d');
+        const featuresChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['搜索功能', '产品浏览', '多语言切换', '社交媒体', '移动端导航', '管理后台'],
+                datasets: [{
+                    label: '功能使用频率 (%)',
+                    data: [85, 78, 45, 60, 75, 25],
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.7)',
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(20, 184, 166, 0.7)',
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(249, 115, 22, 0.7)',
+                        'rgba(139, 92, 246, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(20, 184, 166, 1)',
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(249, 115, 22, 1)',
+                        'rgba(139, 92, 246, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        },
+                        padding: 10,
+                        cornerRadius: 4
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Inter',
+                                size: 12
+                            },
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Inter',
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 </html>
