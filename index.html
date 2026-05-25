@@ -209,7 +209,7 @@
                     <label class="flex items-center gap-2"><input type="checkbox" id="social_facebook" checked> <i class="fab fa-facebook text-blue-600"></i> Facebook</label>
                     <label class="flex items-center gap-2"><input type="checkbox" id="social_whatsapp" checked> <i class="fab fa-whatsapp text-green-600"></i> WhatsApp</label>
                     <label class="flex items-center gap-2"><input type="checkbox" id="social_instagram" checked> <i class="fab fa-instagram text-pink-600"></i> Instagram</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" id="social_twitter" checked> <i class="fab fa-x-twitter text-gray-800"></i> Twitter/X</label>
+                    <label class="flex items-center gap-2"><input type="checkbox" id="social_twitter" checked> <i class="fab fa-twitter text-gray-800"></i> Twitter/X</label>
                     <label class="flex items-center gap-2"><input type="checkbox" id="social_telegram" checked> <i class="fab fa-telegram text-blue-500"></i> Telegram</label>
                     <label class="flex items-center gap-2"><input type="checkbox" id="social_wechat" checked> <i class="fab fa-weixin text-green-500"></i> 微信</label>
                 </div>
@@ -227,7 +227,7 @@
                 <a href="#" class="hover:text-blue-400 social-icon" data-key="facebook"><i class="fab fa-facebook"></i></a>
                 <a href="#" class="hover:text-green-400 social-icon" data-key="whatsapp"><i class="fab fa-whatsapp"></i></a>
                 <a href="#" class="hover:text-pink-400 social-icon" data-key="instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="hover:text-gray-400 social-icon" data-key="twitter"><i class="fab fa-x-twitter"></i></a>
+                <a href="#" class="hover:text-gray-400 social-icon" data-key="twitter"><i class="fab fa-twitter"></i></a>
                 <a href="#" class="hover:text-blue-400 social-icon" data-key="telegram"><i class="fab fa-telegram"></i></a>
                 <a href="#" class="hover:text-green-400 social-icon" data-key="wechat"><i class="fab fa-weixin"></i></a>
             </div>
@@ -342,7 +342,7 @@ function changeLang(lang) {
     });
     calcTotalPrice();
     loadSocialIcons();
-}
+};
 
 // 加载社媒图标
 function loadSocialIcons() {
@@ -410,7 +410,10 @@ const isAdmin = () => currentUser && currentUser.username === ADMIN_ACCOUNT;
 
 // 视图切换
 const switchView = (v) => {
-    toggleMobileMenu(); // 切换视图时关闭移动端菜单
+    // 切换视图时，强制关闭移动端侧边栏，而不是切换状态
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('mobileOverlay').classList.add('hidden');
+    
     document.querySelectorAll('[id$="View"]').forEach(e=>e.classList.add('hidden-view'));
     document.getElementById(v+'View').classList.remove('hidden-view');
     if(v === 'admin' && !isAdmin()){ toast('no_permission'); switchView('home'); }
@@ -430,7 +433,7 @@ document.getElementById('loginBtn').onclick=()=>{
     if(!p) return;
     // 后续对接后端接口，这里先兼容本地
     let user = users.find(x=>x.username===u&&x.password===p);
-    if(!user) return toast("账号密码错误");
+    if(!user) return alert("账号密码错误");
     currentUser = user;
     saveData();
     renderUser();
@@ -610,99 +613,6 @@ const filterProducts = ()=>{
     renderProducts(list);
 };
 
-// 询价相关
-const addInquiry = (id) => {
-    if(!currentUser) return toast('login_required');
-    let item = products.find(x=>x.id===id);
-    if(inquiryList.some(x=>x.id===id)) return toast('exist_tip');
-    inquiryList.push(item);
-    saveData();
-    renderInquiry();
-    calcTotalPrice();
-    toast('success');
-};
-const renderInquiry = () => {
-    if(!currentUser) return toast('login_required');
-    document.getElementById('inquiryList').innerHTML = inquiryList.length
-    ? inquiryList.map(p=>`
-    <div class="bg-white p-4 rounded shadow flex justify-between items-center">
-        <div>
-            <h4 class="font-bold">${p.name}</h4>
-            <p>OEM: ${p.oem} | $${p.price}</p>
-        </div>
-        <button onclick="delInquiry(${p.id})" class="text-red-600">删除</button>
-    </div>`).join('')
-    : `<div class="text-center py-6 text-gray-500">暂无询价商品</div>`;
-};
-const delInquiry = (id) => {
-    inquiryList = inquiryList.filter(x=>x.id!==id);
-    saveData();
-    renderInquiry();
-    calcTotalPrice();
-    toast('success');
-};
-const exportInquiry = () => {
-    if(!inquiryList.length) return toast('暂无数据');
-    let num = document.getElementById('buyNum').value||1;
-    let remark = document.getElementById('buyRemark').value;
-    let text = `采购数量：${num}\n备注：${remark}\n--------------------\n`;
-    inquiryList.forEach(p=>{
-        text += `${p.name} | OEM:${p.oem} | 单价$${p.price}\n`;
-    });
-    text += `--------------------\n总计金额：$${document.getElementById('totalPriceShow').innerText}`;
-    let blob = new Blob([text],{type:'text/plain'});
-    let a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "询价订单.txt";
-    a.click();
-};
-
-// 同城服务
-document.getElementById('publishLocal').onclick=()=>{
-    if(!currentUser) return toast('login_required');
-    let t = document.getElementById('localTitle').value.trim();
-    let c = document.getElementById('localContent').value.trim();
-    let type = document.getElementById('localType').value;
-    let contact = document.getElementById('localContact').value.trim();
-    if(!t||!c) return toast('empty_tip');
-    localPosts.push({id:Date.now(),title:t,content:c,type,contact,user:currentUser.username,status:'pending'});
-    saveData();renderLocal();
-    document.getElementById('localTitle').value='';
-    document.getElementById('localContent').value='';
-    toast('success');
-};
-const renderLocal = () => {
-    document.getElementById('localList').innerHTML = localPosts.map(p=>`
-    <div class="bg-white p-4 rounded shadow">
-        <h3 class="font-bold">${p.type} | ${p.title}</h3>
-        <p class="text-sm my-2">${p.content}</p>
-        <p class="text-xs text-gray-500">联系方式：${p.contact} | 发布人：${p.user}</p>
-    </div>`).join('');
-};
-
-// EPC目录
-const quickSearchBrand = (b) => {
-    switchView('products');
-    // 自动筛选对应品牌的产品
-    document.getElementById('filterBrand').value = b;
-    filterProducts();
-};
-document.getElementById('epcBrand').onchange=()=>document.getElementById('epcModel').disabled=false;
-document.getElementById('epcModel').onchange=()=>document.getElementById('epcYear').disabled=false;
-document.getElementById('epcYear').onchange=()=>document.getElementById('epcSystem').disabled=false;
-document.getElementById('epcSystem').onchange=()=>{
-    document.getElementById('epcImagePlaceholder').classList.add('hidden');
-    document.getElementById('epcExplodedView').src='https://picsum.photos/seed/brake/800/600';
-    document.getElementById('epcExplodedView').classList.remove('hidden');
-    let brand = document.getElementById('epcBrand').value;
-    let list = products.filter(x=>x.brand===brand);
-    document.getElementById('epcPartsList').innerHTML = list.map(p=>`
-    <div class="epc-part-item p-3 border rounded flex justify-between items-center">
-        <span>${p.name}</span>
-        <button onclick="addInquiry(${p.id})" class="bg-blue-600 text-white px-2 py-1 rounded text-sm">加入询价</button>
-    </div>`).join('');
-};
-
 // 首页搜索功能 VIN/OEM搜索
 document.getElementById('heroSearchBtn').onclick = async () => {
     let keyword = document.getElementById('heroSearchInput').value.trim().toUpperCase();
@@ -760,6 +670,78 @@ function goToProduct(id) {
         filterProducts();
     },100);
 }
+
+// 快速品牌搜索
+const quickSearchBrand = (b) => {
+    switchView('products');
+    // 自动筛选对应品牌的产品
+    document.getElementById('filterBrand').value = b;
+    filterProducts();
+};
+
+// 询价相关
+const addInquiry = (id) => {
+    if(!currentUser) return toast('login_required');
+    let item = products.find(x=>x.id===id);
+    if(inquiryList.some(x=>x.id===id)) return toast('exist_tip');
+    inquiryList.push(item);
+    saveData();
+    renderInquiry();
+    calcTotalPrice();
+    toast('success');
+};
+const renderInquiry = () => {
+    if(!currentUser) return toast('login_required');
+    document.getElementById('inquiryList').innerHTML = inquiryList.length
+    ? inquiryList.map(p=>`
+    <div class="bg-white p-4 rounded shadow flex justify-between items-center">
+        <div>
+            <h4 class="font-bold">${p.name}</h4>
+            <p>OEM: ${p.oem} | $${p.price}</p>
+        </div>
+        <button onclick="delInquiry(${p.id})" class="text-red-600">删除</button>
+    </div>`).join('')
+    : `<div class="text-center py-6 text-gray-500">暂无询价商品</div>`;
+};
+const delInquiry = (id) => {
+    inquiryList = inquiryList.filter(x=>x.id!==id);
+    saveData();
+    renderInquiry();
+    calcTotalPrice();
+    toast('success');
+};
+const exportInquiry = () => {
+    if(!inquiryList.length) return toast('暂无数据');
+    let num = document.getElementById('buyNum').value||1;
+    let remark = document.getElementById('buyRemark').value;
+    let text = `采购数量：${num}\n备注：${remark}\n--------------------\n`;
+    inquiryList.forEach(p=>{
+        text += `${p.name} | OEM:${p.oem} | 单价$${p.price}\n`;
+    });
+    text += `--------------------\n总计金额：$${document.getElementById('totalPriceShow').innerText}`;
+    let blob = new Blob([text],{type:'text/plain'});
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "询价订单.txt";
+    a.click();
+};
+
+// EPC目录
+document.getElementById('epcBrand').onchange=()=>document.getElementById('epcModel').disabled=false;
+document.getElementById('epcModel').onchange=()=>document.getElementById('epcYear').disabled=false;
+document.getElementById('epcYear').onchange=()=>document.getElementById('epcSystem').disabled=false;
+document.getElementById('epcSystem').onchange=()=>{
+    document.getElementById('epcImagePlaceholder').classList.add('hidden');
+    document.getElementById('epcExplodedView').src='https://picsum.photos/seed/brake/800/600';
+    document.getElementById('epcExplodedView').classList.remove('hidden');
+    let brand = document.getElementById('epcBrand').value;
+    let list = products.filter(x=>x.brand===brand);
+    document.getElementById('epcPartsList').innerHTML = list.map(p=>`
+    <div class="epc-part-item p-3 border rounded flex justify-between items-center">
+        <span>${p.name}</span>
+        <button onclick="addInquiry(${p.id})" class="bg-blue-600 text-white px-2 py-1 rounded text-sm">加入询价</button>
+    </div>`).join('');
+};
 
 // 客服
 document.getElementById('openChat').onclick=()=>document.getElementById('chatBox').classList.remove('hidden');
