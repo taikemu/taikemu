@@ -48,7 +48,7 @@
 <div id="mobileOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleMobileMenu()"></div>
 
 <header class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-2">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         <!-- 移动端汉堡按钮 -->
         <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700 text-xl mr-2">
             <i class="fas fa-bars"></i>
@@ -66,13 +66,7 @@
             <a data-nav="user" class="nav-link cursor-pointer hover:text-blue-600 font-medium" data-lang="nav_profile">个人中心</a>
             <a data-nav="admin" class="nav-link cursor-pointer hover:text-blue-600 font-medium hidden" id="adminNav" data-lang="nav_admin">管理后台</a>
         </nav>
-        <div class="flex items-center gap-2 flex-wrap">
-            <!-- 新增币种选择下拉 -->
-            <select id="currencySelect" class="px-2 py-1 border rounded text-sm">
-                <option value="USD">USD $</option>
-                <option value="EUR">EUR €</option>
-                <option value="CNY">CNY ¥</option>
-            </select>
+        <div class="flex items-center gap-2">
             <div class="hidden md:flex gap-2">
                 <button onclick="changeLang('zh')" class="px-2 py-1 border rounded text-sm">中文</button>
                 <button onclick="changeLang('en')" class="px-2 py-1 border rounded text-sm">EN</button>
@@ -179,7 +173,7 @@
                 <input id="buyNum" type="number" min="1" value="1" class="w-20 p-2 border rounded" data-lang="buy_num" placeholder="采购数量">
                 <input id="buyRemark" class="flex-1 p-2 border rounded" data-lang="buy_remark" placeholder="备注要求">
             </div>
-            <div class="font-bold mb-3" data-lang="total_price">合计总价：<span id="totalPriceShow">0</span> <span id="totalCurrency">USD</span></div>
+            <div class="font-bold mb-3" data-lang="total_price">合计总价：$<span id="totalPriceShow">0</span></div>
             <div id="inquiryList" class="space-y-3"></div>
         </div>
     </div>
@@ -205,7 +199,7 @@
             </div>
             <div id="adminProducts" class="bg-white p-4 rounded shadow">
                 <button onclick="addProduct()" class="mb-4 px-4 py-2 bg-blue-600 text-white rounded" data-lang="add_product">+ 上传新商品</button>
-                <div class="overflow-x-auto"><table class="w-full border-collapse border"><thead><tr class="bg-gray-100"><th class="border p-2" data-lang="img">图片</th><th class="border p-2">中文名</th><th class="border p-2">英文名</th><th class="border p-2">法文名</th><th class="border p-2">OEM</th><th class="border p-2" data-lang="price">价格(USD)</th><th class="border p-2" data-lang="stock">库存</th><th class="border p-2" data-lang="action">操作</th></tr></thead><tbody id="productTableBody"></tbody></table></div>
+                <div class="overflow-x-auto"><table class="w-full border-collapse border"><thead><tr class="bg-gray-100"><th class="border p-2" data-lang="img">图片</th><th class="border p-2" data-lang="p_name">商品名称</th><th class="border p-2">OEM</th><th class="border p-2" data-lang="price">价格</th><th class="border p-2" data-lang="stock">库存</th><th class="border p-2" data-lang="action">操作</th></tr></thead><tbody id="productTableBody"></tbody></table></div>
             </div>
             <div id="adminLocal" class="hidden bg-white p-4 rounded shadow"></div>
             <div id="adminSettings" class="hidden bg-white p-4 rounded shadow">
@@ -254,7 +248,7 @@
 <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded z-50 hidden"><span id="toastText"></span></div>
 
 <script>
-// 域名白名单
+// 域名白名单 已添加你的官方域名
 const ALLOW_DOMAINS = [
     "localhost",
     "127.0.0.1",
@@ -268,35 +262,7 @@ if(!isDev && !ALLOW_DOMAINS.includes(currentHost)){
     throw new Error("Unauthorized");
 }
 
-// ========== 新增 实时汇率配置 ==========
-let currencyRate = JSON.parse(localStorage.getItem('currencyRate')) || {USD:1, EUR:0.92, CNY:7.2};
-let rateUpdateTime = Number(localStorage.getItem('rateUpdateTime')) || 0;
-let selectCurrency = localStorage.getItem('selectCurrency') || 'USD';
-const currencySymbol = {USD:'$', EUR:'€', CNY:'¥'};
-
-// 拉取实时汇率 1小时刷新一次
-async function getLiveRate(){
-    const now = Date.now();
-    // 3600*1000=1小时
-    if(now - rateUpdateTime < 3600*1000) return;
-    try{
-        const res = await fetch('https://v6.exchangerate-api.com/v6/latest/USD');
-        const data = await res.json();
-        currencyRate.EUR = data.conversion_rates.EUR;
-        currencyRate.CNY = data.conversion_rates.CNY;
-        localStorage.setItem('currencyRate', JSON.stringify(currencyRate));
-        localStorage.setItem('rateUpdateTime', now);
-    }catch(e){
-        console.log('汇率接口异常，使用缓存汇率');
-    }
-}
-
-// 换算价格
-function calcCurrencyPrice(usdPrice){
-    return (usdPrice * currencyRate[selectCurrency]).toFixed(2);
-}
-// ========== END 汇率 ==========
-
+// 三语语言包 补全所有缺失翻译
 const langData = {
     zh: {
         nav_home:"首页",nav_epc:"电子目录",nav_products:"产品",nav_local:"同城服务",nav_inquiry:"我的询价",nav_profile:"个人中心",nav_admin:"管理后台",
@@ -305,8 +271,8 @@ const langData = {
         feat1:"简单易用",feat1_desc:"快速查找配件",feat2:"EPC电子目录",feat2_desc:"原厂配件数据",feat3:"最优价格",feat3_desc:"工厂直供价格",feat4:"全球发货",feat4_desc:"覆盖非洲全境",
         epc_title:"电子配件目录",select_brand:"选择品牌",select_model:"选择车型",select_year:"选择年份",select_system:"选择系统",epc_tip:"请先选择车辆",parts_list:"配件列表",add_all:"全部加入询价",no_parts:"暂无配件",
         all_brand:"全部品牌",max_price:"最高价格",filter:"筛选",
-        local_title:"同城服务",repair:"维修",parts:"配件",title:"标题",content:"内容",contact:"联系方式",publishing:"发布",
-        inquiry_title:"我的询价单",export:"导出询价单",buy_num:"数量",buy_remark:"备注",total_price:"合计总价：",
+        local_title:"同城服务",repair:"维修",parts:"配件",title:"标题",content:"内容",contact:"联系方式",publish:"发布",
+        inquiry_title:"我的询价单",export:"导出询价单",buy_num:"数量",buy_remark:"备注",total_price:"合计总价",
         profile_title:"个人资料",nickname:"昵称",phone:"电话",save:"保存资料",
         admin_title:"管理后台",product_mgr:"产品管理",local_mgr:"同城审核",settings:"系统设置",
         add_product:"+ 上传新商品",img:"图片",p_name:"商品名称",price:"价格",stock:"库存",action:"操作",
@@ -323,8 +289,8 @@ const langData = {
         feat1:"Easy To Use",feat1_desc:"Find Parts Quickly",feat2:"EPC Catalog",feat2_desc:"Genuine Parts Data",feat3:"Best Price",feat3_desc:"Factory Direct Supply",feat4:"Global Shipping",feat4_desc:"Cover All Africa",
         epc_title:"EPC Parts Catalog",select_brand:"Select Brand",select_model:"Select Model",select_year:"Select Year",select_system:"Select System",epc_tip:"Select Vehicle First",parts_list:"Parts List",add_all:"Add All To Inquiry",no_parts:"No Parts",
         all_brand:"All Brands",max_price:"Max Price",filter:"Filter",
-        local_title:"Local Service",repair:"Repair",parts:"Parts",title:"Title",content:"Content",contact:"Contact",publishing:"Publish",
-        inquiry_title:"My Inquiry",export:"Export Inquiry",buy_num:"Qty",buy_remark:"Remark",total_price:"Total Price:",
+        local_title:"Local Service",repair:"Repair",parts:"Parts",title:"Title",content:"Content",contact:"Contact",publish:"Publish",
+        inquiry_title:"My Inquiry",export:"Export Inquiry",buy_num:"Qty",buy_remark:"Remark",total_price:"Total Price",
         profile_title:"My Profile",nickname:"Nickname",phone:"Phone",save:"Save Profile",
         admin_title:"Admin Panel",product_mgr:"Product Manage",local_mgr:"Local Audit",settings:"Settings",
         add_product:"+ Add Product",img:"Image",p_name:"Name",price:"Price",stock:"Stock",action:"Action",
@@ -341,8 +307,8 @@ const langData = {
         feat1:"Facile À Utiliser",feat1_desc:"Trouver Pièces Rapidement",feat2:"Catalogue EPC",feat2_desc:"Données Pièces D'origine",feat3:"Meilleur Prix",feat3_desc:"Fourniture Directe Usine",feat4:"Expédition Mondiale",feat4_desc:"Couvrir Toute L'Afrique",
         epc_title:"Catalogue Pièces EPC",select_brand:"Sélectionner Marque",select_model:"Sélectionner Modèle",select_year:"Sélectionner Année",select_system:"Sélectionner Système",epc_tip:"Sélectionner Véhicule D'abord",parts_list:"Liste Pièces",add_all:"Ajouter Tout À Demande",no_parts:"Aucune Pièce",
         all_brand:"Toutes Marques",max_price:"Prix Max",filter:"Filtrer",
-        local_title:"Service Local",repair:"Réparation",parts:"Pièces",title:"Titre",content:"Contenu",contact:"Contact",publishing:"Publier",
-        inquiry_title:"Ma Demande",export:"Exporter Demande",buy_num:"Qté",buy_remark:"Remarque",total_price:"Prix Total :",
+        local_title:"Service Local",repair:"Réparation",parts:"Pièces",title:"Titre",content:"Contenu",contact:"Contact",publish:"Publier",
+        inquiry_title:"Ma Demande",export:"Exporter Demande",buy_num:"Qté",buy_remark:"Remarque",total_price:"Prix Total",
         profile_title:"Mon Profil",nickname:"Surnom",phone:"Téléphone",save:"Enregistrer Profil",
         admin_title:"Panneau Admin",product_mgr:"Gérer Produits",local_mgr:"Audit Local",settings:"Paramètres",
         add_product:"+ Ajouter Produit",img:"Image",p_name:"Nom",price:"Prix",stock:"Stock",action:"Action",
@@ -355,6 +321,7 @@ const langData = {
 };
 
 let currentLang = localStorage.getItem('lang') || 'zh';
+// 社媒配置
 let socialConfig = JSON.parse(localStorage.getItem('socialConfig')) || {
     facebook: true,
     whatsapp: true,
@@ -375,14 +342,15 @@ function changeLang(lang) {
     });
     calcTotalPrice();
     loadSocialIcons();
-    renderProducts(); // 切换语言重载产品名称
 };
 
+// 加载社媒图标
 function loadSocialIcons() {
     document.querySelectorAll('.social-icon').forEach(el => {
         const key = el.dataset.key;
         el.style.display = socialConfig[key] ? 'block' : 'none';
     });
+    // 同步后台的勾选框
     if(isAdmin()){
         document.getElementById('social_facebook').checked = socialConfig.facebook;
         document.getElementById('social_whatsapp').checked = socialConfig.whatsapp;
@@ -393,6 +361,7 @@ function loadSocialIcons() {
     }
 }
 
+// 保存社媒设置
 function saveSocialSettings() {
     socialConfig = {
         facebook: document.getElementById('social_facebook').checked,
@@ -407,31 +376,23 @@ function saveSocialSettings() {
     toast('success');
 }
 
+// 移动端菜单切换
 function toggleMobileMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
     document.getElementById('mobileOverlay').classList.toggle('hidden');
 }
 
+// 基础数据
 let users = JSON.parse(localStorage.getItem('users')) || [{id:1,username:'admin',password:'admin123',role:'super',nickname:'Admin',phone:''}];
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-// ========== 修改产品结构：三语名称 + 美元原价 ==========
-let products = JSON.parse(localStorage.getItem('products')) || [{
-    id:1,
-    nameZh:"前刹车片",
-    nameEn:"Front Brake Pad",
-    nameFr:"Plaquette de frein avant",
-    oem:"04465-0K090",
-    brand:"toyota",
-    priceUSD:38.5,
-    stock:100,
-    image:"https://picsum.photos/id/23/300/200"
-}];
+let products = JSON.parse(localStorage.getItem('products')) || [{id:1,name:"Front Brake Pad",oem:"04465-0K090",brand:"toyota",price:38.5,stock:100,image:"https://picsum.photos/id/23/300/200"}];
 let localPosts = JSON.parse(localStorage.getItem('localPosts')) || [];
 let inquiryList = JSON.parse(localStorage.getItem('inquiryList')) || [];
 let editProductId = null;
 const ADMIN_ACCOUNT = "admin";
-const API_BASE = "/api";
+const API_BASE = "/api"; // 后端接口地址
 
+// 工具方法
 const toast = (key) => {
     let txt = langData[currentLang][key] || key;
     document.getElementById('toastText').innerText = txt;
@@ -447,9 +408,12 @@ const saveData = () => {
 };
 const isAdmin = () => currentUser && currentUser.username === ADMIN_ACCOUNT;
 
+// 视图切换
 const switchView = (v) => {
+    // 切换视图时，强制关闭移动端侧边栏，而不是切换状态
     document.getElementById('mobileMenu').classList.remove('open');
     document.getElementById('mobileOverlay').classList.add('hidden');
+    
     document.querySelectorAll('[id$="View"]').forEach(e=>e.classList.add('hidden-view'));
     document.getElementById(v+'View').classList.remove('hidden-view');
     if(v === 'admin' && !isAdmin()){ toast('no_permission'); switchView('home'); }
@@ -461,11 +425,13 @@ const checkAdminNav = () => {
     document.getElementById('adminNavMobile').classList.toggle('hidden',!isAdmin());
 };
 
+// 登录注册注销 修复硬编码文字
 document.getElementById('loginBtn').onclick=()=>{
     let u = prompt(langData[currentLang].input_username);
     if(!u) return;
     let p = prompt(langData[currentLang].input_password);
     if(!p) return;
+    // 后续对接后端接口，这里先兼容本地
     let user = users.find(x=>x.username===u&&x.password===p);
     if(!user) return alert("账号密码错误");
     currentUser = user;
@@ -503,47 +469,36 @@ const renderUser = () => {
     if(currentUser) document.getElementById('userInfo').innerText = `Hi, ${currentUser.nickname}`;
 };
 
-// 获取当前语言产品名
-function getProductName(item){
-    if(currentLang === 'zh') return item.nameZh;
-    if(currentLang === 'fr') return item.nameFr;
-    return item.nameEn;
-}
-
+// 询价总价计算
 function calcTotalPrice(){
     let num = Number(document.getElementById('buyNum').value) || 1;
-    let totalUSD = 0;
-    inquiryList.forEach(item=> totalUSD += item.priceUSD * num);
-    const totalLocal = calcCurrencyPrice(totalUSD);
-    document.getElementById('totalPriceShow').innerText = totalLocal;
-    document.getElementById('totalCurrency').innerText = selectCurrency;
+    let total = 0;
+    inquiryList.forEach(item=> total += item.price * num);
+    document.getElementById('totalPriceShow').innerText = total.toFixed(2);
 }
 document.getElementById('buyNum').addEventListener('input',calcTotalPrice);
 
-// 产品渲染 多语言名称+币种价格
+// 产品渲染
 const renderProducts = (list=products) => {
     document.getElementById('productGrid').innerHTML=list.map(p=>`
     <div class="bg-white rounded shadow p-4">
         <img src="${p.image}" class="w-full h-40 object-cover rounded mb-2">
-        <h3 class="font-bold">${getProductName(p)}</h3>
+        <h3 class="font-bold">${p.name}</h3>
         <p class="text-sm">OEM: ${p.oem}</p>
         <p class="text-green-600">${langData[currentLang].stock}: ${p.stock}</p>
-        <p class="text-blue-600 font-bold">${currencySymbol[selectCurrency]}${calcCurrencyPrice(p.priceUSD)}</p>
+        <p class="text-blue-600 font-bold">$${p.price}</p>
         <button onclick="addInquiry(${p.id})" class="mt-2 w-full bg-orange-500 text-white py-1 rounded">加入询价</button>
     </div>`).join('');
 };
 
-// 后台产品表格修改三语输入
 const renderAdminProducts = () => {
     const tbody = document.getElementById('productTableBody');
     tbody.innerHTML = products.map(p=>`
     <tr>
         <td class="border p-2"><img src="${p.image}" class="w-12 h-12 object-cover"></td>
-        <td class="border p-2">${p.nameZh}</td>
-        <td class="border p-2">${p.nameEn}</td>
-        <td class="border p-2">${p.nameFr}</td>
+        <td class="border p-2">${p.name}</td>
         <td class="border p-2">${p.oem}</td>
-        <td class="border p-2">$${p.priceUSD}</td>
+        <td class="border p-2">$${p.price}</td>
         <td class="border p-2">${p.stock}</td>
         <td class="border p-2 gap-2 flex">
             <button onclick="editProduct(${p.id})" class="px-2 py-1 bg-yellow-500 text-white rounded">编辑</button>
@@ -552,18 +507,16 @@ const renderAdminProducts = () => {
     </tr>`).join('');
 };
 
-// 新增产品弹窗 三语名称输入
+// 新增商品
 const addProduct = () => {
     editProductId = null;
     let modal = `<div class="modal-overlay" id="productModal">
-    <div class="bg-white p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md">
         <h3 class="text-lg font-bold mb-4">${langData[currentLang].add_product}</h3>
         <input type="file" id="productImg" accept="image/jpeg,image/png" class="w-full p-2 border rounded mb-2">
-        <input id="nameZh" class="w-full p-2 border rounded mb-2" placeholder="中文名称">
-        <input id="nameEn" class="w-full p-2 border rounded mb-2" placeholder="English Name">
-        <input id="nameFr" class="w-full p-2 border rounded mb-2" placeholder="Nom Français">
+        <input id="productName" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].p_name}">
         <input id="productOem" class="w-full p-2 border rounded mb-2" placeholder="OEM">
-        <input id="productPriceUSD" type="number" step="0.01" class="w-full p-2 border rounded mb-2" placeholder="价格(USD)">
+        <input id="productPrice" type="number" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].price}">
         <input id="productStock" type="number" class="w-full p-2 border rounded mb-2" placeholder="${langData[currentLang].stock}">
         <select id="productBrand" class="w-full p-2 border rounded mb-2">
             <option value="toyota">Toyota</option>
@@ -577,19 +530,18 @@ const addProduct = () => {
     document.body.insertAdjacentHTML('beforeend',modal);
 };
 
+// 编辑商品
 const editProduct = (id) => {
     let p = products.find(x=>x.id===id);
     editProductId = id;
     let modal = `<div class="modal-overlay" id="productModal">
-    <div class="bg-white p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md">
         <h3 class="text-lg font-bold mb-4">编辑商品</h3>
         <img src="${p.image}" class="w-24 h-24 object-cover mb-2">
         <input type="file" id="productImg" accept="image/jpeg,image/png" class="w-full p-2 border rounded mb-2">
-        <input id="nameZh" value="${p.nameZh}" class="w-full p-2 border rounded mb-2">
-        <input id="nameEn" value="${p.nameEn}" class="w-full p-2 border rounded mb-2">
-        <input id="nameFr" value="${p.nameFr}" class="w-full p-2 border rounded mb-2">
+        <input id="productName" value="${p.name}" class="w-full p-2 border rounded mb-2">
         <input id="productOem" value="${p.oem}" class="w-full p-2 border rounded mb-2">
-        <input id="productPriceUSD" value="${p.priceUSD}" type="number" step="0.01" class="w-full p-2 border rounded mb-2">
+        <input id="productPrice" value="${p.price}" type="number" class="w-full p-2 border rounded mb-2">
         <input id="productStock" value="${p.stock}" type="number" class="w-full p-2 border rounded mb-2">
         <select id="productBrand" class="w-full p-2 border rounded mb-2">
             <option value="toyota" ${p.brand==='toyota'?'selected':''}>Toyota</option>
@@ -603,18 +555,17 @@ const editProduct = (id) => {
     document.body.insertAdjacentHTML('beforeend',modal);
 };
 
+// 保存商品+图片校验
 const saveProduct = () => {
-    let nameZh = document.getElementById('nameZh').value.trim();
-    let nameEn = document.getElementById('nameEn').value.trim();
-    let nameFr = document.getElementById('nameFr').value.trim();
+    let name = document.getElementById('productName').value.trim();
     let oem = document.getElementById('productOem').value.trim();
-    let priceUSD = Number(document.getElementById('productPriceUSD').value);
-    let stock = Number(document.getElementById('productStock').value);
+    let price = document.getElementById('productPrice').value;
+    let stock = document.getElementById('productStock').value;
     let brand = document.getElementById('productBrand').value;
     let file = document.getElementById('productImg').files[0];
 
-    if(!nameZh||!nameEn||!nameFr||!oem||!priceUSD||!stock) return toast('empty_tip');
-    if(stock<0) return toast('stock_warn');
+    if(!name||!oem||!price||!stock) return toast('empty_tip');
+    if(Number(stock)<0) return toast('stock_warn');
 
     const maxSize = 2*1024*1024;
     const allowType = ["image/jpeg","image/jpg","image/png"];
@@ -625,12 +576,12 @@ const saveProduct = () => {
             if(!allowType.includes(file.type)||file.size>maxSize) return toast('img_limit');
             let reader = new FileReader();
             reader.onload = e=>{
-                products[idx] = {...products[idx],nameZh,nameEn,nameFr,oem,brand,priceUSD,stock,image:e.target.result};
+                products[idx] = {...products[idx],name,oem,brand,price:Number(price),stock:Number(stock),image:e.target.result};
                 saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
             };
             reader.readAsDataURL(file);
         }else{
-            products[idx] = {...products[idx],nameZh,nameEn,nameFr,oem,brand,priceUSD,stock};
+            products[idx] = {...products[idx],name,oem,brand,price:Number(price),stock:Number(stock)};
             saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
         }
     }else{
@@ -638,7 +589,7 @@ const saveProduct = () => {
         if(!allowType.includes(file.type)||file.size>maxSize) return toast('img_limit');
         let reader = new FileReader();
         reader.onload = e=>{
-            products.push({id:Date.now(),nameZh,nameEn,nameFr,oem,brand,priceUSD,stock,image:e.target.result});
+            products.push({id:Date.now(),name,oem,brand,price:Number(price),stock:Number(stock),image:e.target.result});
             saveData();renderProducts();renderAdminProducts();closeModal();toast('success');
         };
         reader.readAsDataURL(file);
@@ -658,17 +609,21 @@ const filterProducts = ()=>{
     let p = document.getElementById('filterPrice').value;
     let list = products;
     if(b) list = list.filter(x=>x.brand===b);
-    if(p) list = list.filter(x=>x.priceUSD<=Number(p));
+    if(p) list = list.filter(x=>x.price<=Number(p));
     renderProducts(list);
 };
 
+// 首页搜索功能 VIN/OEM搜索
 document.getElementById('heroSearchBtn').onclick = async () => {
     let keyword = document.getElementById('heroSearchInput').value.trim().toUpperCase();
     if(!keyword) return;
     let resultDiv = document.getElementById('heroSearchResult');
     resultDiv.classList.remove('hidden');
+    
+    // 兼容本地模式
     let list, brand = null;
-    if(keyword.length === 17){
+    if(keyword.length === 17){ // VIN码
+        // 简单VIN解析，前3位WMI
         let wmi = keyword.substring(0,3);
         const wmiMap = {
             '4T1':'toyota','5YJ':'toyota','JTD':'toyota','JTJ':'toyota','JTE':'toyota',
@@ -680,11 +635,12 @@ document.getElementById('heroSearchBtn').onclick = async () => {
         if(brand){
             list = products.filter(x=>x.brand===brand);
         }else{
-            list = products.filter(x=>x.oem.includes(keyword) || getProductName(x).toUpperCase().includes(keyword));
+            list = products.filter(x=>x.oem.includes(keyword) || x.name.toUpperCase().includes(keyword));
         }
-    }else{
-        list = products.filter(x=>x.oem.includes(keyword) || getProductName(x).toUpperCase().includes(keyword));
+    }else{ // OEM搜索
+        list = products.filter(x=>x.oem.includes(keyword) || x.name.toUpperCase().includes(keyword));
     }
+    
     if(list.length>0){
         resultDiv.innerHTML = `
             <div class="font-bold mb-2">${langData[currentLang].search_result_title} (${brand?`品牌:${brand}`:'OEM搜索'})</div>
@@ -692,8 +648,8 @@ document.getElementById('heroSearchBtn').onclick = async () => {
                 ${list.map(p=>`
                 <div class="border-b pb-2 flex justify-between items-center">
                     <div class="cursor-pointer hover:text-blue-600" onclick="goToProduct(${p.id})">
-                        <div class="font-medium">${getProductName(p)}</div>
-                        <div class="text-sm text-gray-500">OEM: ${p.oem} | ${currencySymbol[selectCurrency]}${calcCurrencyPrice(p.priceUSD)}</div>
+                        <div class="font-medium">${p.name}</div>
+                        <div class="text-sm text-gray-500">OEM: ${p.oem} | $${p.price}</div>
                     </div>
                     <button onclick="addInquiry(${p.id})" class="bg-orange-500 text-white px-3 py-1 rounded text-sm">加入询价</button>
                 </div>
@@ -705,20 +661,25 @@ document.getElementById('heroSearchBtn').onclick = async () => {
     }
 };
 
+// 搜索结果跳转到产品页
 function goToProduct(id) {
     switchView('products');
+    // 自动定位到产品
     setTimeout(()=>{
         document.getElementById('filterBrand').value = products.find(x=>x.id===id).brand;
         filterProducts();
     },100);
 }
 
+// 快速品牌搜索
 const quickSearchBrand = (b) => {
     switchView('products');
+    // 自动筛选对应品牌的产品
     document.getElementById('filterBrand').value = b;
     filterProducts();
 };
 
+// 询价相关
 const addInquiry = (id) => {
     if(!currentUser) return toast('login_required');
     let item = products.find(x=>x.id===id);
@@ -735,8 +696,8 @@ const renderInquiry = () => {
     ? inquiryList.map(p=>`
     <div class="bg-white p-4 rounded shadow flex justify-between items-center">
         <div>
-            <h4 class="font-bold">${getProductName(p)}</h4>
-            <p>OEM: ${p.oem} | ${currencySymbol[selectCurrency]}${calcCurrencyPrice(p.priceUSD)}</p>
+            <h4 class="font-bold">${p.name}</h4>
+            <p>OEM: ${p.oem} | $${p.price}</p>
         </div>
         <button onclick="delInquiry(${p.id})" class="text-red-600">删除</button>
     </div>`).join('')
@@ -753,11 +714,11 @@ const exportInquiry = () => {
     if(!inquiryList.length) return toast('暂无数据');
     let num = document.getElementById('buyNum').value||1;
     let remark = document.getElementById('buyRemark').value;
-    let text = `采购数量：${num}\n备注：${remark}\n币种：${selectCurrency}\n--------------------\n`;
+    let text = `采购数量：${num}\n备注：${remark}\n--------------------\n`;
     inquiryList.forEach(p=>{
-        text += `${getProductName(p)} | OEM:${p.oem} | 单价${currencySymbol[selectCurrency]}${calcCurrencyPrice(p.priceUSD)}\n`;
+        text += `${p.name} | OEM:${p.oem} | 单价$${p.price}\n`;
     });
-    text += `--------------------\n总计：${currencySymbol[selectCurrency]}${document.getElementById('totalPriceShow').innerText}`;
+    text += `--------------------\n总计金额：$${document.getElementById('totalPriceShow').innerText}`;
     let blob = new Blob([text],{type:'text/plain'});
     let a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -765,6 +726,7 @@ const exportInquiry = () => {
     a.click();
 };
 
+// EPC目录
 document.getElementById('epcBrand').onchange=()=>document.getElementById('epcModel').disabled=false;
 document.getElementById('epcModel').onchange=()=>document.getElementById('epcYear').disabled=false;
 document.getElementById('epcYear').onchange=()=>document.getElementById('epcSystem').disabled=false;
@@ -776,11 +738,12 @@ document.getElementById('epcSystem').onchange=()=>{
     let list = products.filter(x=>x.brand===brand);
     document.getElementById('epcPartsList').innerHTML = list.map(p=>`
     <div class="epc-part-item p-3 border rounded flex justify-between items-center">
-        <span>${getProductName(p)}</span>
+        <span>${p.name}</span>
         <button onclick="addInquiry(${p.id})" class="bg-blue-600 text-white px-2 py-1 rounded text-sm">加入询价</button>
     </div>`).join('');
 };
 
+// 客服
 document.getElementById('openChat').onclick=()=>document.getElementById('chatBox').classList.remove('hidden');
 document.getElementById('closeChat').onclick=()=>document.getElementById('chatBox').classList.add('hidden');
 document.getElementById('sendChat').onclick=()=>{
@@ -793,6 +756,7 @@ document.getElementById('sendChat').onclick=()=>{
     },600);
 };
 
+// 管理标签切换
 document.querySelectorAll('.admin-tab').forEach(tab=>{
     tab.onclick=()=>{
         document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active-tab'));
@@ -806,6 +770,7 @@ document.querySelectorAll('.admin-tab').forEach(tab=>{
     };
 });
 
+// 个人资料保存
 const saveUserInfo = () => {
     if(!currentUser) return toast('login_required');
     currentUser.nickname = document.getElementById('userNickname').value.trim();
@@ -817,6 +782,7 @@ const saveUserInfo = () => {
     renderUser();
 };
 
+// APP返回键适配
 document.addEventListener('keydown',function(e){
     if(e.key === "Backspace" && window.history.length>1){
         e.preventDefault();
@@ -824,8 +790,19 @@ document.addEventListener('keydown',function(e){
     }
 });
 
-// 币种切换事件
-document.getElementById('currencySelect').value = selectCurrency;
-document.getElementById('currencySelect').onchange = function(){
-    selectCurrency = this.value;
-    localStorage.setItem('selectCurrency',
+// 初始化加载
+window.onload=()=>{
+    changeLang(currentLang);
+    renderUser();
+    checkAdminNav();
+    renderProducts();
+    renderInquiry();
+    renderLocal();
+    renderAdminProducts();
+    switchView('home');
+    calcTotalPrice();
+    loadSocialIcons();
+};
+</script>
+</body>
+</html>
